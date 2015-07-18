@@ -1,10 +1,16 @@
 package runtime;
 
+import static instruction.AddInstruction.Add;
 import static instruction.CallInstruction.Call;
+import static instruction.DivideInstruction.Divide;
 import static instruction.LoadInstruction.Load;
+import static instruction.MinusInstruction.Minus;
+import static instruction.MultiplyInstruction.Multiply;
 import static instruction.PushInstruction.Push;
+import static instruction.UnaryMinusInstruction.UnaryMinus;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static value.DoubleValue.Value;
 import static value.StringValue.Value;
 import instruction.Instruction;
 
@@ -13,7 +19,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import value.IntValue;
+import value.DoubleValue;
 
 public class EngineTest {
 	@Test
@@ -21,9 +27,64 @@ public class EngineTest {
 		assertOutput("Hello World!", Arrays.asList(
 			Load(Value("print")),
 			Push(Value("Hello World!")),
-			Push(IntValue.Value(1)),
+			Push(DoubleValue.Value(1)),
 			Call()
 		));
+	}
+	
+	@Test
+	public void add() {
+		assertStackValue("3", Arrays.asList(
+			Push(Value(1)),
+			Push(Value(2)),
+			Add()
+		));
+	}
+	
+	@Test
+	public void subtract() {
+		assertStackValue("2", Arrays.asList(
+			Push(Value(5)),
+			Push(Value(3)),
+			Minus()
+		));
+	}
+	
+	@Test
+	public void multiply() {
+		assertStackValue("10", Arrays.asList(
+			Push(Value(5)),
+			Push(Value(2)),
+			Multiply()
+		));
+	}
+	
+	@Test
+	public void divide() {
+		assertStackValue("2.5", Arrays.asList(
+			Push(Value(5)),
+			Push(Value(2)),
+			Divide()
+		));
+	}
+	
+	@Test
+	public void unaryMinus() {
+		assertStackValue("3", Arrays.asList(
+			Push(Value(-3)),
+			UnaryMinus()
+		));
+	}
+	
+	private static void assertStackValue(String expected, List<Instruction> instructions) {
+		Runtime runtime = new Runtime();
+		
+		new Engine().run(runtime, instructions);
+		
+		assertTrue(runtime.getOutput().isEmpty());
+		assertTrue(runtime.getErrors().isEmpty());
+		assertEquals(expected, runtime.getStack().popValue().toString());
+		assertTrue(runtime.getStack().isEmpty());
 	}
 	
 	private static void assertOutput(String expected, List<Instruction> instructions) {

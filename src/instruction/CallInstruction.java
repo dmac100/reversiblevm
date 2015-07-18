@@ -20,7 +20,7 @@ public class CallInstruction implements Instruction {
 		Stack stack = runtime.getStack();
 		
 		List<Value> params = new ArrayList<>();
-		int numParams = stack.popIntValue().getValue();
+		int numParams = (int) stack.popDoubleValue().getValue();
 		for(int x = 0; x < numParams; x++) {
 			params.add(stack.popValue());
 		}

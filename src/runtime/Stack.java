@@ -3,7 +3,7 @@ package runtime;
 import java.util.ArrayList;
 import java.util.List;
 
-import value.IntValue;
+import value.DoubleValue;
 import value.NativeFunctionValue;
 import value.Value;
 
@@ -23,8 +23,8 @@ public class Stack {
 		return (Value) value;
 	}
 	
-	public IntValue popIntValue() {
-		return (IntValue) popValue();
+	public DoubleValue popDoubleValue() {
+		return (DoubleValue) popValue();
 	}
 	
 	public NativeFunctionValue popFunctionValue() {
