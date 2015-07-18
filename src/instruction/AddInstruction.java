@@ -1,5 +1,6 @@
 package instruction;
 
+import runtime.ExecutionException;
 import runtime.Runtime;
 import runtime.Stack;
 import value.DoubleValue;
@@ -13,17 +14,11 @@ public class AddInstruction implements Instruction {
 		return new AddInstruction();
 	}
 	
-	public void execute(Runtime runtime) {
+	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		Value value2 = stack.popValue();
-		Value value1 = stack.popValue();
-		if(value1 instanceof DoubleValue && value2 instanceof DoubleValue) {
-			double x = ((DoubleValue)value1).getValue();
-			double y = ((DoubleValue)value2).getValue();
-			stack.push(DoubleValue.Value(x + y));
-		} else {
-			runtime.throwError("TypeError: Not a double");
-		}
+		DoubleValue value2 = runtime.popCheckedDoubleValue();
+		DoubleValue value1 = runtime.popCheckedDoubleValue();
+		stack.push(DoubleValue.Value(value1.getValue() + value2.getValue()));
 	}
 	
 	public String toString() {

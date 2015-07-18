@@ -3,6 +3,10 @@ package runtime;
 import java.util.ArrayList;
 import java.util.List;
 
+import value.DoubleValue;
+import value.NativeFunctionValue;
+import value.Value;
+
 public class Runtime {
 	private Scope scope = new GlobalScope();
 	private Stack stack = new Stack();
@@ -34,5 +38,23 @@ public class Runtime {
 	
 	public List<String> getErrors() {
 		return errors;
+	}
+	
+	public DoubleValue popCheckedDoubleValue() throws ExecutionException {
+		Value value = stack.popValue();
+		if(value instanceof DoubleValue) {
+			return (DoubleValue) value;
+		} else {
+			throw new ExecutionException("TypeError: Not a double");
+		}
+	}
+	
+	public NativeFunctionValue popCheckedFunctionValue() throws ExecutionException {
+		Value value = stack.popValue();
+		if(value instanceof NativeFunctionValue) {
+			return (NativeFunctionValue) value;
+		} else {
+			throw new ExecutionException("TypeError: Not a function");
+		}
 	}
 }

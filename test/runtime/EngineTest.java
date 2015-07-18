@@ -76,6 +76,14 @@ public class EngineTest {
 		));
 	}
 	
+	@Test
+	public void typeError() {
+		assertError("TypeError: Not a double", Arrays.asList(
+			Push(Value("3")),
+			UnaryMinus()
+		));
+	}
+	
 	private static void assertStackValue(String expected, List<Instruction> instructions) {
 		Runtime runtime = new Runtime();
 		
@@ -94,6 +102,16 @@ public class EngineTest {
 		
 		assertEquals(Arrays.asList(expected), runtime.getOutput());
 		assertTrue(runtime.getErrors().isEmpty());
+		assertTrue(runtime.getStack().isEmpty());
+	}
+	
+	private static void assertError(String expected, List<Instruction> instructions) {
+		Runtime runtime = new Runtime();
+		
+		new Engine().run(runtime, instructions);
+		
+		assertEquals(expected, runtime.getErrors().get(0));
+		assertTrue(runtime.getOutput().isEmpty());
 		assertTrue(runtime.getStack().isEmpty());
 	}
 }

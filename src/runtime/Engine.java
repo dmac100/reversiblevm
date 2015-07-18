@@ -11,7 +11,13 @@ public class Engine {
 	
 	public void run(Runtime runtime, List<Instruction> instructions) {
 		for(Instruction instruction:instructions) {
-			instruction.execute(runtime);
+			try {
+				instruction.execute(runtime);
+			} catch (ExecutionException e) {
+				System.err.println("Error: " + e.getMessage());
+				runtime.getErrors().add(e.getMessage());
+				return;
+			}
 		}
 	}
 }

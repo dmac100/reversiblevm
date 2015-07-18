@@ -1,5 +1,6 @@
 package instruction;
 
+import runtime.ExecutionException;
 import runtime.Runtime;
 import runtime.Stack;
 import value.DoubleValue;
@@ -13,15 +14,10 @@ public class UnaryMinusInstruction implements Instruction {
 		return new UnaryMinusInstruction();
 	}
 	
-	public void execute(Runtime runtime) {
+	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		Value value = stack.popValue();
-		if(value instanceof DoubleValue) {
-			double x = ((DoubleValue)value).getValue();
-			stack.push(DoubleValue.Value(-x));
-		} else {
-			runtime.throwError("TypeError: Not a double");
-		}
+		DoubleValue value = runtime.popCheckedDoubleValue();
+		stack.push(DoubleValue.Value(-value.getValue()));
 	}
 	
 	public String toString() {

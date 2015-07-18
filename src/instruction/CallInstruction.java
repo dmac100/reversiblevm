@@ -3,6 +3,7 @@ package instruction;
 import java.util.ArrayList;
 import java.util.List;
 
+import runtime.ExecutionException;
 import runtime.Runtime;
 import runtime.Stack;
 import value.NativeFunctionValue;
@@ -16,7 +17,7 @@ public class CallInstruction implements Instruction {
 		return new CallInstruction();
 	}
 	
-	public void execute(Runtime runtime) {
+	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		
 		List<Value> params = new ArrayList<>();
@@ -25,13 +26,8 @@ public class CallInstruction implements Instruction {
 			params.add(stack.popValue());
 		}
 		
-		Value function = stack.popValue();
-		if(function instanceof NativeFunctionValue) {
-			NativeFunctionValue functionValue = (NativeFunctionValue) function;
-			functionValue.execute(runtime, params);
-		} else {
-			runtime.throwError("Not a function value: " + function);
-		}
+		NativeFunctionValue function = runtime.popCheckedFunctionValue();
+		function.execute(runtime, params);
 	}
 	
 	public String toString() {
