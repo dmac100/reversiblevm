@@ -3,15 +3,20 @@ package runtime;
 import static instruction.AddInstruction.Add;
 import static instruction.CallInstruction.Call;
 import static instruction.DivideInstruction.Divide;
+import static instruction.EndFunctionInstruction.EndFunction;
 import static instruction.LoadInstruction.Load;
+import static instruction.LocalInstruction.Local;
 import static instruction.MinusInstruction.Minus;
 import static instruction.MultiplyInstruction.Multiply;
+import static instruction.PopInstruction.Pop;
 import static instruction.PushInstruction.Push;
+import static instruction.StartFunctionInstruction.StartFunction;
 import static instruction.StoreInstruction.Store;
 import static instruction.UnaryMinusInstruction.UnaryMinus;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static value.DoubleValue.Value;
+import static value.NullValue.NullValue;
 import static value.StringValue.Value;
 import instruction.Instruction;
 
@@ -20,16 +25,15 @@ import java.util.List;
 
 import org.junit.Test;
 
-import value.DoubleValue;
-
 public class EngineTest {
 	@Test
 	public void printHello() {
 		assertOutput("Hello World!", Arrays.asList(
-			Load(Value("print")),
 			Push(Value("Hello World!")),
-			Push(DoubleValue.Value(1)),
-			Call()
+			Push(Value(1)),
+			Load(Value("print")),
+			Call(),
+			Pop()
 		));
 	}
 	
@@ -95,6 +99,46 @@ public class EngineTest {
 			Load(Value("x")),
 			Load(Value("y")),
 			Add()
+		));
+	}
+	
+	@Test
+	public void function() {
+		assertStackValue("3", Arrays.asList(
+			StartFunction(),
+			Pop(),
+			Local(Value("x")),
+			Store(Value("x")),
+			Load(Value("x")),
+			Push(Value(1)),
+			Add(),
+			EndFunction(),
+			Store(Value("f")),
+			Push(Value(2)),
+			Push(Value(1)),
+			Load(Value("f")),
+			Call()
+		));
+	}
+	
+	@Test
+	public void functionScope() {
+		assertStackValue("5", Arrays.asList(
+			Push(Value(5)),
+			Store(Value("x")),
+			StartFunction(),
+			Pop(),
+			Push(Value(10)),
+			Local(Value("x")),
+			Store(Value("x")),
+			Push(NullValue()),
+			EndFunction(),
+			Store(Value("f")),
+			Push(Value(0)),
+			Load(Value("f")),
+			Call(),
+			Pop(),
+			Load(Value("x"))
 		));
 	}
 	

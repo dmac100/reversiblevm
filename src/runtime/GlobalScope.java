@@ -10,19 +10,23 @@ import value.Value;
 public class GlobalScope implements Scope {
 	private Map<String, Value> values = new HashMap<>();
 	
+	public GlobalScope() {
+		values.put("print", new NativeFunctionValue("print"));
+	}
+	
 	public Value get(String name) {
-		if(name.equals("print")) {
-			return new NativeFunctionValue("print");
+		if(values.containsKey(name)) {
+			return values.get(name);
 		} else {
-			if(values.containsKey(name)) {
-				return values.get(name);
-			} else {
-				return new NullValue();
-			}
+			return new NullValue();
 		}
 	}
 
 	public void set(String name, Value value) {
 		values.put(name, value);
+	}
+	
+	public void create(String name) {
+		values.put(name, new NullValue());
 	}
 }

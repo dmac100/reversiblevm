@@ -23,6 +23,6 @@ public class StoreInstruction implements Instruction {
 	}
 	
 	public String toString() {
-		return "LOAD: " + name;
+		return "STORE: " + name;
 	}
 }

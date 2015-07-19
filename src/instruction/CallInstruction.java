@@ -1,11 +1,10 @@
 package instruction;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import runtime.ExecutionException;
+import runtime.NonGlobalScope;
 import runtime.Runtime;
-import runtime.Stack;
+import runtime.StackFrame;
+import value.FunctionValue;
 import value.NativeFunctionValue;
 import value.Value;
 
@@ -18,16 +17,15 @@ public class CallInstruction implements Instruction {
 	}
 	
 	public void execute(Runtime runtime) throws ExecutionException {
-		Stack stack = runtime.getStack();
-		
-		List<Value> params = new ArrayList<>();
-		int numParams = (int) stack.popDoubleValue().getValue();
-		for(int x = 0; x < numParams; x++) {
-			params.add(stack.popValue());
+		Value value = runtime.getStack().popValue();
+		if(value instanceof NativeFunctionValue) {
+			((NativeFunctionValue)value).execute(runtime);
+		} else if(value instanceof FunctionValue) {
+			FunctionValue function = (FunctionValue) value;
+			runtime.addStackFrame(new StackFrame(function));
+		} else {
+			throw new ExecutionException("TypeError: Not a function");
 		}
-		
-		NativeFunctionValue function = runtime.popCheckedFunctionValue();
-		function.execute(runtime, params);
 	}
 	
 	public String toString() {

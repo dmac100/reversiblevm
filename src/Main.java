@@ -1,6 +1,8 @@
+import static instruction.AddInstruction.Add;
 import static instruction.CallInstruction.Call;
 import static instruction.LoadInstruction.Load;
 import static instruction.PushInstruction.Push;
+import static value.DoubleValue.Value;
 import static value.StringValue.Value;
 
 import java.util.Arrays;
@@ -11,9 +13,11 @@ import value.DoubleValue;
 public class Main {
 	public static void main(String[] args) {
 		new Engine().run(Arrays.asList(
-			Load(Value("print")),
-			Push(Value("Hello World!")),
+			Push(Value(1)),
+			Push(Value(1)),
+			Add(),
 			Push(DoubleValue.Value(1)),
+			Load(Value("print")),
 			Call()
 		));
 	}
