@@ -7,6 +7,7 @@ import static instruction.LoadInstruction.Load;
 import static instruction.MinusInstruction.Minus;
 import static instruction.MultiplyInstruction.Multiply;
 import static instruction.PushInstruction.Push;
+import static instruction.StoreInstruction.Store;
 import static instruction.UnaryMinusInstruction.UnaryMinus;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -81,6 +82,19 @@ public class EngineTest {
 		assertError("TypeError: Not a double", Arrays.asList(
 			Push(Value("3")),
 			UnaryMinus()
+		));
+	}
+	
+	@Test
+	public void variables() {
+		assertStackValue("3", Arrays.asList(
+			Push(Value(1)),
+			Store(Value("x")),
+			Push(Value(2)),
+			Store(Value("y")),
+			Load(Value("x")),
+			Load(Value("y")),
+			Add()
 		));
 	}
 	
