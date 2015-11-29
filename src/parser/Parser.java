@@ -86,9 +86,8 @@ public class Parser extends BaseParser<Object> {
 	
 	public Rule MemberExpression() {
 		return Sequence(FirstOf(	
-			PrimaryExpression(),
 			FunctionExpression(),
-			Sequence(Terminal("new"), MemberExpression(), Arguments())
+			PrimaryExpression()
 		), ZeroOrMore(FirstOf(
 			Sequence(Terminal("["), Expression(), Terminal("]")),
 			Sequence(Terminal("."), Identifier())
@@ -96,7 +95,7 @@ public class Parser extends BaseParser<Object> {
 	}
 	
 	public Rule NewExpression() {
-		return Sequence(Optional(Terminal("new")), OneOrMore(MemberExpression()));
+		return MemberExpression();
 	}
 	
 	public Rule CallExpression() {
@@ -118,10 +117,7 @@ public class Parser extends BaseParser<Object> {
 	}
 	
 	public Rule ArgumentList() {
-		return FirstOf(	
-			AssignmentExpression(),
-			Sequence(ArgumentList(), Terminal(","), AssignmentExpression())
-		);
+		return Sequence(AssignmentExpression(), ZeroOrMore(Terminal(","), AssignmentExpression()));
 	}
 	
 	public Rule LeftHandSideExpression() {
@@ -132,116 +128,65 @@ public class Parser extends BaseParser<Object> {
 	}
 	
 	public Rule PostfixExpression() {
-		return FirstOf(	
-			Sequence(LeftHandSideExpression(), Terminal("++")),
-			Sequence(LeftHandSideExpression(), Terminal("--")),
-			LeftHandSideExpression()
-		);
+		return Sequence(LeftHandSideExpression(), Optional(FirstOf(Terminal("++"), Terminal("--"))));
 	}
 	
 	public Rule UnaryExpression() {
 		return FirstOf(
-			PostfixExpression(),
 			Sequence(Terminal("delete"), UnaryExpression()),
 			Sequence(Terminal("void"), UnaryExpression()),
-			Sequence(Terminal("typeof"), UnaryExpression()),
 			Sequence(Terminal("++"), UnaryExpression()),
 			Sequence(Terminal("--"), UnaryExpression()),
 			Sequence(Terminal("+"), UnaryExpression()),
 			Sequence(Terminal("-"), UnaryExpression()),
 			Sequence(Terminal("~"), UnaryExpression()),
-			Sequence(Terminal("!"), UnaryExpression())
+			Sequence(Terminal("!"), UnaryExpression()),
+			PostfixExpression()
 		);
 	}
 	
 	public Rule MultiplicativeExpression() {
-		return FirstOf(	
-			Sequence(UnaryExpression(), Terminal("*"), MultiplicativeExpression()),
-			Sequence(UnaryExpression(), Terminal("/"), MultiplicativeExpression()),
-			Sequence(UnaryExpression(), Terminal("%"), MultiplicativeExpression()),
-			UnaryExpression()
-		);
+		return Sequence(UnaryExpression(), Optional(FirstOf(Terminal("*"), Terminal("/"), Terminal("%")), MultiplicativeExpression()));
 	}
 	
 	public Rule AdditiveExpression() {
-		return FirstOf(	
-			Sequence(MultiplicativeExpression(), Terminal("+"), AdditiveExpression()),
-			Sequence(MultiplicativeExpression(), Terminal("-"), AdditiveExpression()),
-			MultiplicativeExpression()
-		);
+		return Sequence(MultiplicativeExpression(), Optional(FirstOf(Terminal("+"), Terminal("-")), AdditiveExpression()));
 	}
 	
 	public Rule ShiftExpression() {
-		return FirstOf(	
-			Sequence(AdditiveExpression(), Terminal("<<"), ShiftExpression()),
-			Sequence(AdditiveExpression(), Terminal(">>"), ShiftExpression()),
-			Sequence(AdditiveExpression(), Terminal(">>>"), ShiftExpression()),
-			AdditiveExpression()
-		);
+		return Sequence(AdditiveExpression(), Optional(FirstOf(Terminal("<<"), Terminal(">>>"), Terminal(">>")), ShiftExpression()));
 	}
 	
 	public Rule RelationalExpression() {
-		return FirstOf(	
-			Sequence(ShiftExpression(), Terminal("<"), RelationalExpression()),
-			Sequence(ShiftExpression(), Terminal(">"), RelationalExpression()),
-			Sequence(ShiftExpression(), Terminal("<="), RelationalExpression()),
-			Sequence(ShiftExpression(), Terminal(">="), RelationalExpression()),
-			Sequence(ShiftExpression(), Terminal("instanceof"), RelationalExpression()),
-			Sequence(ShiftExpression(), Terminal("in"), RelationalExpression()),
-			ShiftExpression()
-		);
+		return Sequence(ShiftExpression(), Optional(FirstOf(Terminal("<="), Terminal(">="), Terminal("<"), Terminal(">"), Terminal("in")), RelationalExpression()));
 	}
 	
 	public Rule EqualityExpression() {
-		return FirstOf(
-			Sequence(RelationalExpression(), Terminal("=="), EqualityExpression()),
-			Sequence(RelationalExpression(), Terminal("!="), EqualityExpression()),
-			Sequence(RelationalExpression(), Terminal("==="), EqualityExpression()),
-			Sequence(RelationalExpression(), Terminal("!=="), EqualityExpression()),
-			RelationalExpression()
-		);
+		return Sequence(RelationalExpression(), Optional(FirstOf(Terminal("==="), Terminal("!=="), Terminal("=="), Terminal("!=")), EqualityExpression()));
 	}
 	
 	public Rule BitwiseANDExpression() {
-		return FirstOf(	
-			Sequence(EqualityExpression(), Terminal("&"), BitwiseANDExpression()),
-			EqualityExpression()
-		);
+		return Sequence(EqualityExpression(), Optional(Terminal("&"), BitwiseANDExpression()));
 	}
 	
 	public Rule BitwiseXORExpression() {
-		return FirstOf(	
-			Sequence(BitwiseANDExpression(), Terminal("^"), BitwiseXORExpression()),
-			BitwiseANDExpression()
-		);
+		return Sequence(BitwiseANDExpression(), Optional(Terminal("^"), BitwiseXORExpression()));
 	}
 	
 	public Rule BitwiseORExpression() {
-		return FirstOf(	
-			Sequence(BitwiseXORExpression(), Terminal("|"), BitwiseORExpression()),
-			BitwiseXORExpression()
-		);
+		return Sequence(BitwiseXORExpression(), Optional(Terminal("|"), BitwiseORExpression()));
 	}
 	
 	public Rule LogicalANDExpression() {
-		return FirstOf(	
-			Sequence(BitwiseORExpression(), Terminal("&&"), LogicalANDExpression()),
-			BitwiseORExpression()
-		);
+		return Sequence(BitwiseORExpression(), Optional(Terminal("&&"), LogicalANDExpression()));
 	}
 	
 	public Rule LogicalORExpression() {
-		return FirstOf(
-			Sequence(LogicalANDExpression(), Terminal("||"), LogicalORExpression()),
-			LogicalANDExpression()
-		);
+		return Sequence(LogicalANDExpression(), Optional(Terminal("||"), LogicalORExpression()));
 	}
 	
 	public Rule ConditionalExpression() {
-		return FirstOf(	
-			Sequence(LogicalORExpression(), Terminal("?"), AssignmentExpression(), Terminal(":"), AssignmentExpression()),
-			LogicalORExpression()
-		);
+		return Sequence(LogicalORExpression(), Optional(Terminal("?"), AssignmentExpression(), Terminal(":"), AssignmentExpression()));
 	}
 	
 	public Rule AssignmentExpression() {
@@ -269,7 +214,7 @@ public class Parser extends BaseParser<Object> {
 	}
 	
 	public Rule Expression() {
-		return Sequence(AssignmentExpression(), ZeroOrMore(Terminal(","), Expression()));
+		return AssignmentExpression();
 	}
 	
 	public Rule Statement() {
@@ -298,10 +243,7 @@ public class Parser extends BaseParser<Object> {
 	}
 	
 	public Rule VariableDeclarationList() {
-		return FirstOf(
-			VariableDeclaration(),
-			VariableDeclarationList(), VariableDeclaration()
-		);
+		return Sequence(VariableDeclaration(), ZeroOrMore(Terminal(","), VariableDeclaration()));
 	}
 	
 	public Rule VariableDeclaration() {
@@ -352,10 +294,7 @@ public class Parser extends BaseParser<Object> {
 	}
 	
 	public Rule CaseClauses() {
-		return FirstOf(
-			CaseClause(),
-			Sequence(CaseClauses(), CaseClause())
-		);
+		return OneOrMore(CaseClause());
 	}
 	
 	public Rule CaseClause() {
