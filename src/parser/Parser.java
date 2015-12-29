@@ -1,16 +1,33 @@
 package parser;
 
-import static org.parboiled.support.ParseTreeUtils.printNodeTree;
+import static instruction.CallInstruction.Call;
+import static instruction.LoadInstruction.Load;
+import static instruction.PopInstruction.Pop;
+import static instruction.PushInstruction.Push;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static value.DoubleValue.Value;
+import static value.StringValue.Value;
+
+import instruction.CallInstruction;
+import instruction.Instruction;
+import instruction.PopInstruction;
+import instruction.PushInstruction;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.parboiled.BaseParser;
-import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
-import org.parboiled.parserunners.BasicParseRunner;
-import org.parboiled.support.ParsingResult;
+
+import value.DoubleValue;
+import value.StringValue;
 
 @BuildParseTree
-public class Parser extends BaseParser<Object> {
+public class Parser extends BaseParser<List<Instruction>> {
 	public Rule Literal() {
 		return FirstOf(
 			NullLiteral(),
@@ -32,13 +49,13 @@ public class Parser extends BaseParser<Object> {
 	}
 	
 	public Rule NumericLiteral() {
-		return Terminal(OneOrMore(FirstOf(CharRange('0', '9'), '-', '.')));
+		return Sequence(Terminal(OneOrMore(FirstOf(CharRange('0', '9'), '-', '.'))), push(singletonList(Push(Value(match())))));
 	}
 	
 	public Rule StringLiteral() {
 		return FirstOf(
-			Terminal(Sequence("'", ZeroOrMore(TestNot("'"), ANY), "'")),
-			Terminal(Sequence("\"", ZeroOrMore(TestNot("\""), ANY), "\""))
+			Terminal(Sequence("'", ZeroOrMore(TestNot("'"), ANY), push(singletonList(Push(Value(match())))), "'")),
+			Terminal(Sequence("\"", ZeroOrMore(TestNot("\""), ANY), push(singletonList(Push(Value(match())))), "\""))
 		);
 	}
 	
@@ -52,7 +69,7 @@ public class Parser extends BaseParser<Object> {
 	public Rule PrimaryExpression() {
 		return FirstOf(
 			Terminal("this"),
-			Identifier(),
+			Sequence(Identifier(), push(singletonList(Load(Value(match()))))),
 			Literal(),
 			ArrayLiteral(),
 			ObjectLiteral(),
@@ -100,7 +117,14 @@ public class Parser extends BaseParser<Object> {
 	
 	public Rule CallExpression() {
 		return Sequence(	
-			Sequence(MemberExpression(), Arguments()),
+			Sequence(MemberExpression(), Arguments(), dup(), push(
+				concat(
+					pop(),
+					singletonList(Push(Value(pop().size()))),
+					pop(),
+					singletonList(Call())
+				)
+			)),
 			ZeroOrMore(FirstOf(
 				Arguments(),
 				Sequence(Terminal("["), Expression(), Terminal("]")),
@@ -111,13 +135,13 @@ public class Parser extends BaseParser<Object> {
 	
 	public Rule Arguments() {
 		return FirstOf(	
-			Sequence(Terminal("("), Terminal(")")),
+			Sequence(Terminal("("), Terminal(")"), push(new ArrayList<Instruction>())),
 			Sequence(Terminal("("), ArgumentList(), Terminal(")"))
 		);
 	}
 	
 	public Rule ArgumentList() {
-		return Sequence(AssignmentExpression(), ZeroOrMore(Terminal(","), AssignmentExpression()));
+		return Sequence(AssignmentExpression(), ZeroOrMore(Terminal(","), AssignmentExpression(), push(concat(pop(), pop()))));
 	}
 	
 	public Rule LeftHandSideExpression() {
@@ -259,7 +283,7 @@ public class Parser extends BaseParser<Object> {
 	}
 	
 	public Rule ExpressionStatement() {
-		return Sequence(TestNot(FirstOf("{", "function")), Expression(), Terminal(";"));
+		return Sequence(TestNot(FirstOf("{", "function")), Expression(), push(concat(pop(), singletonList(PopInstruction.Pop()))), Terminal(";"));
 	}
 	
 	public Rule IfStatement() {
@@ -340,14 +364,12 @@ public class Parser extends BaseParser<Object> {
 		return Sequence(value, Optional(OneOrMore(FirstOf(" ", "\r", "\n", "\t"))));
 	}
 	
-	public static void main(String[] args) {
-    	String input = "a + b";
-    	
-        Parser parser = Parboiled.createParser(Parser.class);
-        ParsingResult<?> result = new BasicParseRunner<>(parser.Expression()).run(input);
-        
-        System.out.println(printNodeTree(result));
-        
-        System.out.println(result.parseTreeRoot.getEndIndex());
-    }
+	@SafeVarargs
+	protected static <T> List<T> concat(List<T>... lists) {
+		List<T> list = new ArrayList<>();
+		for(List<T> a:lists) {
+			list.addAll(a);
+		}
+		return list;
+	}
 }
