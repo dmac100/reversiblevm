@@ -3,6 +3,7 @@ package runtime;
 import java.util.ArrayList;
 import java.util.List;
 
+import value.BooleanValue;
 import value.DoubleValue;
 import value.FunctionValue;
 import value.Value;
@@ -76,6 +77,15 @@ public class Runtime {
 			return (DoubleValue) value;
 		} else {
 			throw new ExecutionException("TypeError: Not a double");
+		}
+	}
+
+	public BooleanValue popCheckedBooleanValue() throws ExecutionException {
+		Value value = stack.popValue();
+		if(value instanceof BooleanValue) {
+			return (BooleanValue) value;
+		} else {
+			throw new ExecutionException("TypeError: Not a boolean");
 		}
 	}
 }

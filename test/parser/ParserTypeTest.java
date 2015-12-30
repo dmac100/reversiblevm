@@ -173,7 +173,6 @@ public class ParserTypeTest {
 		assertParseType("a > a", parser.RelationalExpression());
 		assertParseType("a <= a", parser.RelationalExpression());
 		assertParseType("a >= a", parser.RelationalExpression());
-		assertParseType("a in a", parser.RelationalExpression());
 		assertParseType("a << a", parser.RelationalExpression());
 	}
 
@@ -181,8 +180,6 @@ public class ParserTypeTest {
 	public void EqualityExpression() {
 		assertParseType("a == a", parser.EqualityExpression());
 		assertParseType("a != a", parser.EqualityExpression());
-		assertParseType("a === a", parser.EqualityExpression());
-		assertParseType("a !== a", parser.EqualityExpression());
 		assertParseType("a < a", parser.EqualityExpression());
 	}
 

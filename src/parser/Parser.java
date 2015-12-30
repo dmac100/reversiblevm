@@ -1,30 +1,62 @@
 package parser;
 
+import static instruction.AddInstruction.Add;
+import static instruction.AndInstruction.And;
+import static instruction.BitwiseAndInstruction.BitwiseAnd;
+import static instruction.BitwiseNotInstruction.BitwiseNot;
+import static instruction.BitwiseOrInstruction.BitwiseOr;
+import static instruction.BitwiseXorInstruction.BitwiseXor;
 import static instruction.CallInstruction.Call;
+import static instruction.DivideInstruction.Divide;
+import static instruction.EqualInstruction.Equal;
+import static instruction.GreaterThanEqualInstruction.GreaterThanEqual;
+import static instruction.GreaterThanInstruction.GreaterThan;
+import static instruction.LessThanEqualInstruction.LessThanEqual;
+import static instruction.LessThanInstruction.LessThan;
 import static instruction.LoadInstruction.Load;
+import static instruction.MinusInstruction.Minus;
+import static instruction.ModuloInstruction.Modulo;
+import static instruction.MultiplyInstruction.Multiply;
+import static instruction.NotInstruction.Not;
+import static instruction.OrInstruction.Or;
 import static instruction.PopInstruction.Pop;
 import static instruction.PushInstruction.Push;
-import static java.util.Collections.emptyList;
+import static instruction.ShiftLeftInstruction.ShiftLeft;
+import static instruction.ShiftRightInstruction.ShiftRight;
+import static instruction.UnaryMinusInstruction.UnaryMinus;
+import static instruction.UnaryPlusInstruction.UnaryPlus;
+import static instruction.UnsignedShiftRightInstruction.UnsignedShiftRight;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static value.DoubleValue.Value;
 import static value.StringValue.Value;
-
-import instruction.CallInstruction;
+import instruction.AddInstruction;
+import instruction.AndInstruction;
+import instruction.BitwiseAndInstruction;
+import instruction.BitwiseOrInstruction;
+import instruction.BitwiseXorInstruction;
+import instruction.EqualInstruction;
+import instruction.GreaterThanEqualInstruction;
+import instruction.GreaterThanInstruction;
 import instruction.Instruction;
+import instruction.LessThanEqualInstruction;
+import instruction.LessThanInstruction;
+import instruction.MinusInstruction;
+import instruction.OrInstruction;
 import instruction.PopInstruction;
-import instruction.PushInstruction;
+import instruction.ShiftLeftInstruction;
+import instruction.ShiftRightInstruction;
+import instruction.UnsignedShiftRightInstruction;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 
-import value.DoubleValue;
-import value.StringValue;
+import value.NullValue;
 
 @BuildParseTree
 public class Parser extends BaseParser<List<Instruction>> {
@@ -49,7 +81,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule NumericLiteral() {
-		return Sequence(Terminal(OneOrMore(FirstOf(CharRange('0', '9'), '-', '.'))), push(singletonList(Push(Value(match())))));
+		return Terminal(Sequence(OneOrMore(FirstOf(CharRange('0', '9'), '-', '.')), push(singletonList(Push(Value(match()))))));
 	}
 	
 	public Rule StringLiteral() {
@@ -158,59 +190,125 @@ public class Parser extends BaseParser<List<Instruction>> {
 	public Rule UnaryExpression() {
 		return FirstOf(
 			Sequence(Terminal("delete"), UnaryExpression()),
-			Sequence(Terminal("void"), UnaryExpression()),
+			Sequence(Terminal("void"), UnaryExpression(), push(concat(pop(), singletonList(Pop()), singletonList(Push(new NullValue()))))),
 			Sequence(Terminal("++"), UnaryExpression()),
 			Sequence(Terminal("--"), UnaryExpression()),
-			Sequence(Terminal("+"), UnaryExpression()),
-			Sequence(Terminal("-"), UnaryExpression()),
-			Sequence(Terminal("~"), UnaryExpression()),
-			Sequence(Terminal("!"), UnaryExpression()),
+			Sequence(Terminal("+"), UnaryExpression(), push(concat(pop(), singletonList(UnaryPlus())))),
+			Sequence(Terminal("-"), UnaryExpression(), push(concat(pop(), singletonList(UnaryMinus())))),
+			Sequence(Terminal("~"), UnaryExpression(), push(concat(pop(), singletonList(BitwiseNot())))),
+			Sequence(Terminal("!"), UnaryExpression(), push(concat(pop(), singletonList(Not())))),
 			PostfixExpression()
 		);
 	}
 	
 	public Rule MultiplicativeExpression() {
-		return Sequence(UnaryExpression(), Optional(FirstOf(Terminal("*"), Terminal("/"), Terminal("%")), MultiplicativeExpression()));
+		return Sequence(UnaryExpression(),
+			Optional(FirstOf(
+				Sequence(Terminal("*"), push(singletonList(Multiply()))),
+				Sequence(Terminal("/"), push(singletonList(Divide()))),
+				Sequence(Terminal("%"), push(singletonList(Modulo())))
+			), MultiplicativeExpression(), push(concat(pop(2), pop(), pop())))
+		);
 	}
 	
 	public Rule AdditiveExpression() {
-		return Sequence(MultiplicativeExpression(), Optional(FirstOf(Terminal("+"), Terminal("-")), AdditiveExpression()));
+		return Sequence(MultiplicativeExpression(),
+			Optional(FirstOf(
+				Sequence(Terminal("+"), push(singletonList(Add()))),
+				Sequence(Terminal("-"), push(singletonList(Minus())))
+			), AdditiveExpression(), push(concat(pop(2), pop(), pop())))
+		);
 	}
 	
 	public Rule ShiftExpression() {
-		return Sequence(AdditiveExpression(), Optional(FirstOf(Terminal("<<"), Terminal(">>>"), Terminal(">>")), ShiftExpression()));
+		return Sequence(AdditiveExpression(),
+			Optional(FirstOf(
+				Sequence(Terminal("<<"), push(singletonList(ShiftLeft()))),
+				Sequence(Terminal(">>>"), push(singletonList(UnsignedShiftRight()))),
+				Sequence(Terminal(">>"), push(singletonList(ShiftRight())))
+			), ShiftExpression(), push(concat(pop(2), pop(), pop())))
+		);
 	}
 	
 	public Rule RelationalExpression() {
-		return Sequence(ShiftExpression(), Optional(FirstOf(Terminal("<="), Terminal(">="), Terminal("<"), Terminal(">"), Terminal("in")), RelationalExpression()));
+		return Sequence(ShiftExpression(),
+			Optional(FirstOf(
+				Sequence(Terminal("<="), push(singletonList(LessThanEqual()))),
+				Sequence(Terminal(">="), push(singletonList(GreaterThanEqual()))),
+				Sequence(Terminal("<"), push(singletonList(LessThan()))),
+				Sequence(Terminal(">"), push(singletonList(GreaterThan())))
+			), RelationalExpression(), push(concat(pop(2), pop(), pop())))
+		);
 	}
 	
 	public Rule EqualityExpression() {
-		return Sequence(RelationalExpression(), Optional(FirstOf(Terminal("==="), Terminal("!=="), Terminal("=="), Terminal("!=")), EqualityExpression()));
+		return Sequence(RelationalExpression(),
+			Optional(FirstOf(
+				Sequence(Terminal("=="), push(singletonList(Equal()))),
+				Sequence(Terminal("!="), push(asList(Equal(), Not())))
+			), EqualityExpression(), push(concat(pop(2), pop(), pop())))
+		);
 	}
 	
 	public Rule BitwiseANDExpression() {
-		return Sequence(EqualityExpression(), Optional(Terminal("&"), BitwiseANDExpression()));
+		return Sequence(EqualityExpression(),
+			Optional(
+				Terminal("&"),
+				BitwiseANDExpression(),
+				push(concat(pop(1), pop(), singletonList(BitwiseAnd())))
+			)
+		);
 	}
 	
 	public Rule BitwiseXORExpression() {
-		return Sequence(BitwiseANDExpression(), Optional(Terminal("^"), BitwiseXORExpression()));
+		return Sequence(BitwiseANDExpression(),
+			Optional(
+				Terminal("^"),
+				BitwiseXORExpression(),
+				push(concat(pop(1), pop(), singletonList(BitwiseXor())))
+			)
+		);
 	}
 	
 	public Rule BitwiseORExpression() {
-		return Sequence(BitwiseXORExpression(), Optional(Terminal("|"), BitwiseORExpression()));
+		return Sequence(BitwiseXORExpression(),
+			Optional(
+				Terminal("|"),
+				BitwiseORExpression(),
+				push(concat(pop(1), pop(), singletonList(BitwiseOr())))
+			)
+		);
 	}
 	
 	public Rule LogicalANDExpression() {
-		return Sequence(BitwiseORExpression(), Optional(Terminal("&&"), LogicalANDExpression()));
+		return Sequence(BitwiseORExpression(),
+			Optional(
+				Terminal("&&"),
+				LogicalANDExpression(),
+				push(concat(pop(1), pop(), singletonList(And())))
+			)
+		);
 	}
 	
 	public Rule LogicalORExpression() {
-		return Sequence(LogicalANDExpression(), Optional(Terminal("||"), LogicalORExpression()));
+		return Sequence(LogicalANDExpression(),
+			Optional(
+				Terminal("||"),
+				LogicalORExpression(),
+				push(concat(pop(1), pop(), singletonList(Or())))
+			)
+		);
 	}
 	
 	public Rule ConditionalExpression() {
-		return Sequence(LogicalORExpression(), Optional(Terminal("?"), AssignmentExpression(), Terminal(":"), AssignmentExpression()));
+		return Sequence(LogicalORExpression(),
+			Optional(
+				Terminal("?"),
+				AssignmentExpression(),
+				Terminal(":"),
+				AssignmentExpression()
+			)
+		);
 	}
 	
 	public Rule AssignmentExpression() {

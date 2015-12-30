@@ -1,5 +1,7 @@
 package value;
 
+import runtime.Runtime;
+
 public class DoubleValue implements Value {
 	private double value;
 	
