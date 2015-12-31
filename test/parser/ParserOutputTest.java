@@ -154,12 +154,12 @@ public class ParserOutputTest {
 	
 	@Test
 	public void LogicalANDExpression() {
-		assertParseOutput("1 && 2;", Arrays.asList("PUSH: 1", "PUSH: 2", "AND", "POP"));
+		assertParseOutput("true && false;", Arrays.asList("PUSH: true", "DUP", "JUMPIFFALSE: 2", "PUSH: false", "AND", "POP"));
 	}
 	
 	@Test
 	public void LogicalORExpression() {
-		assertParseOutput("1 || 2;", Arrays.asList("PUSH: 1", "PUSH: 2", "OR", "POP"));
+		assertParseOutput("true || false;", Arrays.asList("PUSH: true", "DUP", "JUMPIFTRUE: 2", "PUSH: false", "OR", "POP"));
 	}
 	
 	@Test

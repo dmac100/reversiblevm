@@ -312,7 +312,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 			Optional(
 				Terminal("&&"),
 				LogicalANDExpression(),
-				push(concat(pop(1), pop(), List(And())))
+				push(concat(pop(1), List(Dup()), List(JumpIfFalse(Value(peek().size() + 1))), pop(), List(And())))
 			)
 		);
 	}
@@ -322,7 +322,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 			Optional(
 				Terminal("||"),
 				LogicalORExpression(),
-				push(concat(pop(1), pop(), List(Or())))
+				push(concat(pop(1), List(Dup()), List(JumpIfTrue(Value(peek().size() + 1))), pop(), List(Or())))
 			)
 		);
 	}
