@@ -113,10 +113,18 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void PostfixExpression() {
+		assertOutput("2", "x = 1; x++; print(x);");
+		assertOutput("1", "x = 1; print(x++);");
+		assertOutput("1", "x = 2; x--; print(x);");
+		assertOutput("2", "x = 2; print(x--);");
 	}
 	
 	@Test
 	public void UnaryExpression() {
+		assertOutput("2", "x = 1; ++x; print(x);");
+		assertOutput("2", "x = 1; print(++x);");
+		assertOutput("1", "x = 2; --x; print(x);");
+		assertOutput("1", "x = 2; print(--x);");
 		assertOutput("5", "print(+5);");
 		assertOutput("-5", "print(-5);");
 		assertOutput("-6", "print(~5);");

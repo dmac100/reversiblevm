@@ -88,10 +88,14 @@ public class ParserOutputTest {
 	
 	@Test
 	public void PostfixExpression() {
+		assertParseOutput("x++;", Arrays.asList("LOAD: x", "DUP", "PUSH: 1", "ADD", "STORE: x", "POP"));
+		assertParseOutput("x--;", Arrays.asList("LOAD: x", "DUP", "PUSH: 1", "MINUS", "STORE: x", "POP"));
 	}
 	
 	@Test
 	public void UnaryExpression() {
+		assertParseOutput("++x;", Arrays.asList("LOAD: x", "PUSH: 1", "ADD", "DUP", "STORE: x", "POP"));
+		assertParseOutput("--x;", Arrays.asList("LOAD: x", "PUSH: 1", "MINUS", "DUP", "STORE: x", "POP"));
 		assertParseOutput("+5;", Arrays.asList("PUSH: 5", "UNARYPLUS", "POP"));
 		assertParseOutput("-5;", Arrays.asList("PUSH: 5", "UNARYMINUS", "POP"));
 		assertParseOutput("~5;", Arrays.asList("PUSH: 5", "BITWISENOT", "POP"));

@@ -85,7 +85,10 @@ public class Parser extends BaseParser<List<Instruction>> {
 	
 	@SuppressSubnodes
 	public Rule NumericLiteral() {
-		return Terminal(Sequence(OneOrMore(FirstOf(CharRange('0', '9'), '-', '.')), push(List(Push(Value(Double.parseDouble(match())))))));
+		return Terminal(Sequence(
+			Sequence(Optional('-'), CharRange('0', '9'), ZeroOrMore(FirstOf(CharRange('0', '9'), '.'))),
+			push(List(Push(Value(Double.parseDouble(match())))))
+		));
 	}
 	
 	@SuppressSubnodes
@@ -202,15 +205,21 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule PostfixExpression() {
-		return Sequence(LeftHandSideExpression(), Optional(FirstOf(Terminal("++"), Terminal("--"))));
+		return Sequence(
+			LeftHandSideExpression(),
+			Optional(FirstOf(
+				Sequence(Terminal("++"), push(concat(peek(), List(Dup()), List(Push(Value(1))), List(Add()), convertToWrite(pop())))),
+				Sequence(Terminal("--"), push(concat(peek(), List(Dup()), List(Push(Value(1))), List(Minus()), convertToWrite(pop()))))
+			))
+		);
 	}
 	
 	public Rule UnaryExpression() {
 		return FirstOf(
 			Sequence(Terminal("delete"), UnaryExpression()),
 			Sequence(Terminal("void"), UnaryExpression(), push(concat(pop(), List(Pop()), List(Push(NullValue()))))),
-			Sequence(Terminal("++"), UnaryExpression()),
-			Sequence(Terminal("--"), UnaryExpression()),
+			Sequence(Terminal("++"), UnaryExpression(), push(concat(peek(), List(Push(Value(1))), List(Add()), List(Dup()), convertToWrite(pop())))),
+			Sequence(Terminal("--"), UnaryExpression(), push(concat(peek(), List(Push(Value(1))), List(Minus()), List(Dup()), convertToWrite(pop())))),
 			Sequence(Terminal("+"), UnaryExpression(), push(concat(pop(), List(UnaryPlus())))),
 			Sequence(Terminal("-"), UnaryExpression(), push(concat(pop(), List(UnaryMinus())))),
 			Sequence(Terminal("~"), UnaryExpression(), push(concat(pop(), List(BitwiseNot())))),
