@@ -215,6 +215,10 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void AssignmentExpression() {
+		assertOutput("2", "x = 2; print(x);");
+		assertOutput("2 2", "x = y = 2; print(x, y);");
+		assertOutput("3", "x = 1; y = 2; print(x + y);");
+		assertOutput("4", "x = 1; x = x + 1; y = 2; print(x + y);");
 	}
 	
 	@Test

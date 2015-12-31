@@ -162,6 +162,8 @@ public class ParserOutputTest {
 	
 	@Test
 	public void AssignmentExpression() {
+		assertParseOutput("x = 2;", Arrays.asList("PUSH: 2", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x = y = 2;", Arrays.asList("PUSH: 2", "DUP", "STORE: y", "DUP", "STORE: x", "POP"));
 	}
 	
 	@Test

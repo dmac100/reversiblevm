@@ -1,7 +1,7 @@
 package instruction;
 
-import runtime.Scope;
 import runtime.Runtime;
+import runtime.Scope;
 import runtime.Stack;
 import value.StringValue;
 
@@ -10,6 +10,10 @@ public class LoadInstruction implements Instruction {
 
 	public LoadInstruction(StringValue name) {
 		this.name = name;
+	}
+	
+	public String getName() {
+		return name.getValue();
 	}
 	
 	public static Instruction Load(StringValue value) {

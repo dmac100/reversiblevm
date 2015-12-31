@@ -1,7 +1,7 @@
 package instruction;
 
-import runtime.Scope;
 import runtime.Runtime;
+import runtime.Scope;
 import runtime.Stack;
 import value.StringValue;
 
@@ -10,6 +10,10 @@ public class StoreInstruction implements Instruction {
 
 	public StoreInstruction(StringValue name) {
 		this.name = name;
+	}
+	
+	public String getName() {
+		return name.getValue();
 	}
 	
 	public static Instruction Store(StringValue value) {

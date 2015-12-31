@@ -8,6 +8,7 @@ import static instruction.BitwiseOrInstruction.BitwiseOr;
 import static instruction.BitwiseXorInstruction.BitwiseXor;
 import static instruction.CallInstruction.Call;
 import static instruction.DivideInstruction.Divide;
+import static instruction.DupInstruction.Dup;
 import static instruction.EqualInstruction.Equal;
 import static instruction.GreaterThanEqualInstruction.GreaterThanEqual;
 import static instruction.GreaterThanInstruction.GreaterThan;
@@ -37,17 +38,20 @@ import instruction.AndInstruction;
 import instruction.BitwiseAndInstruction;
 import instruction.BitwiseOrInstruction;
 import instruction.BitwiseXorInstruction;
+import instruction.DupInstruction;
 import instruction.EqualInstruction;
 import instruction.GreaterThanEqualInstruction;
 import instruction.GreaterThanInstruction;
 import instruction.Instruction;
 import instruction.LessThanEqualInstruction;
 import instruction.LessThanInstruction;
+import instruction.LoadInstruction;
 import instruction.MinusInstruction;
 import instruction.OrInstruction;
 import instruction.PopInstruction;
 import instruction.ShiftLeftInstruction;
 import instruction.ShiftRightInstruction;
+import instruction.StoreInstruction;
 import instruction.UnsignedShiftRightInstruction;
 
 import java.util.ArrayList;
@@ -331,7 +335,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 	
 	public Rule AssignmentExpression() {
 		return FirstOf(
-			Sequence(LeftHandSideExpression(), AssignmentOperator(), AssignmentExpression()),
+			Sequence(LeftHandSideExpression(), AssignmentOperator(), AssignmentExpression(), push(concat(pop(), singletonList(Dup()), convertToWrite(pop())))),
 			ConditionalExpression()
 		);
 	}
@@ -466,7 +470,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule SourceElements() {
-		return OneOrMore(SourceElement());
+		return Sequence(SourceElement(), ZeroOrMore(SourceElement(), push(concat(pop(1), pop()))));
 	}
 
 	public Rule SourceElement() {
@@ -478,6 +482,21 @@ public class Parser extends BaseParser<List<Instruction>> {
 	
 	public Rule Terminal(Object value) {
 		return Sequence(value, Optional(OneOrMore(FirstOf(" ", "\r", "\n", "\t"))));
+	}
+
+	/**
+	 * Converts a list of instructions so that the read last instruction becomes the corresponding write instruction.
+	 */
+	protected static List<Instruction> convertToWrite(List<Instruction> instructions) {
+		List<Instruction> newInstructions = new ArrayList<>();
+		for(int i = 0; i < instructions.size() - 1; i++) {
+			newInstructions.add(instructions.get(i));
+		}
+		Instruction last = instructions.get(instructions.size() - 1);
+		if(last instanceof LoadInstruction) {
+			newInstructions.add(new StoreInstruction(Value(((LoadInstruction)last).getName())));
+		}
+		return newInstructions;
 	}
 	
 	@SafeVarargs
