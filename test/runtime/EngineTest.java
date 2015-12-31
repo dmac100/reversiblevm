@@ -4,6 +4,8 @@ import static instruction.AddInstruction.Add;
 import static instruction.CallInstruction.Call;
 import static instruction.DivideInstruction.Divide;
 import static instruction.EndFunctionInstruction.EndFunction;
+import static instruction.JumpIfTrueInstruction.JumpIfTrue;
+import static instruction.JumpInstruction.Jump;
 import static instruction.LoadInstruction.Load;
 import static instruction.LocalInstruction.Local;
 import static instruction.MinusInstruction.Minus;
@@ -15,15 +17,20 @@ import static instruction.StoreInstruction.Store;
 import static instruction.UnaryMinusInstruction.UnaryMinus;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static value.BooleanValue.Value;
 import static value.DoubleValue.Value;
 import static value.NullValue.NullValue;
 import static value.StringValue.Value;
 import instruction.Instruction;
+import instruction.JumpIfTrueInstruction;
+import instruction.JumpInstruction;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+
+import value.BooleanValue;
 
 public class EngineTest {
 	@Test
@@ -139,6 +146,43 @@ public class EngineTest {
 			Call(),
 			Pop(),
 			Load(Value("x"))
+		));
+	}
+	
+	@Test
+	public void jump() {
+		assertOutput("6", Arrays.asList(
+			Jump(Value(5)),
+			Push(Value(5)),
+			Push(Value(1)),
+			Load(Value("print")),
+			Call(),
+			Pop(),
+			Push(Value(6)),
+			Push(Value(1)),
+			Load(Value("print")),
+			Call(),
+			Pop()
+		));
+	}
+	
+	@Test
+	public void jumpiftrue() {
+		assertOutput("6", Arrays.asList(
+			Push(Value(true)),
+			JumpIfTrue(Value(5)),
+			Push(Value(5)),
+			Push(Value(1)),
+			Load(Value("print")),
+			Call(),
+			Pop(),
+			Push(Value(false)),
+			JumpIfTrue(Value(5)),
+			Push(Value(6)),
+			Push(Value(1)),
+			Load(Value("print")),
+			Call(),
+			Pop()
 		));
 	}
 	

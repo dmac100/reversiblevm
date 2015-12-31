@@ -2,12 +2,11 @@ package runtime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
 import instruction.Instruction;
 
-import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
@@ -235,6 +234,9 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void Block() {
+		assertOutput("", "{ }");
+		assertOutput("1", "{ print(1); }");
+		assertOutput("1\n2", "{ print(1); print(2); }");
 	}
 	
 	@Test
@@ -259,6 +261,7 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void EmptyStatement() {
+		assertOutput("", ";");
 	}
 	
 	@Test
@@ -267,10 +270,26 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void IfStatement() {
+		assertOutput("1", "if(true) { print(1); }");
+		assertOutput("", "if(false) { print(1); }");
+		
+		assertOutput("1", "if(true) { print(1); } else { print(2); }");
+		assertOutput("2", "if(false) { print(1); } else { print(2); }");
+		
+		assertOutput("1", "if(true) { print(1); } else if(true) { print(2); } else { print(3); }");
+		assertOutput("1", "if(true) { print(1); } else if(false) { print(2); } else { print(3); }");
+		assertOutput("2", "if(false) { print(1); } else if(true) { print(2); } else { print(3); }");
+		assertOutput("3", "if(false) { print(1); } else if(false) { print(2); } else { print(3); }");
 	}
 	
 	@Test
 	public void IterationStatement() {
+		assertOutput("0\n1\n2\n3", "x = 0; do { print(x); x = x + 1; } while(x < 4);");
+		assertOutput("0\n1\n2\n3", "x = 0; while(x < 4) { print(x); x = x + 1; }");
+		assertOutput("0\n1\n2\n3", "for(x = 0; x < 4; x = x + 1) { print(x); }");
+		assertOutput("0\n1\n2\n3", "x = 0; for(; x < 4; x = x + 1) { print(x); }");
+		assertOutput("0\n1\n2\n3", "for(x = 0; x < 4; ) { print(x); x = x + 1; }");
+		assertOutput("0\n1\n2\n3", "x = 0; for(; x < 4; ) { print(x); x = x + 1; }");
 	}
 	
 	@Test
@@ -336,6 +355,12 @@ public class ParseAndRunTest {
 		ParsingResult<List<Instruction>> result = new ReportingParseRunner<List<Instruction>>(parser.Sequence(parser.Program(), BaseParser.EOI)).run(program);
 		System.out.println(ParseTreeUtils.printNodeTree(result));
 		
+		System.out.println("Parse Stack Size: " + result.valueStack.size());
+
+		for(List<Instruction> in:result.valueStack) {
+			System.out.println("Parse Stack: " + in);
+		}
+		
 		List<Instruction> instructions = result.valueStack.pop();
 		
 		System.out.println("Instructions: " + instructions);
@@ -346,8 +371,9 @@ public class ParseAndRunTest {
 		
 		System.out.println("Output: " + runtime.getOutput());
 		
-		assertEquals(Arrays.asList(expected), runtime.getOutput());
+		assertEquals(expected, StringUtils.join(runtime.getOutput(), "\n"));
 		assertTrue(runtime.getErrors().isEmpty());
 		assertTrue(runtime.getStack().isEmpty());
+		assertTrue(result.valueStack.isEmpty());
 	}
 }

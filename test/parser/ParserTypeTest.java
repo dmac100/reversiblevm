@@ -1,7 +1,9 @@
 package parser;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
@@ -384,5 +386,6 @@ public class ParserTypeTest {
 		ParsingResult<Object> result = new ReportingParseRunner<>(parser.Sequence(rule, BaseParser.EOI)).run(input);
 		//System.out.println(ParseTreeUtils.printNodeTree(result));
 		assertTrue(result.matched);
+		//assertEquals(1, result.valueStack.size());
 	}
 }

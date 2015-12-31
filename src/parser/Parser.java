@@ -12,12 +12,16 @@ import static instruction.DupInstruction.Dup;
 import static instruction.EqualInstruction.Equal;
 import static instruction.GreaterThanEqualInstruction.GreaterThanEqual;
 import static instruction.GreaterThanInstruction.GreaterThan;
+import static instruction.JumpIfFalseInstruction.JumpIfFalse;
+import static instruction.JumpIfTrueInstruction.JumpIfTrue;
+import static instruction.JumpInstruction.Jump;
 import static instruction.LessThanEqualInstruction.LessThanEqual;
 import static instruction.LessThanInstruction.LessThan;
 import static instruction.LoadInstruction.Load;
 import static instruction.MinusInstruction.Minus;
 import static instruction.ModuloInstruction.Modulo;
 import static instruction.MultiplyInstruction.Multiply;
+import static instruction.NopInstruction.Nop;
 import static instruction.NotInstruction.Not;
 import static instruction.OrInstruction.Or;
 import static instruction.PopInstruction.Pop;
@@ -33,40 +37,25 @@ import static value.BooleanValue.Value;
 import static value.DoubleValue.Value;
 import static value.NullValue.NullValue;
 import static value.StringValue.Value;
-import instruction.AddInstruction;
-import instruction.AndInstruction;
-import instruction.BitwiseAndInstruction;
-import instruction.BitwiseOrInstruction;
-import instruction.BitwiseXorInstruction;
-import instruction.DupInstruction;
-import instruction.EqualInstruction;
-import instruction.GreaterThanEqualInstruction;
-import instruction.GreaterThanInstruction;
 import instruction.Instruction;
-import instruction.LessThanEqualInstruction;
-import instruction.LessThanInstruction;
+import instruction.JumpIfFalseInstruction;
+import instruction.JumpInstruction;
 import instruction.LoadInstruction;
-import instruction.MinusInstruction;
-import instruction.OrInstruction;
+import instruction.NopInstruction;
 import instruction.PopInstruction;
-import instruction.ShiftLeftInstruction;
-import instruction.ShiftRightInstruction;
 import instruction.StoreInstruction;
-import instruction.UnsignedShiftRightInstruction;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.support.Var;
 
-import value.BooleanValue;
 import value.DoubleValue;
 import value.NullValue;
-import value.StringValue;
 
 @BuildParseTree
 public class Parser extends BaseParser<List<Instruction>> {
@@ -90,10 +79,12 @@ public class Parser extends BaseParser<List<Instruction>> {
 		);
 	}
 	
+	@SuppressSubnodes
 	public Rule NumericLiteral() {
 		return Terminal(Sequence(OneOrMore(FirstOf(CharRange('0', '9'), '-', '.')), push(singletonList(Push(Value(Double.parseDouble(match())))))));
 	}
 	
+	@SuppressSubnodes
 	public Rule StringLiteral() {
 		return FirstOf(
 			Terminal(Sequence("'", ZeroOrMore(TestNot("'"), ANY), push(singletonList(Push(Value(match())))), "'")),
@@ -101,6 +92,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 		);
 	}
 	
+	@SuppressSubnodes
 	public Rule Identifier() {
 		return Terminal(Sequence(Sequence(
 			FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), "$", "_"),
@@ -177,7 +169,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 	
 	public Rule Arguments() {
 		return FirstOf(	
-			Sequence(Terminal("("), Terminal(")"), push(singletonList(Push(new DoubleValue(0)))), push(new ArrayList<Instruction>())),
+			Sequence(Terminal("("), Terminal(")"), push(singletonList(Push(Value(0)))), push(new ArrayList<Instruction>())),
 			Sequence(Terminal("("), ArgumentList(), Terminal(")"))
 		);
 	}
@@ -212,7 +204,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 	public Rule UnaryExpression() {
 		return FirstOf(
 			Sequence(Terminal("delete"), UnaryExpression()),
-			Sequence(Terminal("void"), UnaryExpression(), push(concat(pop(), singletonList(Pop()), singletonList(Push(new NullValue()))))),
+			Sequence(Terminal("void"), UnaryExpression(), push(concat(pop(), singletonList(Pop()), singletonList(Push(NullValue()))))),
 			Sequence(Terminal("++"), UnaryExpression()),
 			Sequence(Terminal("--"), UnaryExpression()),
 			Sequence(Terminal("+"), UnaryExpression(), push(concat(pop(), singletonList(UnaryPlus())))),
@@ -375,11 +367,11 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule Block() {
-		return Sequence(Terminal("{"), Optional(StatementList()), Terminal("}"));
+		return Sequence(Terminal("{"), StatementList(), Terminal("}"));
 	}
 	
 	public Rule StatementList() {
-		return OneOrMore(Statement());
+		return Sequence(push(new ArrayList<Instruction>()), ZeroOrMore(Statement(), push(concat(pop(1), pop()))));
 	}
 	
 	public Rule VariableStatement() {
@@ -399,7 +391,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule EmptyStatement() {
-		return Terminal(";");
+		return Sequence(push(new ArrayList<Instruction>()), Terminal(";"));
 	}
 	
 	public Rule ExpressionStatement() {
@@ -408,16 +400,67 @@ public class Parser extends BaseParser<List<Instruction>> {
 	
 	public Rule IfStatement() {
 		return FirstOf(
-			Sequence(Terminal("if"), Terminal("("), Expression(), Terminal(")"), Statement(), Terminal("else"), Statement()),
-			Sequence(Terminal("if"), Terminal("("), Expression(), Terminal(")"), Statement())
+			Sequence(
+				Terminal("if"), Terminal("("), Expression(), Terminal(")"), Statement(), Terminal("else"), Statement(),
+				push(concat(
+					pop(2),
+					singletonList(JumpIfFalse(Value(peek(1).size() + 1))),
+					pop(1),
+					singletonList(Jump(Value(peek().size()))),
+					pop()
+				))
+			),
+			Sequence(
+				Terminal("if"), Terminal("("), Expression(), Terminal(")"), Statement(),
+				push(concat(
+					pop(1),
+					singletonList(JumpIfFalse(Value(peek().size()))),
+					pop()
+				))
+			)
 		);
 	}
 	
 	public Rule IterationStatement() {
 		return FirstOf(
-			Sequence(Terminal("do"), Statement(), Terminal("while"), Terminal("("), Expression(), Terminal(")"), Terminal(";")),
-			Sequence(Terminal("while"), Terminal("("), Expression(), Terminal(")"), Statement()),
-			Sequence(Terminal("for"), Terminal("("), Optional(Expression()), Terminal(";"), Optional(Expression()), Terminal(";"), Optional(Expression()), Terminal(")"), Statement()),
+			Sequence(
+				Terminal("do"), Statement(), Terminal("while"), Terminal("("), Expression(), Terminal(")"), Terminal(";"),
+				push(concat(
+					peek(1),
+					peek(),
+					singletonList(JumpIfTrue(Value(-pop().size() - pop().size() - 1)))
+				))
+			),
+			Sequence(
+				Terminal("while"), Terminal("("), Expression(), Terminal(")"), Statement(),
+				push(concat(
+					peek(1),
+					singletonList(JumpIfFalse(Value(peek().size() + 1))),
+					peek(),
+					singletonList(Jump(Value(-pop().size() - pop().size() - 2)))
+				))
+			),
+			Sequence(
+				Terminal("for"),
+				Terminal("("),
+				OptionalOr(Expression(), Push(NullValue())),
+				Terminal(";"),
+				OptionalOr(Expression(), Push(Value(true))),
+				Terminal(";"),
+				OptionalOr(Expression(), Push(NullValue())),
+				Terminal(")"),
+				Statement(),
+				push(concat(
+					pop(3),
+					singletonList(Pop()),
+					peek(2),
+					singletonList(JumpIfFalse(Value(peek(0).size() + peek(1).size() + 4))),
+					peek(0),
+					peek(1),
+					singletonList(Pop()),
+					singletonList(Jump(Value(-pop().size() - pop().size() - pop().size() - 3)))
+				))
+			),
 			Sequence(Terminal("for"), Terminal("("), Terminal("var"), VariableDeclarationList(), Terminal(";"), Optional(Expression()), Terminal(";"), Optional(Expression()), Terminal(")"), Statement())
 		);
 	}
@@ -442,11 +485,11 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule CaseClause() {
-		return Sequence(Terminal("case"), Expression(), Terminal(":"), Optional(StatementList()));
+		return Sequence(Terminal("case"), Expression(), Terminal(":"), StatementList());
 	}
 	
 	public Rule DefaultClause() {
-		return Sequence(Terminal("default"), Terminal(":"), Optional(StatementList()));
+		return Sequence(Terminal("default"), Terminal(":"), StatementList());
 	}
 	
 	public Rule FunctionDeclaration() {
@@ -480,8 +523,16 @@ public class Parser extends BaseParser<List<Instruction>> {
 		);
 	}
 	
+	@SuppressSubnodes
 	public Rule Terminal(Object value) {
 		return Sequence(value, Optional(OneOrMore(FirstOf(" ", "\r", "\n", "\t"))));
+	}
+	
+	/**
+	 * Matches optional or pushes instruction onto the stack.
+	 */
+	public Rule OptionalOr(Rule optional, Instruction instruction) {
+		return FirstOf(optional, push(singletonList(instruction)));
 	}
 
 	/**
