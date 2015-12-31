@@ -28,7 +28,9 @@ import static instruction.UnaryPlusInstruction.UnaryPlus;
 import static instruction.UnsignedShiftRightInstruction.UnsignedShiftRight;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static value.BooleanValue.Value;
 import static value.DoubleValue.Value;
+import static value.NullValue.NullValue;
 import static value.StringValue.Value;
 import instruction.AddInstruction;
 import instruction.AndInstruction;
@@ -55,8 +57,12 @@ import java.util.List;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.support.Var;
 
+import value.BooleanValue;
+import value.DoubleValue;
 import value.NullValue;
+import value.StringValue;
 
 @BuildParseTree
 public class Parser extends BaseParser<List<Instruction>> {
@@ -70,18 +76,18 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule NullLiteral() {
-		return Terminal("null");
+		return Sequence(Terminal("null"), push(singletonList(Push(NullValue()))));
 	}
 	
 	public Rule BooleanLiteral() {
 		return FirstOf(
-			Terminal("true"),
-			Terminal("false")
+			Sequence(Terminal("true"), push(singletonList(Push(Value(true))))),
+			Sequence(Terminal("false"), push(singletonList(Push(Value(false)))))
 		);
 	}
 	
 	public Rule NumericLiteral() {
-		return Terminal(Sequence(OneOrMore(FirstOf(CharRange('0', '9'), '-', '.')), push(singletonList(Push(Value(match()))))));
+		return Terminal(Sequence(OneOrMore(FirstOf(CharRange('0', '9'), '-', '.')), push(singletonList(Push(Value(Double.parseDouble(match())))))));
 	}
 	
 	public Rule StringLiteral() {
@@ -92,17 +98,17 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule Identifier() {
-		return Terminal(Sequence(
+		return Terminal(Sequence(Sequence(
 			FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), "$", "_"),
 			ZeroOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), CharRange('0', '9'), "$", "_"))
-		));
+		), push(singletonList(Load(Value(match()))))));
 	}
 
 	public Rule PrimaryExpression() {
 		return FirstOf(
 			Terminal("this"),
-			Sequence(Identifier(), push(singletonList(Load(Value(match()))))),
 			Literal(),
+			Identifier(),
 			ArrayLiteral(),
 			ObjectLiteral(),
 			Sequence(Terminal("("), Expression(), Terminal(")"))
@@ -149,10 +155,10 @@ public class Parser extends BaseParser<List<Instruction>> {
 	
 	public Rule CallExpression() {
 		return Sequence(	
-			Sequence(MemberExpression(), Arguments(), dup(), push(
+			Sequence(MemberExpression(), Arguments(), push(
 				concat(
 					pop(),
-					singletonList(Push(Value(pop().size()))),
+					pop(),
 					pop(),
 					singletonList(Call())
 				)
@@ -167,13 +173,25 @@ public class Parser extends BaseParser<List<Instruction>> {
 	
 	public Rule Arguments() {
 		return FirstOf(	
-			Sequence(Terminal("("), Terminal(")"), push(new ArrayList<Instruction>())),
+			Sequence(Terminal("("), Terminal(")"), push(singletonList(Push(new DoubleValue(0)))), push(new ArrayList<Instruction>())),
 			Sequence(Terminal("("), ArgumentList(), Terminal(")"))
 		);
 	}
 	
 	public Rule ArgumentList() {
-		return Sequence(AssignmentExpression(), ZeroOrMore(Terminal(","), AssignmentExpression(), push(concat(pop(), pop()))));
+		Var<Integer> argCount = new Var<Integer>();
+		return Sequence(
+			argCount.set(1),
+			AssignmentExpression(),
+			ZeroOrMore(
+				Terminal(","),
+				AssignmentExpression(),
+				argCount.set(argCount.get() + 1),
+				push(concat(pop(), pop()))
+			),
+			push(singletonList(Push(new DoubleValue(argCount.get())))),
+			swap()
+		);
 	}
 	
 	public Rule LeftHandSideExpression() {

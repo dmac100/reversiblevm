@@ -83,7 +83,7 @@ public class EngineTest {
 	
 	@Test
 	public void typeError() {
-		assertError("TypeError: Not a double", Arrays.asList(
+		assertError("TypeError: Not a double: 3", Arrays.asList(
 			Push(Value("3")),
 			UnaryMinus()
 		));

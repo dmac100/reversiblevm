@@ -3,7 +3,7 @@ package instruction;
 import runtime.ExecutionException;
 import runtime.Runtime;
 import runtime.Stack;
-import value.BooleanValue;
+import value.DoubleValue;
 
 public class BitwiseXorInstruction implements Instruction {
 	public BitwiseXorInstruction() {
@@ -15,9 +15,9 @@ public class BitwiseXorInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		BooleanValue value2 = runtime.popCheckedBooleanValue();
-		BooleanValue value1 = runtime.popCheckedBooleanValue();
-		stack.push(BooleanValue.Value(value1.getValue() ^ value2.getValue()));
+		DoubleValue value2 = runtime.popCheckedDoubleValue();
+		DoubleValue value1 = runtime.popCheckedDoubleValue();
+		stack.push(DoubleValue.Value((int)value1.getValue() ^ (int)value2.getValue()));
 	}
 	
 	public String toString() {

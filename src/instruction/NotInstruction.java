@@ -1,6 +1,9 @@
 package instruction;
 
+import runtime.ExecutionException;
 import runtime.Runtime;
+import runtime.Stack;
+import value.BooleanValue;
 
 public class NotInstruction implements Instruction {
 	public NotInstruction() {
@@ -10,7 +13,10 @@ public class NotInstruction implements Instruction {
 		return new NotInstruction();
 	}
 	
-	public void execute(Runtime runtime) {
+	public void execute(Runtime runtime) throws ExecutionException {
+		Stack stack = runtime.getStack();
+		BooleanValue value = runtime.popCheckedBooleanValue();
+		stack.push(BooleanValue.Value(!value.getValue()));
 	}
 	
 	public String toString() {

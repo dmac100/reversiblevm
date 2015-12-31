@@ -76,7 +76,7 @@ public class Runtime {
 		if(value instanceof DoubleValue) {
 			return (DoubleValue) value;
 		} else {
-			throw new ExecutionException("TypeError: Not a double");
+			throw new ExecutionException("TypeError: Not a double: " + value);
 		}
 	}
 
@@ -85,7 +85,7 @@ public class Runtime {
 		if(value instanceof BooleanValue) {
 			return (BooleanValue) value;
 		} else {
-			throw new ExecutionException("TypeError: Not a boolean");
+			throw new ExecutionException("TypeError: Not a boolean: " + value);
 		}
 	}
 }

@@ -1,24 +1,25 @@
-import static instruction.AddInstruction.Add;
-import static instruction.CallInstruction.Call;
-import static instruction.LoadInstruction.Load;
-import static instruction.PushInstruction.Push;
-import static value.DoubleValue.Value;
-import static value.StringValue.Value;
+import instruction.Instruction;
 
-import java.util.Arrays;
+import java.util.List;
 
+import org.parboiled.BaseParser;
+import org.parboiled.Parboiled;
+import org.parboiled.parserunners.ReportingParseRunner;
+import org.parboiled.support.ParsingResult;
+
+import parser.Parser;
 import runtime.Engine;
-import value.DoubleValue;
 
 public class Main {
 	public static void main(String[] args) {
-		new Engine().run(Arrays.asList(
-			Push(Value(1)),
-			Push(Value(1)),
-			Add(),
-			Push(DoubleValue.Value(1)),
-			Load(Value("print")),
-			Call()
-		));
+		String program = "print('Hello World!');";
+		
+		Parser parser = Parboiled.createParser(Parser.class);
+		
+		ParsingResult<List<Instruction>> result = new ReportingParseRunner<List<Instruction>>(parser.Sequence(parser.Program(), BaseParser.EOI)).run(program);
+		
+		List<Instruction> instructions = result.valueStack.pop();
+		
+		new Engine().run(instructions);
 	}
 }
