@@ -1,5 +1,17 @@
 package runtime;
 
+import static instruction.AddInstruction.Add;
+import static instruction.BitwiseAndInstruction.BitwiseAnd;
+import static instruction.BitwiseOrInstruction.BitwiseOr;
+import static instruction.BitwiseXorInstruction.BitwiseXor;
+import static instruction.DivideInstruction.Divide;
+import static instruction.MinusInstruction.Minus;
+import static instruction.ModuloInstruction.Modulo;
+import static instruction.MultiplyInstruction.Multiply;
+import static instruction.ShiftLeftInstruction.ShiftLeft;
+import static instruction.ShiftRightInstruction.ShiftRight;
+import static instruction.UnsignedShiftRightInstruction.UnsignedShiftRight;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import instruction.Instruction;
@@ -222,7 +234,18 @@ public class ParseAndRunTest {
 	}
 	
 	@Test
-	public void AssignmentOperator() {
+	public void CompoundAssignmentOperator() {
+		assertOutput("6", "x = 2; x *= 3; print(x);");
+		assertOutput("2", "x = 4; x /= 2; print(x);");
+		assertOutput("2", "x = 5; x %= 3; print(x);");
+		assertOutput("5", "x = 2; x += 3; print(x);");
+		assertOutput("2", "x = 5; x -= 3; print(x);");
+		assertOutput("4", "x = 2; x <<= 1; print(x);");
+		assertOutput("1", "x = 2; x >>= 1; print(x);");
+		assertOutput("1", "x = 2; x >>>= 1; print(x);");
+		assertOutput("2", "x = 2; x &= 3; print(x);");
+		assertOutput("1", "x = 2; x ^= 3; print(x);");
+		assertOutput("3", "x = 2; x |= 3; print(x);");
 	}
 	
 	@Test

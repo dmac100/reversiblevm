@@ -330,25 +330,35 @@ public class Parser extends BaseParser<List<Instruction>> {
 	
 	public Rule AssignmentExpression() {
 		return FirstOf(
-			Sequence(LeftHandSideExpression(), AssignmentOperator(), AssignmentExpression(), push(concat(pop(), singletonList(Dup()), convertToWrite(pop())))),
+			Sequence(
+				LeftHandSideExpression(),
+				Terminal("="),
+				AssignmentExpression(),
+				push(concat(pop(), singletonList(Dup()), convertToWrite(pop())))
+			),
+			Sequence(
+				LeftHandSideExpression(),
+				CompoundAssignmentOperator(),
+				AssignmentExpression(),
+				push(concat(peek(2), pop(), pop(), singletonList(Dup()), convertToWrite(pop())))
+			),
 			ConditionalExpression()
 		);
 	}
 	
-	public Rule AssignmentOperator() {
+	public Rule CompoundAssignmentOperator() {
 		return FirstOf(	
-			Terminal("="),
-			Terminal("*="),
-			Terminal("/="),
-			Terminal("%="),
-			Terminal("+="),
-			Terminal("-="),
-			Terminal("<<="),
-			Terminal(">>="),
-			Terminal(">>>="),
-			Terminal("&="),
-			Terminal("^="),
-			Terminal("|=")
+			Sequence(Terminal("*="), push(singletonList(Multiply()))),
+			Sequence(Terminal("/="), push(singletonList(Divide()))),
+			Sequence(Terminal("%="), push(singletonList(Modulo()))),
+			Sequence(Terminal("+="), push(singletonList(Add()))),
+			Sequence(Terminal("-="), push(singletonList(Minus()))),
+			Sequence(Terminal("<<="), push(singletonList(ShiftLeft()))),
+			Sequence(Terminal(">>="), push(singletonList(ShiftRight()))),
+			Sequence(Terminal(">>>="), push(singletonList(UnsignedShiftRight()))),
+			Sequence(Terminal("&="), push(singletonList(BitwiseAnd()))),
+			Sequence(Terminal("^="), push(singletonList(BitwiseXor()))),
+			Sequence(Terminal("|="), push(singletonList(BitwiseOr())))
 		);
 	}
 	

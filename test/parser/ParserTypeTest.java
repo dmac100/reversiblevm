@@ -224,23 +224,23 @@ public class ParserTypeTest {
 	@Test
 	public void AssignmentExpression() {
 		assertParseType("a = 2", parser.AssignmentExpression());
+		assertParseType("a += 2", parser.AssignmentExpression());
 		assertParseType("a ? 1 : 2", parser.AssignmentExpression());
 	}
 
 	@Test
-	public void AssignmentOperator() {
-		assertParseType("=", parser.AssignmentOperator());
-		assertParseType("*=", parser.AssignmentOperator());
-		assertParseType("/=", parser.AssignmentOperator());
-		assertParseType("%=", parser.AssignmentOperator());
-		assertParseType("+=", parser.AssignmentOperator());
-		assertParseType("-=", parser.AssignmentOperator());
-		assertParseType("<<=", parser.AssignmentOperator());
-		assertParseType(">>=", parser.AssignmentOperator());
-		assertParseType(">>>=", parser.AssignmentOperator());
-		assertParseType("&=", parser.AssignmentOperator());
-		assertParseType("^=", parser.AssignmentOperator());
-		assertParseType("|=", parser.AssignmentOperator());
+	public void CompoundAssignmentOperator() {
+		assertParseType("*=", parser.CompoundAssignmentOperator());
+		assertParseType("/=", parser.CompoundAssignmentOperator());
+		assertParseType("%=", parser.CompoundAssignmentOperator());
+		assertParseType("+=", parser.CompoundAssignmentOperator());
+		assertParseType("-=", parser.CompoundAssignmentOperator());
+		assertParseType("<<=", parser.CompoundAssignmentOperator());
+		assertParseType(">>=", parser.CompoundAssignmentOperator());
+		assertParseType(">>>=", parser.CompoundAssignmentOperator());
+		assertParseType("&=", parser.CompoundAssignmentOperator());
+		assertParseType("^=", parser.CompoundAssignmentOperator());
+		assertParseType("|=", parser.CompoundAssignmentOperator());
 	}
 
 	@Test

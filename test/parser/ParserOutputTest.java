@@ -1,5 +1,7 @@
 package parser;
 
+import static instruction.AddInstruction.Add;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -164,10 +166,24 @@ public class ParserOutputTest {
 	public void AssignmentExpression() {
 		assertParseOutput("x = 2;", Arrays.asList("PUSH: 2", "DUP", "STORE: x", "POP"));
 		assertParseOutput("x = y = 2;", Arrays.asList("PUSH: 2", "DUP", "STORE: y", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x = x + 2;", Arrays.asList("LOAD: x", "PUSH: 2", "ADD", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x += 2;", Arrays.asList("LOAD: x", "PUSH: 2", "ADD", "DUP", "STORE: x", "POP"));
+		
+		assertParseOutput("x *= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "MULTIPLY", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x /= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "DIVIDE", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x %= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "MODULO", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x += 2;", Arrays.asList("LOAD: x", "PUSH: 2", "ADD", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x -= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "MINUS", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x <<= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "SHIFTLEFT", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x >>= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "SHIFTRIGHT", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x >>>= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "UNSIGNEDSHIFTRIGHT", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x &= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "BITWISEAND", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x ^= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "BITWISEXOR", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x |= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "BITWISEOR", "DUP", "STORE: x", "POP"));
 	}
 	
 	@Test
-	public void AssignmentOperator() {
+	public void CompoundAssignmentOperator() {
 	}
 	
 	@Test
