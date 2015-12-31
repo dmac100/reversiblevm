@@ -18,6 +18,7 @@ import static instruction.JumpInstruction.Jump;
 import static instruction.LessThanEqualInstruction.LessThanEqual;
 import static instruction.LessThanInstruction.LessThan;
 import static instruction.LoadInstruction.Load;
+import static instruction.LocalInstruction.Local;
 import static instruction.MinusInstruction.Minus;
 import static instruction.ModuloInstruction.Modulo;
 import static instruction.MultiplyInstruction.Multiply;
@@ -28,6 +29,7 @@ import static instruction.PopInstruction.Pop;
 import static instruction.PushInstruction.Push;
 import static instruction.ShiftLeftInstruction.ShiftLeft;
 import static instruction.ShiftRightInstruction.ShiftRight;
+import static instruction.StoreInstruction.Store;
 import static instruction.UnaryMinusInstruction.UnaryMinus;
 import static instruction.UnaryPlusInstruction.UnaryPlus;
 import static instruction.UnsignedShiftRightInstruction.UnsignedShiftRight;
@@ -41,6 +43,7 @@ import instruction.Instruction;
 import instruction.JumpIfFalseInstruction;
 import instruction.JumpInstruction;
 import instruction.LoadInstruction;
+import instruction.LocalInstruction;
 import instruction.NopInstruction;
 import instruction.PopInstruction;
 import instruction.StoreInstruction;
@@ -94,17 +97,17 @@ public class Parser extends BaseParser<List<Instruction>> {
 	
 	@SuppressSubnodes
 	public Rule Identifier() {
-		return Terminal(Sequence(Sequence(
+		return Terminal(Sequence(
 			FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), "$", "_"),
 			ZeroOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), CharRange('0', '9'), "$", "_"))
-		), push(singletonList(Load(Value(match()))))));
+		));
 	}
 
 	public Rule PrimaryExpression() {
 		return FirstOf(
 			Terminal("this"),
 			Literal(),
-			Identifier(),
+			Sequence(Identifier(), push(singletonList(Load(Value(match().trim()))))),
 			ArrayLiteral(),
 			ObjectLiteral(),
 			Sequence(Terminal("("), Expression(), Terminal(")"))
@@ -379,11 +382,17 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule VariableDeclarationList() {
-		return Sequence(VariableDeclaration(), ZeroOrMore(Terminal(","), VariableDeclaration()));
+		return Sequence(VariableDeclaration(), ZeroOrMore(Terminal(","), VariableDeclaration(), push(concat(pop(1), pop()))));
 	}
 	
 	public Rule VariableDeclaration() {
-		return Sequence(Identifier(), Initialiser());
+		Var<String> name = new Var<>();
+		return Sequence(
+			Identifier(),
+			name.set(match().trim()),
+			push(singletonList(Local(Value(name.get())))),
+			Optional(Initialiser(), push(concat(pop(1), pop(), singletonList(Store(Value(name.get()))))))
+		);
 	}
 	
 	public Rule Initialiser() {
@@ -461,7 +470,27 @@ public class Parser extends BaseParser<List<Instruction>> {
 					singletonList(Jump(Value(-pop().size() - pop().size() - pop().size() - 3)))
 				))
 			),
-			Sequence(Terminal("for"), Terminal("("), Terminal("var"), VariableDeclarationList(), Terminal(";"), Optional(Expression()), Terminal(";"), Optional(Expression()), Terminal(")"), Statement())
+			Sequence(
+				Terminal("for"),
+				Terminal("("),
+				Terminal("var"),
+				VariableDeclarationList(),
+				Terminal(";"),
+				OptionalOr(Expression(), Push(Value(true))),
+				Terminal(";"),
+				OptionalOr(Expression(), Push(NullValue())),
+				Terminal(")"),
+				Statement(),
+				push(concat(
+					pop(3),
+					peek(2),
+					singletonList(JumpIfFalse(Value(peek(0).size() + peek(1).size() + 4))),
+					peek(0),
+					peek(1),
+					singletonList(Pop()),
+					singletonList(Jump(Value(-pop().size() - pop().size() - pop().size() - 3)))
+				))
+			)
 		);
 	}
 	

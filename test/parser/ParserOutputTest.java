@@ -188,6 +188,10 @@ public class ParserOutputTest {
 	
 	@Test
 	public void VariableStatement() {
+		assertParseOutput("var x;", Arrays.<String>asList("LOCAL: x"));
+		assertParseOutput("var x = 1;", Arrays.<String>asList("LOCAL: x", "PUSH: 1", "STORE: x"));
+		assertParseOutput("var x = 1, y = 2;", Arrays.<String>asList("LOCAL: x", "PUSH: 1", "STORE: x", "LOCAL: y", "PUSH: 2", "STORE: y"));
+		assertParseOutput("var x, y, z;", Arrays.<String>asList("LOCAL: x", "LOCAL: y", "LOCAL: z"));
 	}
 	
 	@Test
@@ -196,6 +200,8 @@ public class ParserOutputTest {
 	
 	@Test
 	public void VariableDeclaration() {
+		assertParseOutput("var x;", Arrays.<String>asList("LOCAL: x"));
+		assertParseOutput("var x = 1;", Arrays.<String>asList("LOCAL: x", "PUSH: 1", "STORE: x"));
 	}
 	
 	@Test

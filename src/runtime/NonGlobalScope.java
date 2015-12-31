@@ -31,6 +31,8 @@ public class NonGlobalScope implements Scope {
 	}
 
 	public void create(String name) {
-		values.put(name, new NullValue());
+		if(!values.containsKey(name)) {
+			values.put(name, new NullValue());
+		}
 	}
 }

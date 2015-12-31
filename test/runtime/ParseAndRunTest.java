@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import instruction.Instruction;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -245,6 +246,7 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void VariableStatement() {
+		assertOutput("1\n2", "var x = 1, y = 2; print(x); print(y);");
 	}
 	
 	@Test
@@ -290,6 +292,10 @@ public class ParseAndRunTest {
 		assertOutput("0\n1\n2\n3", "x = 0; for(; x < 4; x = x + 1) { print(x); }");
 		assertOutput("0\n1\n2\n3", "for(x = 0; x < 4; ) { print(x); x = x + 1; }");
 		assertOutput("0\n1\n2\n3", "x = 0; for(; x < 4; ) { print(x); x = x + 1; }");
+		assertOutput("0\n1\n2\n3", "for(var x = 0; x < 4; x = x + 1) { print(x); }");
+		assertOutput("0\n1\n2\n3", "for(var x = 0; x < 4; ) { print(x); x = x + 1; }");
+		assertOutput("0\n1\n2\n3", "for(var x = 0, y = 1; x < 4; x = x + y) { print(x); }");
+		assertOutput("0\n1\n2\n3", "for(var x = 0, y = 1; x < 4; ) { print(x); x = x + y; }");
 	}
 	
 	@Test
