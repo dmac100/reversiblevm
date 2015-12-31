@@ -164,6 +164,7 @@ public class ParserOutputTest {
 	
 	@Test
 	public void ConditionalExpression() {
+		assertParseOutput("x ? y : z;", Arrays.asList("LOAD: x", "JUMPIFFALSE: 2", "LOAD: y", "JUMP: 1", "LOAD: z", "POP"));
 	}
 	
 	@Test

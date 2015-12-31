@@ -231,6 +231,8 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void ConditionalExpression() {
+		assertOutput("1", "print(true ? 1 : 2);");
+		assertOutput("2", "print(false ? 1 : 2);");
 	}
 	
 	@Test

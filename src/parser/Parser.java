@@ -333,7 +333,14 @@ public class Parser extends BaseParser<List<Instruction>> {
 				Terminal("?"),
 				AssignmentExpression(),
 				Terminal(":"),
-				AssignmentExpression()
+				AssignmentExpression(),
+				push(concat(
+					pop(2),
+					List(JumpIfFalse(Value(peek(1).size() + 1))),
+					pop(1),
+					List(Jump(Value(peek().size()))),
+					pop()
+				))
 			)
 		);
 	}
