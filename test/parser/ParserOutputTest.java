@@ -24,18 +24,29 @@ public class ParserOutputTest {
 	
 	@Test
 	public void NullLiteral() {
+		assertParseOutput("null;", Arrays.asList("PUSH: null", "POP"));
 	}
 	
 	@Test
 	public void BooleanLiteral() {
+		assertParseOutput("true;", Arrays.asList("PUSH: true", "POP"));
+		assertParseOutput("false;", Arrays.asList("PUSH: false", "POP"));
 	}
 	
 	@Test
 	public void NumericLiteral() {
+		assertParseOutput("-10;", Arrays.asList("PUSH: -10", "POP"));
+		assertParseOutput("-10.5;", Arrays.asList("PUSH: -10.5", "POP"));
+		assertParseOutput("10;", Arrays.asList("PUSH: 10", "POP"));
+		assertParseOutput("10.5;", Arrays.asList("PUSH: 10.5", "POP"));
 	}
 	
 	@Test
 	public void StringLiteral() {
+		assertParseOutput("'';", Arrays.asList("PUSH: ", "POP"));
+		assertParseOutput("'a';", Arrays.asList("PUSH: a", "POP"));
+		assertParseOutput("\"\";", Arrays.asList("PUSH: ", "POP"));
+		assertParseOutput("\"a\";", Arrays.asList("PUSH: a", "POP"));
 	}
 	
 	@Test
@@ -96,11 +107,11 @@ public class ParserOutputTest {
 	public void UnaryExpression() {
 		assertParseOutput("++x;", Arrays.asList("LOAD: x", "PUSH: 1", "ADD", "DUP", "STORE: x", "POP"));
 		assertParseOutput("--x;", Arrays.asList("LOAD: x", "PUSH: 1", "MINUS", "DUP", "STORE: x", "POP"));
-		assertParseOutput("+5;", Arrays.asList("PUSH: 5", "UNARYPLUS", "POP"));
-		assertParseOutput("-5;", Arrays.asList("PUSH: 5", "UNARYMINUS", "POP"));
-		assertParseOutput("~5;", Arrays.asList("PUSH: 5", "BITWISENOT", "POP"));
-		assertParseOutput("!5;", Arrays.asList("PUSH: 5", "NOT", "POP"));
-		assertParseOutput("void 5;", Arrays.asList("PUSH: 5", "POP", "PUSH: null", "POP"));
+		assertParseOutput("+x;", Arrays.asList("LOAD: x", "UNARYPLUS", "POP"));
+		assertParseOutput("-x;", Arrays.asList("LOAD: x", "UNARYMINUS", "POP"));
+		assertParseOutput("~x;", Arrays.asList("LOAD: x", "BITWISENOT", "POP"));
+		assertParseOutput("!x;", Arrays.asList("LOAD: x", "NOT", "POP"));
+		assertParseOutput("void x;", Arrays.asList("LOAD: x", "POP", "PUSH: null", "POP"));
 	}
 	
 	@Test
@@ -201,6 +212,10 @@ public class ParserOutputTest {
 	
 	@Test
 	public void Block() {
+		assertParseOutput("{ }", Arrays.<String>asList());
+		assertParseOutput("{ 1; }", Arrays.asList("PUSH: 1", "POP"));
+		assertParseOutput("{ 1; 2; }", Arrays.asList("PUSH: 1", "POP", "PUSH: 2", "POP"));
+		assertParseOutput("{ 1; 2; 3; }", Arrays.asList("PUSH: 1", "POP", "PUSH: 2", "POP", "PUSH: 3", "POP"));
 	}
 	
 	@Test
@@ -231,18 +246,27 @@ public class ParserOutputTest {
 	
 	@Test
 	public void EmptyStatement() {
+		assertParseOutput(";", Arrays.<String>asList());
 	}
 	
 	@Test
 	public void ExpressionStatement() {
+		assertParseOutput("1;", Arrays.asList("PUSH: 1", "POP"));
 	}
 	
 	@Test
 	public void IfStatement() {
+		assertParseOutput("if(x) { a; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 2", "LOAD: a", "POP"));
+		assertParseOutput("if(x) { a; } else { b; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 3", "LOAD: a", "POP", "JUMP: 2", "LOAD: b", "POP"));
+		assertParseOutput("if(x) { a; } else if(y) { b; } else { c; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 3", "LOAD: a", "POP", "JUMP: 7", "LOAD: y", "JUMPIFFALSE: 3", "LOAD: b", "POP", "JUMP: 2", "LOAD: c", "POP"));
 	}
 	
 	@Test
 	public void IterationStatement() {
+		assertParseOutput("do { a; } while(x);", Arrays.asList("LOAD: a", "POP", "LOAD: x", "JUMPIFTRUE: -4"));
+		assertParseOutput("while(x) { b; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 3", "LOAD: b", "POP", "JUMP: -5"));
+		assertParseOutput("for(x; y; z) { b; }", Arrays.asList("LOAD: x", "POP", "LOAD: y", "JUMPIFFALSE: 7", "LOAD: b", "POP", "LOAD: z", "POP", "JUMP: -7"));
+		assertParseOutput("for(var x; y; z) { b; }", Arrays.asList("LOCAL: x", "LOAD: y", "JUMPIFFALSE: 7", "LOAD: b", "POP", "LOAD: z", "POP", "JUMP: -7"));
 	}
 	
 	@Test
@@ -316,6 +340,15 @@ public class ParserOutputTest {
 			"PUSH: 2",
 			"PUSH: 1",
 			"PUSH: 2",
+			"LOAD: print",
+			"CALL",
+			"POP"
+		));
+		assertParseOutput("print(1, 2, 3);", Arrays.asList(
+			"PUSH: 3",
+			"PUSH: 2",
+			"PUSH: 1",
+			"PUSH: 3",
 			"LOAD: print",
 			"CALL",
 			"POP"

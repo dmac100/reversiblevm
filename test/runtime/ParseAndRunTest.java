@@ -388,6 +388,7 @@ public class ParseAndRunTest {
 		assertOutput("", "print();");
 		assertOutput("1", "print(1);");
 		assertOutput("1 2", "print(1, 2);");
+		assertOutput("1 2 3", "print(1, 2, 3);");
 	}
 	
 	private void assertOutput(String expected, String program) {

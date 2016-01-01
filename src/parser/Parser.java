@@ -157,7 +157,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule CallExpression() {
-		return Sequence(	
+		return Sequence(
 			Sequence(MemberExpression(), Arguments(), push(
 				concat(
 					pop(),
@@ -221,10 +221,10 @@ public class Parser extends BaseParser<List<Instruction>> {
 			Sequence(Terminal("++"), UnaryExpression(), push(concat(peek(), List(Push(Value(1))), List(Add()), List(Dup()), convertToWrite(pop())))),
 			Sequence(Terminal("--"), UnaryExpression(), push(concat(peek(), List(Push(Value(1))), List(Minus()), List(Dup()), convertToWrite(pop())))),
 			Sequence(Terminal("+"), UnaryExpression(), push(concat(pop(), List(UnaryPlus())))),
-			Sequence(Terminal("-"), UnaryExpression(), push(concat(pop(), List(UnaryMinus())))),
 			Sequence(Terminal("~"), UnaryExpression(), push(concat(pop(), List(BitwiseNot())))),
 			Sequence(Terminal("!"), UnaryExpression(), push(concat(pop(), List(Not())))),
-			PostfixExpression()
+			PostfixExpression(),
+			Sequence(Terminal("-"), UnaryExpression(), push(concat(pop(), List(UnaryMinus()))))
 		);
 	}
 	
@@ -431,7 +431,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule ExpressionStatement() {
-		return Sequence(TestNot(FirstOf("{", "function")), Expression(), push(concat(pop(), List(PopInstruction.Pop()))), Terminal(";"));
+		return Sequence(TestNot(FirstOf("{", "function")), Expression(), push(concat(pop(), List(Pop()))), Terminal(";"));
 	}
 	
 	public Rule IfStatement() {
