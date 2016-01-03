@@ -31,4 +31,8 @@ public class GlobalScope implements Scope {
 			values.put(name, new NullValue());
 		}
 	}
+	
+	public String toString() {
+		return values.toString();
+	}
 }

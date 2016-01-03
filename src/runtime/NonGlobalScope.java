@@ -35,4 +35,8 @@ public class NonGlobalScope implements Scope {
 			values.put(name, new NullValue());
 		}
 	}
+	
+	public String toString() {
+		return values + " -> " + parentScope;
+	}
 }

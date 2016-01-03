@@ -9,6 +9,7 @@ import static instruction.BitwiseXorInstruction.BitwiseXor;
 import static instruction.CallInstruction.Call;
 import static instruction.DivideInstruction.Divide;
 import static instruction.DupInstruction.Dup;
+import static instruction.EndFunctionInstruction.EndFunction;
 import static instruction.EqualInstruction.Equal;
 import static instruction.GreaterThanEqualInstruction.GreaterThanEqual;
 import static instruction.GreaterThanInstruction.GreaterThan;
@@ -22,30 +23,25 @@ import static instruction.LocalInstruction.Local;
 import static instruction.MinusInstruction.Minus;
 import static instruction.ModuloInstruction.Modulo;
 import static instruction.MultiplyInstruction.Multiply;
-import static instruction.NopInstruction.Nop;
 import static instruction.NotInstruction.Not;
 import static instruction.OrInstruction.Or;
 import static instruction.PopInstruction.Pop;
 import static instruction.PushInstruction.Push;
 import static instruction.ShiftLeftInstruction.ShiftLeft;
 import static instruction.ShiftRightInstruction.ShiftRight;
+import static instruction.StartFunctionInstruction.StartFunction;
 import static instruction.StoreInstruction.Store;
 import static instruction.UnaryMinusInstruction.UnaryMinus;
 import static instruction.UnaryPlusInstruction.UnaryPlus;
 import static instruction.UnsignedShiftRightInstruction.UnsignedShiftRight;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static value.BooleanValue.Value;
 import static value.DoubleValue.Value;
 import static value.NullValue.NullValue;
 import static value.StringValue.Value;
 import instruction.Instruction;
-import instruction.JumpIfFalseInstruction;
-import instruction.JumpInstruction;
 import instruction.LoadInstruction;
-import instruction.LocalInstruction;
-import instruction.NopInstruction;
-import instruction.PopInstruction;
+import instruction.ReturnInstruction;
 import instruction.StoreInstruction;
 
 import java.util.ArrayList;
@@ -59,7 +55,6 @@ import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.support.Var;
 
 import value.DoubleValue;
-import value.NullValue;
 
 @BuildParseTree
 public class Parser extends BaseParser<List<Instruction>> {
@@ -190,7 +185,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 				Terminal(","),
 				AssignmentExpression(),
 				argCount.set(argCount.get() + 1),
-				push(concat(pop(), pop()))
+				push(concat(pop(1), pop()))
 			),
 			push(List(Push(new DoubleValue(argCount.get())))),
 			swap()
@@ -388,11 +383,11 @@ public class Parser extends BaseParser<List<Instruction>> {
 			Block(),
 			VariableStatement(),
 			EmptyStatement(),
-			ExpressionStatement(),
+			ReturnStatement(),
 			IfStatement(),
 			IterationStatement(),
-			ReturnStatement(),
-			SwitchStatement()
+			SwitchStatement(),
+			ExpressionStatement()
 		);
 	}
 	
@@ -418,7 +413,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 			Identifier(),
 			name.set(match().trim()),
 			push(List(Local(Value(name.get())))),
-			Optional(Initialiser(), push(concat(pop(1), pop(), List(Store(Value(name.get()))))))
+			Optional(Initialiser(), push(concat(pop(), pop(), List(Store(Value(name.get()))))))
 		);
 	}
 	
@@ -522,7 +517,10 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule ReturnStatement() {
-		return Sequence(Terminal("return"), Optional(Expression()), Terminal(";"));
+		return Sequence(
+			Terminal("return"), push(List(ReturnInstruction.Return())),
+			Optional(Expression(), push(concat(List(Pop()), pop(), pop()))), Terminal(";")
+		);
 	}
 	
 	public Rule SwitchStatement() {
@@ -549,19 +547,49 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule FunctionDeclaration() {
-		return Sequence(Terminal("function"), Identifier(), Terminal("("), Optional(FormalParameterList()), Terminal(")"), Terminal("{"), FunctionBody(), Terminal("}"));
+		return Sequence(
+			Terminal("function"),
+			Sequence(Identifier(), push(concat(List(Local(Value(match().trim()))), List(Store(Value(match().trim())))))),
+			Terminal("("),
+			FormalParameterList(),
+			Terminal(")"),
+			Terminal("{"),
+			FunctionBody(),
+			Terminal("}"),
+			push(concat(List(StartFunction()), List(Pop()), pop(1), List(Push(NullValue())), pop(), List(EndFunction()), pop()))
+		);
 	}
 	
 	public Rule FunctionExpression() {
-		return Sequence(Terminal("function"), Optional(Identifier()), Terminal("("), Optional(FormalParameterList()), Terminal(")"), Terminal("{"), FunctionBody(), Terminal("}"));
+		return Sequence(
+			Terminal("function"),
+			Terminal("("),
+			FormalParameterList(),
+			Terminal(")"),
+			Terminal("{"),
+			FunctionBody(),
+			Terminal("}"),
+			push(concat(List(StartFunction()), List(Pop()), pop(1), List(Push(NullValue())), pop(), List(EndFunction())))
+		);
 	}
 	
 	public Rule FormalParameterList() {
-		return Sequence(Identifier(), Optional(Terminal(","), FormalParameterList()));
+		return Sequence(
+			push(new ArrayList<Instruction>()),
+			Optional(
+				Sequence(Identifier(), push(concat(pop(), List(Local(Value(match().trim()))), List(Store(Value(match().trim())))))),
+				Optional(
+					Terminal(","), FormalParameterList(), push(concat(pop(1), pop()))
+				)
+			)
+		);
 	}
 	
 	public Rule FunctionBody() {
-		return Optional(SourceElements());
+		return Sequence(
+			push(new ArrayList<Instruction>()),
+			Optional(SourceElements(), push(concat(pop(), pop())))
+		);
 	}
 	
 	public Rule Program() {

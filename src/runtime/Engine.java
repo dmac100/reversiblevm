@@ -56,7 +56,7 @@ public class Engine {
 	private void execute(Runtime runtime, Instruction instruction) {
 		try {
 			instruction.execute(runtime);
-			System.out.println("EXECUTING: " + instruction + " - " + runtime.getStack());
+			System.out.println("EXECUTING: " + instruction + " - " + runtime.getStack() + " - " + runtime.getScope());
 		} catch (ExecutionException e) {
 			System.out.println("EXECUTING: " + instruction);
 			System.err.println("Error: " + e.getMessage());

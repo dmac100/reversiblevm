@@ -352,7 +352,7 @@ public class ParserTypeTest {
 
 	@Test
 	public void FunctionExpression() {
-		assertParseType("function a() { a(); }", parser.FunctionExpression());
+		assertParseType("function() { a(); }", parser.FunctionExpression());
 	}
 
 	@Test

@@ -1,6 +1,7 @@
 package value;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import runtime.Runtime;
@@ -47,6 +48,7 @@ public class NativeFunctionValue implements Value {
 		for(int x = 0; x < numParams; x++) {
 			params.add(stack.popValue());
 		}
+		Collections.reverse(params);
 		return params;
 	}
 }

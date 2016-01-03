@@ -333,6 +333,8 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void ReturnStatement() {
+		assertOutput("null", "print((function() { return; })());");
+		assertOutput("1", "print((function() { return 1; })());");
 	}
 	
 	@Test
@@ -357,10 +359,17 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void FunctionDeclaration() {
+		assertOutput("1", "function f(x) { print(x); }; f(1);");
+		assertOutput("3", "function f(x, y) { print(x + y); }; f(1, 2);");
+		assertOutput("720", "function f(n) { return (n == 0) ? 1 : n * f(n - 1); }; print(f(6));");
 	}
 	
 	@Test
 	public void FunctionExpression() {
+		assertOutput("1", "var f = function(x) { print(x); }; f(1);");
+		assertOutput("3", "var f = function(x, y) { print(x + y); }; f(1, 2);");
+		assertOutput("1", "(function(x) { print(x); })(1);");
+		assertOutput("3", "(function(x, y) { print(x + y); })(1, 2);");
 	}
 	
 	@Test
