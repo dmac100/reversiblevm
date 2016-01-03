@@ -18,7 +18,7 @@ public class Engine {
 		for(Instruction instruction:instructions) {
 			mainFunction.addInstruction(instruction);
 		}
-		runtime.addStackFrame(new StackFrame(mainFunction));
+		runtime.addStackFrame(mainFunction);
 		run(runtime);
 	}
 	

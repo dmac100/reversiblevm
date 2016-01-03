@@ -4,10 +4,12 @@ import value.FunctionValue;
 
 public class StackFrame {
 	private final FunctionValue function;
+	private final Scope scope;
 	private int instructionCounter = 0;
 
-	public StackFrame(FunctionValue function) {
+	public StackFrame(FunctionValue function, Scope scope) {
 		this.function = function;
+		this.scope = scope;
 	}
 	
 	public int getInstructionCounter() {
@@ -20,5 +22,9 @@ public class StackFrame {
 	
 	public FunctionValue getFunction() {
 		return function;
+	}
+	
+	public Scope getScope() {
+		return scope;
 	}
 }

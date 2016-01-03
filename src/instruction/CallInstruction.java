@@ -22,7 +22,7 @@ public class CallInstruction implements Instruction {
 			((NativeFunctionValue)value).execute(runtime);
 		} else if(value instanceof FunctionValue) {
 			FunctionValue function = (FunctionValue) value;
-			runtime.addStackFrame(new StackFrame(function));
+			runtime.addStackFrame(function);
 		} else {
 			throw new ExecutionException("TypeError: Not a function");
 		}
