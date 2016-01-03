@@ -81,13 +81,6 @@ public class ParserTypeTest {
 	}
 
 	@Test
-	public void PropertyName() {
-		assertParseType("a", parser.PropertyName());
-		assertParseType("'a'", parser.PropertyName());
-		assertParseType("1", parser.PropertyName());
-	}
-
-	@Test
 	public void MemberExpression() {
 		assertParseType("a", parser.MemberExpression());
 		assertParseType("function() {}", parser.MemberExpression());

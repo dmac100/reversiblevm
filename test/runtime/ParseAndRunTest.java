@@ -81,14 +81,13 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void ObjectLiteral() {
+		assertOutput("1", "var x = ({ a: 1 }); print(x.a);");
+		assertOutput("1", "var x = ({ a: { b: 1 } }); print(x.a.b);");
+		assertOutput("1", "var x = ({ f: function() { print(1); } }); x.f();");
 	}
 	
 	@Test
 	public void PropertyNameAndValueList() {
-	}
-	
-	@Test
-	public void PropertyName() {
 	}
 	
 	@Test

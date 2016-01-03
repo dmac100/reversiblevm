@@ -6,6 +6,7 @@ import java.util.List;
 import value.BooleanValue;
 import value.DoubleValue;
 import value.FunctionValue;
+import value.ObjectValue;
 import value.Value;
 
 public class Runtime {
@@ -86,6 +87,15 @@ public class Runtime {
 			return (BooleanValue) value;
 		} else {
 			throw new ExecutionException("TypeError: Not a boolean: " + value);
+		}
+	}
+
+	public ObjectValue popCheckedObjectValue() throws ExecutionException {
+		Value value = stack.popValue();
+		if(value instanceof ObjectValue) {
+			return (ObjectValue) value;
+		} else {
+			throw new ExecutionException("TypeError: Not an object: " + value);
 		}
 	}
 }

@@ -11,6 +11,7 @@ import static instruction.DivideInstruction.Divide;
 import static instruction.DupInstruction.Dup;
 import static instruction.EndFunctionInstruction.EndFunction;
 import static instruction.EqualInstruction.Equal;
+import static instruction.GetPropertyInstruction.GetProperty;
 import static instruction.GreaterThanEqualInstruction.GreaterThanEqual;
 import static instruction.GreaterThanInstruction.GreaterThan;
 import static instruction.JumpIfFalseInstruction.JumpIfFalse;
@@ -23,11 +24,13 @@ import static instruction.LocalInstruction.Local;
 import static instruction.MinusInstruction.Minus;
 import static instruction.ModuloInstruction.Modulo;
 import static instruction.MultiplyInstruction.Multiply;
+import static instruction.NewObjectInstruction.NewObject;
 import static instruction.NopInstruction.Nop;
 import static instruction.NotInstruction.Not;
 import static instruction.OrInstruction.Or;
 import static instruction.PopInstruction.Pop;
 import static instruction.PushInstruction.Push;
+import static instruction.SetPropertyInstruction.SetProperty;
 import static instruction.ShiftLeftInstruction.ShiftLeft;
 import static instruction.ShiftRightInstruction.ShiftRight;
 import static instruction.StartFunctionInstruction.StartFunction;
@@ -41,10 +44,13 @@ import static value.BooleanValue.Value;
 import static value.DoubleValue.Value;
 import static value.NullValue.NullValue;
 import static value.StringValue.Value;
+import instruction.GetPropertyInstruction;
 import instruction.Instruction;
 import instruction.LoadInstruction;
+import instruction.NewObjectInstruction;
 import instruction.NopInstruction;
 import instruction.ReturnInstruction;
+import instruction.SetPropertyInstruction;
 import instruction.StoreInstruction;
 import instruction.SwapInstruction;
 
@@ -126,18 +132,22 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule ObjectLiteral() {
-		return Sequence(Terminal("{"), Optional(PropertyNameAndValueList()), Terminal("}"));
+		return Sequence(
+			push(List(NewObject())),
+			Terminal("{"),
+			OptionalOr(PropertyNameAndValueList(), Dup()),
+			push(concat(pop(1), pop())),
+			Terminal("}")
+		);
 	}
 	
 	public Rule PropertyNameAndValueList() {
-		return Sequence(PropertyName(), Terminal(":"), AssignmentExpression(), Optional(Terminal(","), PropertyNameAndValueList()));
-	}
-	
-	public Rule PropertyName() {
-		return FirstOf(
-			Identifier(),
-			StringLiteral(),
-			NumericLiteral()
+		return Sequence(
+			Identifier(), push(List(SetProperty(Value(match().trim())))),
+			Terminal(":"),
+			AssignmentExpression(),
+			push(concat(List(Dup()), pop(), pop())),
+			Optional(Terminal(","), PropertyNameAndValueList(), push(concat(pop(1), pop())))
 		);
 	}
 	
@@ -147,7 +157,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 			PrimaryExpression()
 		), ZeroOrMore(FirstOf(
 			Sequence(Terminal("["), Expression(), Terminal("]")),
-			Sequence(Terminal("."), Identifier())
+			Sequence(Terminal("."), Identifier(), push(concat(pop(), List(GetProperty(Value(match().trim()))))))
 		)));
 	}
 	

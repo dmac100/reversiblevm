@@ -67,6 +67,10 @@ public class ParserOutputTest {
 	
 	@Test
 	public void ObjectLiteral() {
+		assertParseOutput("({});", Arrays.asList("NEWOBJECT", "DUP", "POP"));
+		assertParseOutput("({ a: 1 });", Arrays.asList("NEWOBJECT", "DUP", "PUSH: 1", "SETPROPERTY: a", "POP"));
+		assertParseOutput("({ a: 1, b: 2 });", Arrays.asList("NEWOBJECT", "DUP", "PUSH: 1", "SETPROPERTY: a", "DUP", "PUSH: 2", "SETPROPERTY: b", "POP"));
+		assertParseOutput("({ a: 1, b: 2, c: 3 });", Arrays.asList("NEWOBJECT", "DUP", "PUSH: 1", "SETPROPERTY: a", "DUP", "PUSH: 2", "SETPROPERTY: b", "DUP", "PUSH: 3", "SETPROPERTY: c", "POP"));
 	}
 	
 	@Test
@@ -74,11 +78,9 @@ public class ParserOutputTest {
 	}
 	
 	@Test
-	public void PropertyName() {
-	}
-	
-	@Test
 	public void MemberExpression() {
+		assertParseOutput("a.b;", Arrays.asList("LOAD: a", "GETPROPERTY: b", "POP"));
+		assertParseOutput("a.b.c;", Arrays.asList("LOAD: a", "GETPROPERTY: b", "GETPROPERTY: c", "POP"));
 	}
 	
 	@Test
