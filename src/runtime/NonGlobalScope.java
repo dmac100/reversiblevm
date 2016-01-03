@@ -36,6 +36,10 @@ public class NonGlobalScope implements Scope {
 		}
 	}
 	
+	public Scope getParentScope() {
+		return parentScope;
+	}
+	
 	public String toString() {
 		return values + " -> " + parentScope;
 	}

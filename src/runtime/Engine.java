@@ -14,7 +14,7 @@ public class Engine {
 	}
 	
 	public void run(Runtime runtime, List<Instruction> instructions) {
-		FunctionValue mainFunction = new FunctionValue(new GlobalScope());
+		FunctionValue mainFunction = new FunctionValue(runtime.getScope());
 		for(Instruction instruction:instructions) {
 			mainFunction.addInstruction(instruction);
 		}
@@ -56,14 +56,14 @@ public class Engine {
 	private void execute(Runtime runtime, Instruction instruction) {
 		try {
 			instruction.execute(runtime);
-			System.out.println("EXECUTING: " + instruction + " - " + runtime.getStack() + " - " + runtime.getScope());
+			System.out.println(runtime.getNestedFunctionDefinitionCount() + ":" + runtime.getCurrentStackFrame().getInstructionCounter() + " - EXECUTING: " + instruction + " - " + runtime.getStack() + " - " + runtime.getScope());
 		} catch (ExecutionException e) {
-			System.out.println("EXECUTING: " + instruction);
+			System.out.println(runtime.getNestedFunctionDefinitionCount() + ":" + runtime.getCurrentStackFrame().getInstructionCounter() + " - EXECUTING: " + instruction + " - " + runtime.getStack() + " - " + runtime.getScope());
 			System.err.println("Error: " + e.getMessage());
 			runtime.getErrors().add(e.getMessage());
 			return;
 		} catch (Exception e) {
-			System.out.println("EXECUTING: " + instruction);
+			System.out.println(runtime.getNestedFunctionDefinitionCount() + ":" + runtime.getCurrentStackFrame().getInstructionCounter() + " - EXECUTING: " + instruction + " - " + runtime.getStack() + " - " + runtime.getScope());
 			throw e;
 		}
 	}

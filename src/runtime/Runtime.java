@@ -10,6 +10,7 @@ import value.Value;
 
 public class Runtime {
 	private Stack stack = new Stack();
+	private Scope scope = new GlobalScope();
 	private List<StackFrame> stackFrames = new ArrayList<>();
 	private FunctionValue currentFunctionDefinition = null;
 	private int nestedFunctionDefinitionCount = 0;
@@ -19,6 +20,7 @@ public class Runtime {
 	
 	public void addStackFrame(StackFrame frame) {
 		stackFrames.add(frame);
+		scope = new NonGlobalScope(scope);
 	}
 	
 	public StackFrame getCurrentStackFrame() {
@@ -26,11 +28,12 @@ public class Runtime {
 	}
 	
 	public StackFrame popStackFrame() {
+		scope = scope.getParentScope();
 		return stackFrames.isEmpty() ? null : stackFrames.remove(stackFrames.size() - 1);
 	}
 	
 	public Scope getScope() {
-		return getCurrentStackFrame().getFunction().getScope();
+		return scope;
 	}
 	
 	public void throwError(String error) {

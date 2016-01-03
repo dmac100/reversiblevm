@@ -32,6 +32,10 @@ public class GlobalScope implements Scope {
 		}
 	}
 	
+	public Scope getParentScope() {
+		return null;
+	}
+	
 	public String toString() {
 		return values.toString();
 	}

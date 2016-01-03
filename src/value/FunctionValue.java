@@ -9,15 +9,16 @@ import runtime.NonGlobalScope;
 import runtime.Scope;
 
 public class FunctionValue implements Value {
-	private final Scope scope;
 	private final List<Instruction> instructions = new ArrayList<>();
 	
+	private Scope parentScope;
+	
 	public FunctionValue(Scope parentScope) {
-		scope = new NonGlobalScope(parentScope);
+		this.parentScope = parentScope;
 	}
 	
-	public Scope getScope() {
-		return scope;
+	public Scope getParentScope() {
+		return parentScope;
 	}
 	
 	public void addInstruction(Instruction instruction) {
@@ -30,5 +31,6 @@ public class FunctionValue implements Value {
 	
 	public String toString() {
 		return "[Function]";
+		//return "[" + instructions + "]";
 	}
 }
