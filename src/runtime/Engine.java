@@ -14,7 +14,7 @@ public class Engine {
 	}
 	
 	public void run(Runtime runtime, List<Instruction> instructions) {
-		FunctionValue mainFunction = new FunctionValue(runtime.getScope());
+		FunctionValue mainFunction = new FunctionValue(new GlobalScope());
 		for(Instruction instruction:instructions) {
 			mainFunction.addInstruction(instruction);
 		}

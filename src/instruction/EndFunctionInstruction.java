@@ -15,6 +15,8 @@ public class EndFunctionInstruction implements Instruction {
 		if(runtime.getNestedFunctionDefinitionCount() == 0) {
 			runtime.getStack().push(runtime.getCurrentFunctionDefinition());
 			runtime.setCurrentFunctionDefinition(null);
+		} else {
+			runtime.getCurrentFunctionDefinition().addInstruction(this);
 		}
 	}
 	

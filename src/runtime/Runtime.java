@@ -17,17 +17,8 @@ public class Runtime {
 	private List<String> errors = new ArrayList<>();
 	private List<String> output = new ArrayList<>();
 	
-	public Runtime() {
-		Scope parentScope = new GlobalScope();
-		addStackFrame(new FunctionValue(parentScope), parentScope);
-	}
-	
 	public void addStackFrame(FunctionValue function) {
-		addStackFrame(function, getScope());
-	}
-	
-	private void addStackFrame(FunctionValue function, Scope parentScope) {
-		stackFrames.add(new StackFrame(function, new NonGlobalScope(parentScope)));
+		stackFrames.add(new StackFrame(function, new NonGlobalScope(function.getParentScope())));
 	}
 	
 	public StackFrame getCurrentStackFrame() {

@@ -14,6 +14,8 @@ public class StartFunctionInstruction implements Instruction {
 	public void execute(Runtime runtime) {
 		if(runtime.getNestedFunctionDefinitionCount() == 0) {
 			runtime.setCurrentFunctionDefinition(new FunctionValue(runtime.getScope()));
+		} else {
+			runtime.getCurrentFunctionDefinition().addInstruction(this);
 		}
 		runtime.setNestedFunctionDefinitionCount(runtime.getNestedFunctionDefinitionCount() + 1);
 	}
