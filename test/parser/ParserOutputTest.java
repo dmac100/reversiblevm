@@ -302,14 +302,14 @@ public class ParserOutputTest {
 		assertParseOutput("function f(x, y) { }", Arrays.asList("STARTFUNCTION", "POP", "LOCAL: x", "STORE: x", "LOCAL: y", "STORE: y", "PUSH: null", "ENDFUNCTION", "LOCAL: f", "STORE: f"));
 		assertParseOutput("function f(x, y, z) { }", Arrays.asList("STARTFUNCTION", "POP", "LOCAL: x", "STORE: x", "LOCAL: y", "STORE: y", "LOCAL: z", "STORE: z", "PUSH: null", "ENDFUNCTION", "LOCAL: f", "STORE: f"));
 		
-		assertParseOutput("function f() { print(); }", Arrays.asList("STARTFUNCTION", "POP", "PUSH: null", "PUSH: 0", "LOAD: print", "CALL", "POP", "ENDFUNCTION", "LOCAL: f", "STORE: f"));
-		assertParseOutput("function f(x) { print(x); }", Arrays.asList("STARTFUNCTION", "POP", "LOCAL: x", "STORE: x", "PUSH: null", "LOAD: x", "PUSH: 1", "LOAD: print", "CALL", "POP", "ENDFUNCTION", "LOCAL: f", "STORE: f"));
+		assertParseOutput("function f() { print(); }", Arrays.asList("STARTFUNCTION", "POP", "PUSH: null", "LOAD: print", "PUSH: 0", "SWAP", "CALL", "POP", "ENDFUNCTION", "LOCAL: f", "STORE: f"));
+		assertParseOutput("function f(x) { print(x); }", Arrays.asList("STARTFUNCTION", "POP", "LOCAL: x", "STORE: x", "PUSH: null", "LOAD: print", "LOAD: x", "SWAP", "PUSH: 1", "SWAP", "CALL", "POP", "ENDFUNCTION", "LOCAL: f", "STORE: f"));
 	}
 	
 	@Test
 	public void FunctionExpression() {
 		assertParseOutput("var f = function() { };", Arrays.asList("STARTFUNCTION", "POP", "PUSH: null", "ENDFUNCTION", "LOCAL: f", "STORE: f"));
-		assertParseOutput("var f = function(x) { print(x); };", Arrays.asList("STARTFUNCTION", "POP", "LOCAL: x", "STORE: x", "PUSH: null", "LOAD: x", "PUSH: 1", "LOAD: print", "CALL", "POP", "ENDFUNCTION", "LOCAL: f", "STORE: f"));
+		assertParseOutput("var f = function(x) { print(x); };", Arrays.asList("STARTFUNCTION", "POP", "LOCAL: x", "STORE: x", "PUSH: null", "LOAD: print", "LOAD: x", "SWAP", "PUSH: 1", "SWAP", "CALL", "POP", "ENDFUNCTION", "LOCAL: f", "STORE: f"));
 	}
 	
 	@Test
@@ -334,36 +334,15 @@ public class ParserOutputTest {
 	
 	@Test
 	public void CallExpression() {
-		assertParseOutput("print();", Arrays.asList(
-			"PUSH: 0",
-			"LOAD: print",
-			"CALL",
-			"POP"
-		));
-		assertParseOutput("print('Hello World!');", Arrays.asList(
-			"PUSH: Hello World!",
-			"PUSH: 1",
-			"LOAD: print",
-			"CALL",
-			"POP"
-		));
-		assertParseOutput("print(1, 2);", Arrays.asList(
-			"PUSH: 1",
-			"PUSH: 2",
-			"PUSH: 2",
-			"LOAD: print",
-			"CALL",
-			"POP"
-		));
-		assertParseOutput("print(1, 2, 3);", Arrays.asList(
-			"PUSH: 1",
-			"PUSH: 2",
-			"PUSH: 3",
-			"PUSH: 3",
-			"LOAD: print",
-			"CALL",
-			"POP"
-		));
+		assertParseOutput("f();", Arrays.asList("LOAD: f", "PUSH: 0", "SWAP", "CALL", "POP"));
+		assertParseOutput("f(3);", Arrays.asList("LOAD: f", "PUSH: 3", "SWAP", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("f(3)(4);", Arrays.asList("LOAD: f", "PUSH: 3", "SWAP", "PUSH: 1", "SWAP", "CALL", "PUSH: 4", "SWAP", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("f(3)(4, 5);", Arrays.asList("LOAD: f", "PUSH: 3", "SWAP", "PUSH: 1", "SWAP", "CALL", "PUSH: 4", "SWAP", "PUSH: 5", "SWAP", "PUSH: 2", "SWAP", "CALL", "POP"));
+		
+		assertParseOutput("f(3, 4);", Arrays.asList("LOAD: f", "PUSH: 3", "SWAP", "PUSH: 4", "SWAP", "PUSH: 2", "SWAP", "CALL", "POP"));
+		assertParseOutput("f(3, 4, 5);", Arrays.asList("LOAD: f", "PUSH: 3", "SWAP", "PUSH: 4", "SWAP", "PUSH: 5", "SWAP", "PUSH: 3", "SWAP", "CALL", "POP"));
+		
+		assertParseOutput("f()()();", Arrays.asList("LOAD: f", "PUSH: 0", "SWAP", "CALL", "PUSH: 0", "SWAP", "CALL", "PUSH: 0", "SWAP", "CALL", "POP"));
 	}
 	
 	private void assertParseOutput(String input, List<String> instructions) {

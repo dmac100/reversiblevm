@@ -24,7 +24,7 @@ public class CallInstruction implements Instruction {
 			FunctionValue function = (FunctionValue) value;
 			runtime.addStackFrame(function);
 		} else {
-			throw new ExecutionException("TypeError: Not a function");
+			throw new ExecutionException("TypeError: Not a function: " + value);
 		}
 	}
 	

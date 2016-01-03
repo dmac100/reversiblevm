@@ -23,6 +23,7 @@ import static instruction.LocalInstruction.Local;
 import static instruction.MinusInstruction.Minus;
 import static instruction.ModuloInstruction.Modulo;
 import static instruction.MultiplyInstruction.Multiply;
+import static instruction.NopInstruction.Nop;
 import static instruction.NotInstruction.Not;
 import static instruction.OrInstruction.Or;
 import static instruction.PopInstruction.Pop;
@@ -31,6 +32,7 @@ import static instruction.ShiftLeftInstruction.ShiftLeft;
 import static instruction.ShiftRightInstruction.ShiftRight;
 import static instruction.StartFunctionInstruction.StartFunction;
 import static instruction.StoreInstruction.Store;
+import static instruction.SwapInstruction.Swap;
 import static instruction.UnaryMinusInstruction.UnaryMinus;
 import static instruction.UnaryPlusInstruction.UnaryPlus;
 import static instruction.UnsignedShiftRightInstruction.UnsignedShiftRight;
@@ -41,8 +43,10 @@ import static value.NullValue.NullValue;
 import static value.StringValue.Value;
 import instruction.Instruction;
 import instruction.LoadInstruction;
+import instruction.NopInstruction;
 import instruction.ReturnInstruction;
 import instruction.StoreInstruction;
+import instruction.SwapInstruction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -154,15 +158,10 @@ public class Parser extends BaseParser<List<Instruction>> {
 	public Rule CallExpression() {
 		return Sequence(
 			Sequence(MemberExpression(), Arguments(), push(
-				concat(
-					pop(),
-					pop(),
-					pop(),
-					List(Call())
-				)
+				concat(pop(2), pop(), pop(), List(Call()))
 			)),
 			ZeroOrMore(FirstOf(
-				Arguments(),
+				Sequence(Arguments(), push(concat(pop(2), pop(), pop(), List(Call())))),
 				Sequence(Terminal("["), Expression(), Terminal("]")),
 				Sequence(Terminal("."), Identifier())
 			))
@@ -171,7 +170,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 	
 	public Rule Arguments() {
 		return FirstOf(	
-			Sequence(Terminal("("), Terminal(")"), push(List(Push(Value(0)))), push(new ArrayList<Instruction>())),
+			Sequence(Terminal("("), Terminal(")"), push(concat(List(Push(Value(0))), List(Swap()))), push(new ArrayList<Instruction>())),
 			Sequence(Terminal("("), ArgumentList(), Terminal(")"))
 		);
 	}
@@ -180,14 +179,14 @@ public class Parser extends BaseParser<List<Instruction>> {
 		Var<Integer> argCount = new Var<Integer>();
 		return Sequence(
 			argCount.set(1),
-			AssignmentExpression(),
+			AssignmentExpression(), push(concat(pop(), List(Swap()))),
 			ZeroOrMore(
 				Terminal(","),
 				AssignmentExpression(),
 				argCount.set(argCount.get() + 1),
-				push(concat(pop(1), pop()))
+				push(concat(pop(1), pop(), List(Swap())))
 			),
-			push(List(Push(new DoubleValue(argCount.get())))),
+			push(concat(List(Push(Value(argCount.get()))), List(Swap()))),
 			swap()
 		);
 	}
