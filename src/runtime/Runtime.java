@@ -3,6 +3,7 @@ package runtime;
 import java.util.ArrayList;
 import java.util.List;
 
+import value.ArrayValue;
 import value.BooleanValue;
 import value.DoubleValue;
 import value.FunctionValue;
@@ -96,6 +97,15 @@ public class Runtime {
 			return (ObjectValue) value;
 		} else {
 			throw new ExecutionException("TypeError: Not an object: " + value);
+		}
+	}
+
+	public ArrayValue popCheckedArrayValue() throws ExecutionException {
+		Value value = stack.popValue();
+		if(value instanceof ArrayValue) {
+			return (ArrayValue) value;
+		} else {
+			throw new ExecutionException("TypeError: Not an array: " + value);
 		}
 	}
 }

@@ -1,22 +1,9 @@
 package runtime;
 
-import static instruction.AddInstruction.Add;
-import static instruction.BitwiseAndInstruction.BitwiseAnd;
-import static instruction.BitwiseOrInstruction.BitwiseOr;
-import static instruction.BitwiseXorInstruction.BitwiseXor;
-import static instruction.DivideInstruction.Divide;
-import static instruction.MinusInstruction.Minus;
-import static instruction.ModuloInstruction.Modulo;
-import static instruction.MultiplyInstruction.Multiply;
-import static instruction.ShiftLeftInstruction.ShiftLeft;
-import static instruction.ShiftRightInstruction.ShiftRight;
-import static instruction.UnsignedShiftRightInstruction.UnsignedShiftRight;
-import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import instruction.Instruction;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -73,6 +60,11 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void ArrayLiteral() {
+		assertOutput("[]", "print([]);");
+		assertOutput("[1, 2, 3]", "print([1, 2, 3]);");
+		
+		assertOutput("5", "a = [3, 4, 5]; print(a[2]);");
+		assertOutput("3", "a = [[1, 2], [3, 4]]; print(a[1][0]);");
 	}
 	
 	@Test
@@ -81,6 +73,9 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void ObjectLiteral() {
+		assertOutput("{a:1, b:2}", "var x = ({ a: 1, b: 2 }); print(x);");
+		assertOutput("{a:{b:2}}", "var x = ({ a: { b: 2 } }); print(x);");
+		
 		assertOutput("1", "var x = ({ a: 1 }); print(x.a);");
 		assertOutput("1", "var x = ({ a: { b: 1 } }); print(x.a.b);");
 		assertOutput("1", "var x = ({ f: function() { print(1); } }); x.f();");
@@ -121,6 +116,11 @@ public class ParseAndRunTest {
 		assertOutput("1", "x = { y: 1 }; print(x.y++);");
 		assertOutput("1", "x = { y: 2 }; x.y--; print(x.y);");
 		assertOutput("2", "x = { y: 2 }; print(x.y--);");
+		
+		assertOutput("2", "x = [1]; x[0]++; print(x[0]);");
+		assertOutput("1", "x = [1]; print(x[0]++);");
+		assertOutput("1", "x = [2]; x[0]--; print(x[0]);");
+		assertOutput("2", "x = [2]; print(x[0]--);");
 	}
 	
 	@Test
@@ -140,6 +140,11 @@ public class ParseAndRunTest {
 		assertOutput("2", "x = { y: 1 }; print(++x.y);");
 		assertOutput("1", "x = { y: 2 }; --x.y; print(x.y);");
 		assertOutput("1", "x = { y: 2 }; print(--x.y);");
+		
+		assertOutput("2", "x = [1]; ++x[0]; print(x[0]);");
+		assertOutput("2", "x = [1]; print(++x[0]);");
+		assertOutput("1", "x = [2]; --x[0]; print(x[0]);");
+		assertOutput("1", "x = [2]; print(--x[0]);");
 	}
 	
 	@Test
@@ -254,6 +259,8 @@ public class ParseAndRunTest {
 		
 		assertOutput("3", "x = { y: 2 }; x.y = 3; print(x.y);");
 		assertOutput("3", "x = { y: { z: 2 } }; x.y.z = 3; print(x.y.z);");
+		
+		assertOutput("3", "x = [2]; x[0] = 3; print(x[0]);");
 	}
 	
 	@Test
@@ -272,6 +279,9 @@ public class ParseAndRunTest {
 		
 		assertOutput("5", "x = { y: 2 }; x.y += 3; print(x.y);");
 		assertOutput("5", "x = { y: { z: 2 } }; x.y.z += 3; print(x.y.z);");
+		
+		assertOutput("5", "x = [2]; x[0] += 3; print(x[0]);");
+		assertOutput("5", "x = [[2]]; x[0][0] += 3; print(x[0][0]);");
 	}
 	
 	@Test

@@ -1,14 +1,20 @@
 package parser;
 
+import static instruction.Dup2Instruction.Dup2;
 import static instruction.DupInstruction.Dup;
+import static instruction.Swap2Instruction.Swap2;
 import static instruction.SwapInstruction.Swap;
 import static java.util.Collections.singletonList;
 import static value.StringValue.Value;
+import instruction.Dup2Instruction;
+import instruction.GetElementInstruction;
 import instruction.GetPropertyInstruction;
 import instruction.Instruction;
 import instruction.LoadInstruction;
+import instruction.SetElementInstruction;
 import instruction.SetPropertyInstruction;
 import instruction.StoreInstruction;
+import instruction.Swap2Instruction;
 import instruction.SwapInstruction;
 
 import java.util.ArrayList;
@@ -36,8 +42,13 @@ public class AssignmentInstructions {
 		this.read = singletonList(instructions.get(instructions.size() - 1));
 		this.write = singletonList(convertToWrite(instructions.get(instructions.size() - 1)));
 		if(!prefix.isEmpty()) {
-			dup.add(Dup());
-			swap.add(Swap());
+			if(write.get(0) instanceof SetElementInstruction) {
+				dup.add(Dup2());
+				swap.add(Swap2());
+			} else {
+				dup.add(Dup());
+				swap.add(Swap());
+			}
 		}
 	}
 	
@@ -69,6 +80,8 @@ public class AssignmentInstructions {
 			return new StoreInstruction(Value(((LoadInstruction)instruction).getName()));
 		} else if(instruction instanceof GetPropertyInstruction) {
 			return new SetPropertyInstruction(Value(((GetPropertyInstruction)instruction).getName()));
+		} else if(instruction instanceof GetElementInstruction) {
+			return new SetElementInstruction();
 		}
 		return instruction;
 	}

@@ -11,6 +11,7 @@ import static instruction.DivideInstruction.Divide;
 import static instruction.DupInstruction.Dup;
 import static instruction.EndFunctionInstruction.EndFunction;
 import static instruction.EqualInstruction.Equal;
+import static instruction.GetElementInstruction.GetElementInstruction;
 import static instruction.GetPropertyInstruction.GetProperty;
 import static instruction.GreaterThanEqualInstruction.GreaterThanEqual;
 import static instruction.GreaterThanInstruction.GreaterThan;
@@ -24,11 +25,13 @@ import static instruction.LocalInstruction.Local;
 import static instruction.MinusInstruction.Minus;
 import static instruction.ModuloInstruction.Modulo;
 import static instruction.MultiplyInstruction.Multiply;
+import static instruction.NewArrayInstruction.NewArray;
 import static instruction.NewObjectInstruction.NewObject;
 import static instruction.NopInstruction.Nop;
 import static instruction.NotInstruction.Not;
 import static instruction.OrInstruction.Or;
 import static instruction.PopInstruction.Pop;
+import static instruction.PushElementInstruction.PushElement;
 import static instruction.PushInstruction.Push;
 import static instruction.SetPropertyInstruction.SetProperty;
 import static instruction.ShiftLeftInstruction.ShiftLeft;
@@ -44,11 +47,14 @@ import static value.BooleanValue.Value;
 import static value.DoubleValue.Value;
 import static value.NullValue.NullValue;
 import static value.StringValue.Value;
+import instruction.GetElementInstruction;
 import instruction.GetPropertyInstruction;
 import instruction.Instruction;
 import instruction.LoadInstruction;
+import instruction.NewArrayInstruction;
 import instruction.NewObjectInstruction;
 import instruction.NopInstruction;
+import instruction.PushElementInstruction;
 import instruction.ReturnInstruction;
 import instruction.SetPropertyInstruction;
 import instruction.StoreInstruction;
@@ -125,7 +131,15 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule ArrayLiteral() {
-		return Sequence(Terminal("["), Optional(ZeroOrMore(AssignmentExpression(), Terminal(",")), AssignmentExpression()), Terminal("]"));
+		return Sequence(
+			Terminal("["),
+			push(concat(List(NewArray()))),
+			Optional(
+				ZeroOrMore(AssignmentExpression(), Terminal(","), push(concat(pop(1), List(Dup()), pop(), List(PushElement())))),
+				AssignmentExpression(), push(concat(pop(1), List(Dup()), pop(), List(PushElement())))
+			),
+			Terminal("]")
+		);
 	}
 	
 	public Rule Elision() {
@@ -157,7 +171,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 			FunctionExpression(),
 			PrimaryExpression()
 		), ZeroOrMore(FirstOf(
-			Sequence(Terminal("["), Expression(), Terminal("]")),
+			Sequence(Terminal("["), Expression(), push(concat(pop(1), pop(), List(GetElementInstruction()))), Terminal("]")),
 			Sequence(Terminal("."), Identifier(), push(concat(pop(), List(GetProperty(Value(match().trim()))))))
 		)));
 	}

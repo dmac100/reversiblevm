@@ -1,10 +1,7 @@
 package parser;
 
-import static instruction.AddInstruction.Add;
-import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -59,6 +56,10 @@ public class ParserOutputTest {
 	
 	@Test
 	public void ArrayLiteral() {
+		assertParseOutput("([]);", Arrays.asList("NEWARRAY", "POP"));
+		assertParseOutput("([1]);", Arrays.asList("NEWARRAY", "DUP", "PUSH: 1", "PUSHELEMENT", "POP"));
+		assertParseOutput("([1, 2]);", Arrays.asList("NEWARRAY", "DUP", "PUSH: 1", "PUSHELEMENT", "DUP", "PUSH: 2", "PUSHELEMENT", "POP"));
+		assertParseOutput("([1, 2, 3]);", Arrays.asList("NEWARRAY", "DUP", "PUSH: 1", "PUSHELEMENT", "DUP", "PUSH: 2", "PUSHELEMENT", "DUP", "PUSH: 3", "PUSHELEMENT", "POP"));
 	}
 	
 	@Test
@@ -81,6 +82,9 @@ public class ParserOutputTest {
 	public void MemberExpression() {
 		assertParseOutput("a.b;", Arrays.asList("LOAD: a", "GETPROPERTY: b", "POP"));
 		assertParseOutput("a.b.c;", Arrays.asList("LOAD: a", "GETPROPERTY: b", "GETPROPERTY: c", "POP"));
+		
+		assertParseOutput("a[1];", Arrays.asList("LOAD: a", "PUSH: 1", "GETELEMENT", "POP"));
+		assertParseOutput("a[1][2];", Arrays.asList("LOAD: a", "PUSH: 1", "GETELEMENT", "PUSH: 2", "GETELEMENT", "POP"));
 	}
 	
 	@Test
@@ -106,6 +110,9 @@ public class ParserOutputTest {
 		
 		assertParseOutput("a.x++;", Arrays.asList("LOAD: a", "DUP", "GETPROPERTY: x", "SWAP", "DUP", "GETPROPERTY: x", "PUSH: 1", "ADD", "SETPROPERTY: x", "POP"));
 		assertParseOutput("a.x--;", Arrays.asList("LOAD: a", "DUP", "GETPROPERTY: x", "SWAP", "DUP", "GETPROPERTY: x", "PUSH: 1", "MINUS", "SETPROPERTY: x", "POP"));
+		
+		assertParseOutput("a[x]++;", Arrays.asList("LOAD: a", "LOAD: x", "DUP2", "GETELEMENT", "SWAP2", "DUP2", "GETELEMENT", "PUSH: 1", "ADD", "SETELEMENT", "POP"));
+		assertParseOutput("a[x]--;", Arrays.asList("LOAD: a", "LOAD: x", "DUP2", "GETELEMENT", "SWAP2", "DUP2", "GETELEMENT", "PUSH: 1", "MINUS", "SETELEMENT", "POP"));
 	}
 	
 	@Test
@@ -121,6 +128,9 @@ public class ParserOutputTest {
 		
 		assertParseOutput("a.x++;", Arrays.asList("LOAD: a", "DUP", "GETPROPERTY: x", "SWAP", "DUP", "GETPROPERTY: x", "PUSH: 1", "ADD", "SETPROPERTY: x", "POP"));
 		assertParseOutput("a.x--;", Arrays.asList("LOAD: a", "DUP", "GETPROPERTY: x", "SWAP", "DUP", "GETPROPERTY: x", "PUSH: 1", "MINUS", "SETPROPERTY: x", "POP"));
+		
+		assertParseOutput("a[x]++;", Arrays.asList("LOAD: a", "LOAD: x", "DUP2", "GETELEMENT", "SWAP2", "DUP2", "GETELEMENT", "PUSH: 1", "ADD", "SETELEMENT", "POP"));
+		assertParseOutput("a[x]--;", Arrays.asList("LOAD: a", "LOAD: x", "DUP2", "GETELEMENT", "SWAP2", "DUP2", "GETELEMENT", "PUSH: 1", "MINUS", "SETELEMENT", "POP"));
 	}
 	
 	@Test
@@ -208,8 +218,11 @@ public class ParserOutputTest {
 		
 		assertParseOutput("x.y = 2;", Arrays.asList("LOAD: x", "DUP", "PUSH: 2", "SETPROPERTY: y", "GETPROPERTY: y", "POP"));
 		assertParseOutput("x.y.z = 2;", Arrays.asList("LOAD: x", "GETPROPERTY: y", "DUP", "PUSH: 2", "SETPROPERTY: z", "GETPROPERTY: z", "POP"));
-		
 		assertParseOutput("x.y += 2;", Arrays.asList("LOAD: x", "DUP", "DUP", "GETPROPERTY: y", "PUSH: 2", "ADD", "SETPROPERTY: y", "GETPROPERTY: y", "POP"));
+		
+		assertParseOutput("x[y] = 2;", Arrays.asList("LOAD: x", "LOAD: y", "DUP2", "PUSH: 2", "SETELEMENT", "GETELEMENT", "POP"));
+		assertParseOutput("x[y][z] += 2;", Arrays.asList("LOAD: x", "LOAD: y", "GETELEMENT", "LOAD: z", "DUP2", "DUP2", "GETELEMENT", "PUSH: 2", "ADD", "SETELEMENT", "GETELEMENT", "POP"));
+		assertParseOutput("x[y] += 2;", Arrays.asList("LOAD: x", "LOAD: y", "DUP2", "DUP2", "GETELEMENT", "PUSH: 2", "ADD", "SETELEMENT", "GETELEMENT", "POP"));
 	}
 	
 	@Test
