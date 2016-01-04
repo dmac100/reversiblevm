@@ -116,19 +116,30 @@ public class ParseAndRunTest {
 		assertOutput("1", "x = 1; print(x++);");
 		assertOutput("1", "x = 2; x--; print(x);");
 		assertOutput("2", "x = 2; print(x--);");
+		
+		assertOutput("2", "x = { y: 1 }; x.y++; print(x.y);");
+		assertOutput("1", "x = { y: 1 }; print(x.y++);");
+		assertOutput("1", "x = { y: 2 }; x.y--; print(x.y);");
+		assertOutput("2", "x = { y: 2 }; print(x.y--);");
 	}
 	
 	@Test
 	public void UnaryExpression() {
-		assertOutput("2", "x = 1; ++x; print(x);");
-		assertOutput("2", "x = 1; print(++x);");
-		assertOutput("1", "x = 2; --x; print(x);");
-		assertOutput("1", "x = 2; print(--x);");
 		assertOutput("5", "print(+5);");
 		assertOutput("-5", "print(-5);");
 		assertOutput("-6", "print(~5);");
 		assertOutput("false", "print(!true);");
 		assertOutput("null", "print(void 5);");
+		
+		assertOutput("2", "x = 1; ++x; print(x);");
+		assertOutput("2", "x = 1; print(++x);");
+		assertOutput("1", "x = 2; --x; print(x);");
+		assertOutput("1", "x = 2; print(--x);");
+		
+		assertOutput("2", "x = { y: 1 }; ++x.y; print(x.y);");
+		assertOutput("2", "x = { y: 1 }; print(++x.y);");
+		assertOutput("1", "x = { y: 2 }; --x.y; print(x.y);");
+		assertOutput("1", "x = { y: 2 }; print(--x.y);");
 	}
 	
 	@Test
@@ -240,6 +251,9 @@ public class ParseAndRunTest {
 		assertOutput("2 2", "x = y = 2; print(x, y);");
 		assertOutput("3", "x = 1; y = 2; print(x + y);");
 		assertOutput("4", "x = 1; x = x + 1; y = 2; print(x + y);");
+		
+		assertOutput("3", "x = { y: 2 }; x.y = 3; print(x.y);");
+		assertOutput("3", "x = { y: { z: 2 } }; x.y.z = 3; print(x.y.z);");
 	}
 	
 	@Test
@@ -255,6 +269,9 @@ public class ParseAndRunTest {
 		assertOutput("2", "x = 2; x &= 3; print(x);");
 		assertOutput("1", "x = 2; x ^= 3; print(x);");
 		assertOutput("3", "x = 2; x |= 3; print(x);");
+		
+		assertOutput("5", "x = { y: 2 }; x.y += 3; print(x.y);");
+		assertOutput("5", "x = { y: { z: 2 } }; x.y.z += 3; print(x.y.z);");
 	}
 	
 	@Test

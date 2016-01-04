@@ -101,19 +101,26 @@ public class ParserOutputTest {
 	
 	@Test
 	public void PostfixExpression() {
-		assertParseOutput("x++;", Arrays.asList("LOAD: x", "DUP", "PUSH: 1", "ADD", "STORE: x", "POP"));
-		assertParseOutput("x--;", Arrays.asList("LOAD: x", "DUP", "PUSH: 1", "MINUS", "STORE: x", "POP"));
+		assertParseOutput("x++;", Arrays.asList("LOAD: x", "PUSH: 1", "ADD", "STORE: x", "LOAD: x", "PUSH: 1", "MINUS", "POP"));
+		assertParseOutput("x--;", Arrays.asList("LOAD: x", "PUSH: 1", "MINUS", "STORE: x", "LOAD: x", "PUSH: 1", "ADD", "POP"));
+		
+		assertParseOutput("a.x++;", Arrays.asList("LOAD: a", "DUP", "DUP", "GETPROPERTY: x", "PUSH: 1", "ADD", "SETPROPERTY: x", "GETPROPERTY: x", "PUSH: 1", "MINUS", "POP"));
+		assertParseOutput("a.x--;", Arrays.asList("LOAD: a", "DUP", "DUP", "GETPROPERTY: x", "PUSH: 1", "MINUS", "SETPROPERTY: x", "GETPROPERTY: x", "PUSH: 1", "ADD", "POP"));
 	}
 	
 	@Test
 	public void UnaryExpression() {
-		assertParseOutput("++x;", Arrays.asList("LOAD: x", "PUSH: 1", "ADD", "DUP", "STORE: x", "POP"));
-		assertParseOutput("--x;", Arrays.asList("LOAD: x", "PUSH: 1", "MINUS", "DUP", "STORE: x", "POP"));
 		assertParseOutput("+x;", Arrays.asList("LOAD: x", "UNARYPLUS", "POP"));
 		assertParseOutput("-x;", Arrays.asList("LOAD: x", "UNARYMINUS", "POP"));
 		assertParseOutput("~x;", Arrays.asList("LOAD: x", "BITWISENOT", "POP"));
 		assertParseOutput("!x;", Arrays.asList("LOAD: x", "NOT", "POP"));
 		assertParseOutput("void x;", Arrays.asList("LOAD: x", "POP", "PUSH: null", "POP"));
+		
+		assertParseOutput("++x;", Arrays.asList("LOAD: x", "PUSH: 1", "ADD", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("--x;", Arrays.asList("LOAD: x", "PUSH: 1", "MINUS", "STORE: x", "LOAD: x", "POP"));
+		
+		assertParseOutput("a.x++;", Arrays.asList("LOAD: a", "DUP", "DUP", "GETPROPERTY: x", "PUSH: 1", "ADD", "SETPROPERTY: x", "GETPROPERTY: x", "PUSH: 1", "MINUS", "POP"));
+		assertParseOutput("a.x--;", Arrays.asList("LOAD: a", "DUP", "DUP", "GETPROPERTY: x", "PUSH: 1", "MINUS", "SETPROPERTY: x", "GETPROPERTY: x", "PUSH: 1", "ADD", "POP"));
 	}
 	
 	@Test
@@ -182,22 +189,27 @@ public class ParserOutputTest {
 	
 	@Test
 	public void AssignmentExpression() {
-		assertParseOutput("x = 2;", Arrays.asList("PUSH: 2", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x = y = 2;", Arrays.asList("PUSH: 2", "DUP", "STORE: y", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x = x + 2;", Arrays.asList("LOAD: x", "PUSH: 2", "ADD", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x += 2;", Arrays.asList("LOAD: x", "PUSH: 2", "ADD", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x = 2;", Arrays.asList("PUSH: 2", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x = y = 2;", Arrays.asList("PUSH: 2", "STORE: y", "LOAD: y", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x = x + 2;", Arrays.asList("LOAD: x", "PUSH: 2", "ADD", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x += 2;", Arrays.asList("LOAD: x", "PUSH: 2", "ADD", "STORE: x", "LOAD: x", "POP"));
 		
-		assertParseOutput("x *= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "MULTIPLY", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x /= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "DIVIDE", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x %= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "MODULO", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x += 2;", Arrays.asList("LOAD: x", "PUSH: 2", "ADD", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x -= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "MINUS", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x <<= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "SHIFTLEFT", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x >>= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "SHIFTRIGHT", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x >>>= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "UNSIGNEDSHIFTRIGHT", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x &= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "BITWISEAND", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x ^= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "BITWISEXOR", "DUP", "STORE: x", "POP"));
-		assertParseOutput("x |= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "BITWISEOR", "DUP", "STORE: x", "POP"));
+		assertParseOutput("x *= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "MULTIPLY", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x /= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "DIVIDE", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x %= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "MODULO", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x += 2;", Arrays.asList("LOAD: x", "PUSH: 2", "ADD", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x -= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "MINUS", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x <<= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "SHIFTLEFT", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x >>= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "SHIFTRIGHT", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x >>>= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "UNSIGNEDSHIFTRIGHT", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x &= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "BITWISEAND", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x ^= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "BITWISEXOR", "STORE: x", "LOAD: x", "POP"));
+		assertParseOutput("x |= 2;", Arrays.asList("LOAD: x", "PUSH: 2", "BITWISEOR", "STORE: x", "LOAD: x", "POP"));
+		
+		assertParseOutput("x.y = 2;", Arrays.asList("LOAD: x", "DUP", "PUSH: 2", "SETPROPERTY: y", "GETPROPERTY: y", "POP"));
+		assertParseOutput("x.y.z = 2;", Arrays.asList("LOAD: x", "GETPROPERTY: y", "DUP", "PUSH: 2", "SETPROPERTY: z", "GETPROPERTY: z", "POP"));
+		
+		assertParseOutput("x.y += 2;", Arrays.asList("LOAD: x", "DUP", "DUP", "GETPROPERTY: y", "PUSH: 2", "ADD", "SETPROPERTY: y", "GETPROPERTY: y", "POP"));
 	}
 	
 	@Test

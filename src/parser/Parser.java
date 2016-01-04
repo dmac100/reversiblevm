@@ -55,6 +55,7 @@ import instruction.StoreInstruction;
 import instruction.SwapInstruction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -209,21 +210,65 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule PostfixExpression() {
+		Var<AssignmentInstructions> assignment = new Var<>();
+		
 		return Sequence(
 			LeftHandSideExpression(),
 			Optional(FirstOf(
-				Sequence(Terminal("++"), push(concat(peek(), List(Dup()), List(Push(Value(1))), List(Add()), convertToWrite(pop())))),
-				Sequence(Terminal("--"), push(concat(peek(), List(Dup()), List(Push(Value(1))), List(Minus()), convertToWrite(pop()))))
+				Sequence(Terminal("++"), assignment.set(new AssignmentInstructions(pop())), push(concat(
+					assignment.get().getPrefix(),
+					assignment.get().getDup(),
+					assignment.get().getDup(),
+					assignment.get().getRead(),
+					List(Push(Value(1))),
+					List(Add()),
+					assignment.get().getWrite(),
+					assignment.get().getRead(),
+					List(Push(Value(1))),
+					List(Minus())
+				))),
+				Sequence(Terminal("--"), assignment.set(new AssignmentInstructions(pop())), push(concat(
+					assignment.get().getPrefix(),
+					assignment.get().getDup(),
+					assignment.get().getDup(),
+					assignment.get().getRead(),
+					List(Push(Value(1))),
+					List(Minus()),
+					assignment.get().getWrite(),
+					assignment.get().getRead(),
+					List(Push(Value(1))),
+					List(Add())
+				)))
 			))
 		);
 	}
 	
 	public Rule UnaryExpression() {
+		Var<AssignmentInstructions> assignment = new Var<>();
+		
 		return FirstOf(
 			Sequence(Terminal("delete"), UnaryExpression()),
 			Sequence(Terminal("void"), UnaryExpression(), push(concat(pop(), List(Pop()), List(Push(NullValue()))))),
-			Sequence(Terminal("++"), UnaryExpression(), push(concat(peek(), List(Push(Value(1))), List(Add()), List(Dup()), convertToWrite(pop())))),
-			Sequence(Terminal("--"), UnaryExpression(), push(concat(peek(), List(Push(Value(1))), List(Minus()), List(Dup()), convertToWrite(pop())))),
+			Sequence(Terminal("++"), UnaryExpression(), assignment.set(new AssignmentInstructions(pop())), push(concat(
+				assignment.get().getPrefix(),
+				assignment.get().getDup(),
+				assignment.get().getDup(),
+				assignment.get().getRead(),
+				List(Push(Value(1))),
+				List(Add()),
+				assignment.get().getWrite(),
+				assignment.get().getRead()
+			))),
+			Sequence(Terminal("--"), UnaryExpression(), assignment.set(new AssignmentInstructions(pop())), push(concat(
+				assignment.get().getPrefix(),
+				assignment.get().getDup(),
+				assignment.get().getDup(),
+				assignment.get().getRead(),
+				List(Push(Value(1))),
+				List(Minus()),
+				assignment.get().getWrite(),
+				assignment.get().getRead()
+			))),
 			Sequence(Terminal("+"), UnaryExpression(), push(concat(pop(), List(UnaryPlus())))),
 			Sequence(Terminal("~"), UnaryExpression(), push(concat(pop(), List(BitwiseNot())))),
 			Sequence(Terminal("!"), UnaryExpression(), push(concat(pop(), List(Not())))),
@@ -350,18 +395,37 @@ public class Parser extends BaseParser<List<Instruction>> {
 	}
 	
 	public Rule AssignmentExpression() {
+		Var<AssignmentInstructions> assignment = new Var<>();
+		
 		return FirstOf(
 			Sequence(
 				LeftHandSideExpression(),
 				Terminal("="),
+				assignment.set(new AssignmentInstructions(pop())),
 				AssignmentExpression(),
-				push(concat(pop(), List(Dup()), convertToWrite(pop())))
+				push(concat(
+					assignment.get().getPrefix(),
+					assignment.get().getDup(),
+					pop(),
+					assignment.get().getWrite(),
+					assignment.get().getRead()
+				))
 			),
 			Sequence(
 				LeftHandSideExpression(),
 				CompoundAssignmentOperator(),
+				assignment.set(new AssignmentInstructions(pop(1))),
 				AssignmentExpression(),
-				push(concat(peek(2), pop(), pop(), List(Dup()), convertToWrite(pop())))
+				push(concat(
+					assignment.get().getPrefix(),
+					assignment.get().getDup(),
+					assignment.get().getDup(),
+					assignment.get().getRead(),
+					pop(),
+					pop(),
+					assignment.get().getWrite(),
+					assignment.get().getRead()
+				))
 			),
 			ConditionalExpression()
 		);
@@ -627,22 +691,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 	public Rule OptionalOr(Rule optional, Instruction instruction) {
 		return FirstOf(optional, push(List(instruction)));
 	}
-
-	/**
-	 * Converts a list of instructions so that the read last instruction becomes the corresponding write instruction.
-	 */
-	protected static List<Instruction> convertToWrite(List<Instruction> instructions) {
-		List<Instruction> newInstructions = new ArrayList<>();
-		for(int i = 0; i < instructions.size() - 1; i++) {
-			newInstructions.add(instructions.get(i));
-		}
-		Instruction last = instructions.get(instructions.size() - 1);
-		if(last instanceof LoadInstruction) {
-			newInstructions.add(new StoreInstruction(Value(((LoadInstruction)last).getName())));
-		}
-		return newInstructions;
-	}
-
+	
 	protected static <T> List<T> List(T t) {
 		return Collections.singletonList(t);
 	}

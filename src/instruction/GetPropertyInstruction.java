@@ -16,6 +16,10 @@ public class GetPropertyInstruction implements Instruction {
 		return new GetPropertyInstruction(name);
 	}
 	
+	public String getName() {
+		return name.getValue();
+	}
+	
 	public void execute(Runtime runtime) throws ExecutionException {
 		ObjectValue object = runtime.popCheckedObjectValue();
 		runtime.getStack().push(object.get(name));
