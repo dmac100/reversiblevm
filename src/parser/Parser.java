@@ -218,26 +218,24 @@ public class Parser extends BaseParser<List<Instruction>> {
 				Sequence(Terminal("++"), assignment.set(new AssignmentInstructions(pop())), push(concat(
 					assignment.get().getPrefix(),
 					assignment.get().getDup(),
+					assignment.get().getRead(),
+					assignment.get().getSwap(),
 					assignment.get().getDup(),
 					assignment.get().getRead(),
 					List(Push(Value(1))),
 					List(Add()),
-					assignment.get().getWrite(),
-					assignment.get().getRead(),
-					List(Push(Value(1))),
-					List(Minus())
+					assignment.get().getWrite()
 				))),
 				Sequence(Terminal("--"), assignment.set(new AssignmentInstructions(pop())), push(concat(
 					assignment.get().getPrefix(),
 					assignment.get().getDup(),
+					assignment.get().getRead(),
+					assignment.get().getSwap(),
 					assignment.get().getDup(),
 					assignment.get().getRead(),
 					List(Push(Value(1))),
 					List(Minus()),
-					assignment.get().getWrite(),
-					assignment.get().getRead(),
-					List(Push(Value(1))),
-					List(Add())
+					assignment.get().getWrite()
 				)))
 			))
 		);

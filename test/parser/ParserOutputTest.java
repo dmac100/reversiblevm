@@ -101,11 +101,11 @@ public class ParserOutputTest {
 	
 	@Test
 	public void PostfixExpression() {
-		assertParseOutput("x++;", Arrays.asList("LOAD: x", "PUSH: 1", "ADD", "STORE: x", "LOAD: x", "PUSH: 1", "MINUS", "POP"));
-		assertParseOutput("x--;", Arrays.asList("LOAD: x", "PUSH: 1", "MINUS", "STORE: x", "LOAD: x", "PUSH: 1", "ADD", "POP"));
+		assertParseOutput("x++;", Arrays.asList("LOAD: x", "LOAD: x", "PUSH: 1", "ADD", "STORE: x", "POP"));
+		assertParseOutput("x--;", Arrays.asList("LOAD: x", "LOAD: x", "PUSH: 1", "MINUS", "STORE: x", "POP"));
 		
-		assertParseOutput("a.x++;", Arrays.asList("LOAD: a", "DUP", "DUP", "GETPROPERTY: x", "PUSH: 1", "ADD", "SETPROPERTY: x", "GETPROPERTY: x", "PUSH: 1", "MINUS", "POP"));
-		assertParseOutput("a.x--;", Arrays.asList("LOAD: a", "DUP", "DUP", "GETPROPERTY: x", "PUSH: 1", "MINUS", "SETPROPERTY: x", "GETPROPERTY: x", "PUSH: 1", "ADD", "POP"));
+		assertParseOutput("a.x++;", Arrays.asList("LOAD: a", "DUP", "GETPROPERTY: x", "SWAP", "DUP", "GETPROPERTY: x", "PUSH: 1", "ADD", "SETPROPERTY: x", "POP"));
+		assertParseOutput("a.x--;", Arrays.asList("LOAD: a", "DUP", "GETPROPERTY: x", "SWAP", "DUP", "GETPROPERTY: x", "PUSH: 1", "MINUS", "SETPROPERTY: x", "POP"));
 	}
 	
 	@Test
@@ -119,8 +119,8 @@ public class ParserOutputTest {
 		assertParseOutput("++x;", Arrays.asList("LOAD: x", "PUSH: 1", "ADD", "STORE: x", "LOAD: x", "POP"));
 		assertParseOutput("--x;", Arrays.asList("LOAD: x", "PUSH: 1", "MINUS", "STORE: x", "LOAD: x", "POP"));
 		
-		assertParseOutput("a.x++;", Arrays.asList("LOAD: a", "DUP", "DUP", "GETPROPERTY: x", "PUSH: 1", "ADD", "SETPROPERTY: x", "GETPROPERTY: x", "PUSH: 1", "MINUS", "POP"));
-		assertParseOutput("a.x--;", Arrays.asList("LOAD: a", "DUP", "DUP", "GETPROPERTY: x", "PUSH: 1", "MINUS", "SETPROPERTY: x", "GETPROPERTY: x", "PUSH: 1", "ADD", "POP"));
+		assertParseOutput("a.x++;", Arrays.asList("LOAD: a", "DUP", "GETPROPERTY: x", "SWAP", "DUP", "GETPROPERTY: x", "PUSH: 1", "ADD", "SETPROPERTY: x", "POP"));
+		assertParseOutput("a.x--;", Arrays.asList("LOAD: a", "DUP", "GETPROPERTY: x", "SWAP", "DUP", "GETPROPERTY: x", "PUSH: 1", "MINUS", "SETPROPERTY: x", "POP"));
 	}
 	
 	@Test
