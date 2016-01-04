@@ -1,10 +1,10 @@
 package value;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class ObjectValue implements Value {
-	private Map<String, Value> values = new HashMap<>();
+	private SortedMap<String, Value> values = new TreeMap<>();
 	
 	public ObjectValue() {
 	}
