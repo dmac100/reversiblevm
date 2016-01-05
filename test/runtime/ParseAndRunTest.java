@@ -331,30 +331,30 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void IfStatement() {
-		assertOutput("1", "if(true) { print(1); }");
-		assertOutput("", "if(false) { print(1); }");
+		assertOutput("1\n", "if(true) { print(1); }; print();");
+		assertOutput("", "if(false) { print(1); }; print();");
 		
-		assertOutput("1", "if(true) { print(1); } else { print(2); }");
-		assertOutput("2", "if(false) { print(1); } else { print(2); }");
+		assertOutput("1\n", "if(true) { print(1); } else { print(2); }; print();");
+		assertOutput("2\n", "if(false) { print(1); } else { print(2); }; print();");
 		
-		assertOutput("1", "if(true) { print(1); } else if(true) { print(2); } else { print(3); }");
-		assertOutput("1", "if(true) { print(1); } else if(false) { print(2); } else { print(3); }");
-		assertOutput("2", "if(false) { print(1); } else if(true) { print(2); } else { print(3); }");
-		assertOutput("3", "if(false) { print(1); } else if(false) { print(2); } else { print(3); }");
+		assertOutput("1\n", "if(true) { print(1); } else if(true) { print(2); } else { print(3); }; print();");
+		assertOutput("1\n", "if(true) { print(1); } else if(false) { print(2); } else { print(3); }; print();");
+		assertOutput("2\n", "if(false) { print(1); } else if(true) { print(2); } else { print(3); }; print();");
+		assertOutput("3\n", "if(false) { print(1); } else if(false) { print(2); } else { print(3); }; print();");
 	}
 	
 	@Test
 	public void IterationStatement() {
-		assertOutput("0\n1\n2\n3", "x = 0; do { print(x); x = x + 1; } while(x < 4);");
-		assertOutput("0\n1\n2\n3", "x = 0; while(x < 4) { print(x); x = x + 1; }");
-		assertOutput("0\n1\n2\n3", "for(x = 0; x < 4; x = x + 1) { print(x); }");
-		assertOutput("0\n1\n2\n3", "x = 0; for(; x < 4; x = x + 1) { print(x); }");
-		assertOutput("0\n1\n2\n3", "for(x = 0; x < 4; ) { print(x); x = x + 1; }");
-		assertOutput("0\n1\n2\n3", "x = 0; for(; x < 4; ) { print(x); x = x + 1; }");
-		assertOutput("0\n1\n2\n3", "for(var x = 0; x < 4; x = x + 1) { print(x); }");
-		assertOutput("0\n1\n2\n3", "for(var x = 0; x < 4; ) { print(x); x = x + 1; }");
-		assertOutput("0\n1\n2\n3", "for(var x = 0, y = 1; x < 4; x = x + y) { print(x); }");
-		assertOutput("0\n1\n2\n3", "for(var x = 0, y = 1; x < 4; ) { print(x); x = x + y; }");
+		assertOutput("0\n1\n2\n3\n", "x = 0; do { print(x); x = x + 1; } while(x < 4); print();");
+		assertOutput("0\n1\n2\n3\n", "x = 0; while(x < 4) { print(x); x = x + 1; }; print();");
+		assertOutput("0\n1\n2\n3\n", "for(x = 0; x < 4; x = x + 1) { print(x); }; print();");
+		assertOutput("0\n1\n2\n3\n", "x = 0; for(; x < 4; x = x + 1) { print(x); }; print();");
+		assertOutput("0\n1\n2\n3\n", "for(x = 0; x < 4; ) { print(x); x = x + 1; }; print();");
+		assertOutput("0\n1\n2\n3\n", "x = 0; for(; x < 4; ) { print(x); x = x + 1; }; print();");
+		assertOutput("0\n1\n2\n3\n", "for(var x = 0; x < 4; x = x + 1) { print(x); }; print();");
+		assertOutput("0\n1\n2\n3\n", "for(var x = 0; x < 4; ) { print(x); x = x + 1; }; print();");
+		assertOutput("0\n1\n2\n3\n", "for(var x = 0, y = 1; x < 4; x = x + y) { print(x); }; print();");
+		assertOutput("0\n1\n2\n3\n", "for(var x = 0, y = 1; x < 4; ) { print(x); x = x + y; }; print();");
 	}
 	
 	@Test

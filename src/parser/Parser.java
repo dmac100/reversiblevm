@@ -570,7 +570,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 					pop(3),
 					List(Pop()),
 					peek(2),
-					List(JumpIfFalse(Value(peek(0).size() + peek(1).size() + 4))),
+					List(JumpIfFalse(Value(peek(0).size() + peek(1).size() + 2))),
 					peek(0),
 					peek(1),
 					List(Pop()),
@@ -591,7 +591,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 				push(concat(
 					pop(3),
 					peek(2),
-					List(JumpIfFalse(Value(peek(0).size() + peek(1).size() + 4))),
+					List(JumpIfFalse(Value(peek(0).size() + peek(1).size() + 2))),
 					peek(0),
 					peek(1),
 					List(Pop()),

@@ -292,8 +292,8 @@ public class ParserOutputTest {
 	public void IterationStatement() {
 		assertParseOutput("do { a; } while(x);", Arrays.asList("LOAD: a", "POP", "LOAD: x", "JUMPIFTRUE: -4"));
 		assertParseOutput("while(x) { b; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 3", "LOAD: b", "POP", "JUMP: -5"));
-		assertParseOutput("for(x; y; z) { b; }", Arrays.asList("LOAD: x", "POP", "LOAD: y", "JUMPIFFALSE: 7", "LOAD: b", "POP", "LOAD: z", "POP", "JUMP: -7"));
-		assertParseOutput("for(var x; y; z) { b; }", Arrays.asList("LOCAL: x", "LOAD: y", "JUMPIFFALSE: 7", "LOAD: b", "POP", "LOAD: z", "POP", "JUMP: -7"));
+		assertParseOutput("for(x; y; z) { b; }", Arrays.asList("LOAD: x", "POP", "LOAD: y", "JUMPIFFALSE: 5", "LOAD: b", "POP", "LOAD: z", "POP", "JUMP: -7"));
+		assertParseOutput("for(var x; y; z) { b; }", Arrays.asList("LOCAL: x", "LOAD: y", "JUMPIFFALSE: 5", "LOAD: b", "POP", "LOAD: z", "POP", "JUMP: -7"));
 	}
 	
 	@Test
