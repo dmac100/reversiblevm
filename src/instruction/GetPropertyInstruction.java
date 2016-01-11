@@ -2,6 +2,7 @@ package instruction;
 
 import runtime.ExecutionException;
 import runtime.Runtime;
+import runtime.Stack;
 import value.ObjectValue;
 import value.StringValue;
 
@@ -21,7 +22,8 @@ public class GetPropertyInstruction implements Instruction {
 	}
 	
 	public void execute(Runtime runtime) throws ExecutionException {
-		ObjectValue object = runtime.popCheckedObjectValue();
+		Stack stack = runtime.getStack();
+		ObjectValue object = runtime.checkObjectValue(stack.popValue());
 		runtime.getStack().push(object.get(name));
 	}
 	

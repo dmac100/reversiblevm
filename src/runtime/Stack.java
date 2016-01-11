@@ -23,14 +23,6 @@ public class Stack {
 		return (Value) value;
 	}
 	
-	public DoubleValue popDoubleValue() {
-		return (DoubleValue) popValue();
-	}
-	
-	public NativeFunctionValue popFunctionValue() {
-		return (NativeFunctionValue) popValue();
-	}
-	
 	public String toString() {
 		return stack.toString();
 	}

@@ -15,7 +15,7 @@ public class BitwiseNotInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		DoubleValue value = runtime.popCheckedDoubleValue();
+		DoubleValue value = runtime.checkDoubleValue(stack.popValue());
 		stack.push(DoubleValue.Value(~(int)value.getValue()));
 	}
 	

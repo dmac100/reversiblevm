@@ -2,6 +2,7 @@ package instruction;
 
 import runtime.ExecutionException;
 import runtime.Runtime;
+import runtime.Stack;
 import runtime.StackFrame;
 import value.BooleanValue;
 import value.DoubleValue;
@@ -18,7 +19,8 @@ public class JumpIfTrueInstruction implements Instruction {
 	}
 	
 	public void execute(Runtime runtime) throws ExecutionException {
-		BooleanValue value = runtime.popCheckedBooleanValue();
+		Stack stack = runtime.getStack();
+		BooleanValue value = runtime.checkBooleanValue(stack.popValue());
 		if(value.getValue()) {
 			StackFrame stackFrame = runtime.getCurrentStackFrame();
 			stackFrame.setInstructionCounter(stackFrame.getInstructionCounter() + (int)offset.getValue());

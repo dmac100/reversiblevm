@@ -2,6 +2,7 @@ package instruction;
 
 import runtime.ExecutionException;
 import runtime.Runtime;
+import runtime.Stack;
 import value.ArrayValue;
 import value.DoubleValue;
 import value.Value;
@@ -15,9 +16,10 @@ public class SetElementInstruction implements Instruction {
 	}
 	
 	public void execute(Runtime runtime) throws ExecutionException {
+		Stack stack = runtime.getStack();
 		Value value = runtime.getStack().popValue();
-		DoubleValue index = runtime.popCheckedDoubleValue();
-		ArrayValue array = runtime.popCheckedArrayValue();
+		DoubleValue index = runtime.checkDoubleValue(stack.popValue());
+		ArrayValue array = runtime.checkArrayValue(stack.popValue());
 		array.set(index, value);
 	}
 	

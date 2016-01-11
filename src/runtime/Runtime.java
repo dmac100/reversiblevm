@@ -73,8 +73,7 @@ public class Runtime {
 		this.nestedFunctionDefinitionCount = nestedFunctionDefinitionCount;
 	}
 
-	public DoubleValue popCheckedDoubleValue() throws ExecutionException {
-		Value value = stack.popValue();
+	public DoubleValue checkDoubleValue(Value value) throws ExecutionException {
 		if(value instanceof DoubleValue) {
 			return (DoubleValue) value;
 		} else {
@@ -82,8 +81,7 @@ public class Runtime {
 		}
 	}
 
-	public BooleanValue popCheckedBooleanValue() throws ExecutionException {
-		Value value = stack.popValue();
+	public BooleanValue checkBooleanValue(Value value) throws ExecutionException {
 		if(value instanceof BooleanValue) {
 			return (BooleanValue) value;
 		} else {
@@ -91,8 +89,7 @@ public class Runtime {
 		}
 	}
 
-	public ObjectValue popCheckedObjectValue() throws ExecutionException {
-		Value value = stack.popValue();
+	public ObjectValue checkObjectValue(Value value) throws ExecutionException {
 		if(value instanceof ObjectValue) {
 			return (ObjectValue) value;
 		} else {
@@ -100,12 +97,19 @@ public class Runtime {
 		}
 	}
 
-	public ArrayValue popCheckedArrayValue() throws ExecutionException {
-		Value value = stack.popValue();
+	public ArrayValue checkArrayValue(Value value) throws ExecutionException {
 		if(value instanceof ArrayValue) {
 			return (ArrayValue) value;
 		} else {
 			throw new ExecutionException("TypeError: Not an array: " + value);
+		}
+	}
+
+	public Object checkFunctionValue(Value value) throws ExecutionException {
+		if(value instanceof FunctionValue) {
+			return (FunctionValue) value;
+		} else {
+			throw new ExecutionException("TypeError: Not a function: " + value);
 		}
 	}
 }

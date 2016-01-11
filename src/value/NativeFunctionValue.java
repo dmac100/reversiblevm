@@ -4,47 +4,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import runtime.ExecutionException;
 import runtime.Runtime;
 import runtime.Stack;
 
-public class NativeFunctionValue implements Value {
-	private String name;
-	
-	public NativeFunctionValue(String name) {
-		this.name = name;
-	}
-	
-	public String getName() {
-		return name;
+public abstract class NativeFunctionValue implements Value {
+	public NativeFunctionValue() {
 	}
 	
 	public String toString() {
-		return "[Native: " + name + "]";
+		return "[NativeFunction]";
 	}
 
-	public void execute(Runtime runtime) {
+	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		List<Value> params = getParams(stack);
+		List<Value> params = getParams(runtime, stack);
 		
-		if(name.equals("print")) {
-			StringBuilder value = new StringBuilder();
-			for(int i = 0; i < params.size(); i++) {
-				if(i != 0) {
-					value.append(" ");
-				}
-				value.append(params.get(i).toString());
-			}
-			runtime.print(value.toString());
-			
-			stack.push(new NullValue());
-		} else {
-			throw new RuntimeException("Unknown native function: " + name);
-		}
+		execute(runtime, stack, params);
 	}
 	
-	private static List<Value> getParams(Stack stack) {
+	protected abstract void execute(Runtime runtime, Stack stack, List<Value> params);
+
+	private static List<Value> getParams(Runtime runtime, Stack stack) throws ExecutionException {
 		List<Value> params = new ArrayList<>();
-		int numParams = (int) stack.popDoubleValue().getValue();
+		int numParams = (int) runtime.checkDoubleValue(stack.popValue()).getValue();
 		for(int x = 0; x < numParams; x++) {
 			params.add(stack.popValue());
 		}

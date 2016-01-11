@@ -15,8 +15,8 @@ public class AndInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		BooleanValue value2 = runtime.popCheckedBooleanValue();
-		BooleanValue value1 = runtime.popCheckedBooleanValue();
+		BooleanValue value2 = runtime.checkBooleanValue(stack.popValue());
+		BooleanValue value1 = runtime.checkBooleanValue(stack.popValue());
 		stack.push(BooleanValue.Value(value1.getValue() && value2.getValue()));
 	}
 	
