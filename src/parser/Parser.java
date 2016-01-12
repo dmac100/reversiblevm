@@ -150,8 +150,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 		return Sequence(
 			push(List(NewObject())),
 			Terminal("{"),
-			OptionalOr(PropertyNameAndValueList(), Dup()),
-			push(concat(pop(1), pop())),
+			Optional(PropertyNameAndValueList(), push(concat(pop(1), pop()))),
 			Terminal("}")
 		);
 	}

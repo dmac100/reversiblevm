@@ -73,6 +73,8 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void ObjectLiteral() {
+		assertOutput("{}", "var x = ({}); print(x);");
+		assertOutput("{a:1}", "var x = ({ a: 1 }); print(x);");
 		assertOutput("{a:1, b:2}", "var x = ({ a: 1, b: 2 }); print(x);");
 		assertOutput("{a:{b:2}}", "var x = ({ a: { b: 2 } }); print(x);");
 		

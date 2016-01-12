@@ -68,7 +68,7 @@ public class ParserOutputTest {
 	
 	@Test
 	public void ObjectLiteral() {
-		assertParseOutput("({});", Arrays.asList("NEWOBJECT", "DUP", "POP"));
+		assertParseOutput("({});", Arrays.asList("NEWOBJECT", "POP"));
 		assertParseOutput("({ a: 1 });", Arrays.asList("NEWOBJECT", "DUP", "PUSH: 1", "SETPROPERTY: a", "POP"));
 		assertParseOutput("({ a: 1, b: 2 });", Arrays.asList("NEWOBJECT", "DUP", "PUSH: 1", "SETPROPERTY: a", "DUP", "PUSH: 2", "SETPROPERTY: b", "POP"));
 		assertParseOutput("({ a: 1, b: 2, c: 3 });", Arrays.asList("NEWOBJECT", "DUP", "PUSH: 1", "SETPROPERTY: a", "DUP", "PUSH: 2", "SETPROPERTY: b", "DUP", "PUSH: 3", "SETPROPERTY: c", "POP"));
