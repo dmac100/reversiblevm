@@ -14,6 +14,7 @@ import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
 
+import parser.Instructions;
 import parser.Parser;
 
 public class LibraryTest {
@@ -232,16 +233,16 @@ public class LibraryTest {
 	}
 	
 	private void assertOutput(String expected, String program) {
-		ParsingResult<List<Instruction>> result = new ReportingParseRunner<List<Instruction>>(parser.Sequence(parser.Program(), BaseParser.EOI)).run(program);
+		ParsingResult<Instructions> result = new ReportingParseRunner<Instructions>(parser.Sequence(parser.Program(), BaseParser.EOI)).run(program);
 		System.out.println(ParseTreeUtils.printNodeTree(result));
 		
 		System.out.println("Parse Stack Size: " + result.valueStack.size());
 
-		for(List<Instruction> in:result.valueStack) {
+		for(Instructions in:result.valueStack) {
 			System.out.println("Parse Stack: " + in);
 		}
 		
-		List<Instruction> instructions = result.valueStack.pop();
+		List<Instruction> instructions = result.valueStack.pop().getInstructions();
 		
 		System.out.println("Instructions: " + instructions);
 		

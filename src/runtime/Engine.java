@@ -14,6 +14,7 @@ import org.parboiled.Parboiled;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 
+import parser.Instructions;
 import parser.Parser;
 import value.FunctionValue;
 
@@ -90,8 +91,8 @@ public class Engine {
 	
 	public static List<Instruction> compile(String program) {
 		Parser parser = Parboiled.createParser(Parser.class);
-		ReportingParseRunner<List<Instruction>> parseRunner = new ReportingParseRunner<List<Instruction>>(parser.Sequence(parser.Program(), BaseParser.EOI));
-		ParsingResult<List<Instruction>> result = parseRunner.run(program);
-		return result.valueStack.pop();
+		ReportingParseRunner<Instructions> parseRunner = new ReportingParseRunner<Instructions>(parser.Sequence(parser.Program(), BaseParser.EOI));
+		ParsingResult<Instructions> result = parseRunner.run(program);
+		return result.valueStack.pop().getInstructions();
 	}
 }

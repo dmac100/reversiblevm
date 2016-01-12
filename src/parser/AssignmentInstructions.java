@@ -35,6 +35,10 @@ public class AssignmentInstructions {
 	private final List<Instruction> read;
 	private final List<Instruction> write;
 	
+	public AssignmentInstructions(Instructions instructions) {
+		this(instructions.getInstructions());
+	}
+	
 	public AssignmentInstructions(List<Instruction> instructions) {
 		this.prefix = instructions.subList(0, instructions.size() - 1);
 		this.dup = new ArrayList<>();
