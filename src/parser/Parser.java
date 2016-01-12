@@ -663,7 +663,7 @@ public class Parser extends BaseParser<List<Instruction>> {
 			Optional(
 				Sequence(Identifier(), push(concat(pop(), List(Local(Value(match().trim()))), List(Store(Value(match().trim())))))),
 				Optional(
-					Terminal(","), FormalParameterList(), push(concat(pop(1), pop()))
+					Terminal(","), FormalParameterList(), push(concat(pop(), pop()))
 				)
 			)
 		);
