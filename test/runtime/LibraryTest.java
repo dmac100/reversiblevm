@@ -76,17 +76,17 @@ public class LibraryTest {
 
 		assertOutput("[1, 2, 3]", "print(ArrayProto.concat([1, 2], [3]));");
 
-		assertOutput("true", "print(ArrayProto.every([], function(x) { return x >= 1 }));");
-		assertOutput("true", "print(ArrayProto.every([1, 2, 3], function(x) { return x >= 1 }));");
-		assertOutput("false", "print(ArrayProto.every([1, 2, 3], function(x) { return x > 1 }));");
+		assertOutput("true", "print(ArrayProto.every([], function(x) { return x >= 1; }));");
+		assertOutput("true", "print(ArrayProto.every([1, 2, 3], function(x) { return x >= 1; }));");
+		assertOutput("false", "print(ArrayProto.every([1, 2, 3], function(x) { return x > 1; }));");
 
-		assertOutput("[3, 4, 5]", "print(ArrayProto.filter([1, 2, 3, 4, 5], function(x) { return x >= 3 }));");
+		assertOutput("[3, 4, 5]", "print(ArrayProto.filter([1, 2, 3, 4, 5], function(x) { return x >= 3; }));");
 
-		assertOutput("null", "print(ArrayProto.find([], function(x) { return x == 3 }));");
-		assertOutput("3", "print(ArrayProto.find([1, 2, 3, 4, 5], function(x) { return x == 3 }));");
+		assertOutput("null", "print(ArrayProto.find([], function(x) { return x == 3; }));");
+		assertOutput("3", "print(ArrayProto.find([1, 2, 3, 4, 5], function(x) { return x == 3; }));");
 
-		assertOutput("-1", "print(ArrayProto.findIndex([], function(x) { return x == 3 }));");
-		assertOutput("2", "print(ArrayProto.findIndex([1, 2, 3, 4, 5], function(x) { return x == 3 }));");
+		assertOutput("-1", "print(ArrayProto.findIndex([], function(x) { return x == 3; }));");
+		assertOutput("2", "print(ArrayProto.findIndex([1, 2, 3, 4, 5], function(x) { return x == 3; }));");
 
 		assertOutput("-1", "print(ArrayProto.indexOf([1, 2, 3, 4, 5], 6));");
 		assertOutput("2", "print(ArrayProto.indexOf([1, 2, 3, 4, 5], 3));");
@@ -100,10 +100,10 @@ public class LibraryTest {
 		assertOutput("[2, 4, 6, 8]", "print(ArrayProto.map([1, 2, 3, 4], function(x) { return x * 2; }));");
 
 		assertOutput("10", "print(ArrayProto.reduce([1, 2, 3, 4], function(prev, x) { return prev + x; }, 0));");
-		assertOutput("1234", "print(ArrayProto.reduce([1, 2, 3, 4], function(prev, x) { return prev.concat(x); }, ''));");
+		assertOutput("1234", "print(ArrayProto.reduce(['1', '2', '3', '4'], function(prev, x) { return StringProto.concat(prev, x); }, ''));");
 
 		assertOutput("10", "print(ArrayProto.reduceRight([1, 2, 3, 4], function(prev, x) { return prev + x; }, 0));");
-		assertOutput("4321", "print(ArrayProto.reduceRight([1, 2, 3, 4], function(prev, x) { return prev.concat(x); }, ''));");
+		assertOutput("4321", "print(ArrayProto.reduceRight(['1', '2', '3', '4'], function(prev, x) { return StringProto.concat(prev, x); }, ''));");
 
 		assertOutput("false", "print(ArrayProto.some([], function(x) { return x == 1; }));");
 		assertOutput("true", "print(ArrayProto.some([1, 2, 3, 4], function(x) { return x == 1; }));");
