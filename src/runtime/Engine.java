@@ -4,8 +4,17 @@ import instruction.EndFunctionInstruction;
 import instruction.Instruction;
 import instruction.StartFunctionInstruction;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+import org.parboiled.BaseParser;
+import org.parboiled.Parboiled;
+import org.parboiled.parserunners.ReportingParseRunner;
+import org.parboiled.support.ParsingResult;
+
+import parser.Parser;
 import value.FunctionValue;
 
 public class Engine {
@@ -15,10 +24,13 @@ public class Engine {
 	
 	public void run(Runtime runtime, List<Instruction> instructions) {
 		try {
-			FunctionValue mainFunction = new FunctionValue(new GlobalScope());
-			for(Instruction instruction:instructions) {
-				mainFunction.addInstruction(instruction);
-			}
+			GlobalScope globalScope = new GlobalScope();
+			
+			FunctionValue includeFunction = new FunctionValue(globalScope, parseFile("/runtime/include.js"));
+			runtime.addStackFrame(includeFunction);
+			run(runtime);
+			
+			FunctionValue mainFunction = new FunctionValue(globalScope, instructions);
 			runtime.addStackFrame(mainFunction);
 			run(runtime);
 		} catch(ExecutionException e) {
@@ -61,10 +73,25 @@ public class Engine {
 	private void execute(Runtime runtime, Instruction instruction) throws ExecutionException {
 		try {
 			instruction.execute(runtime);
-			System.out.println(runtime.getNestedFunctionDefinitionCount() + ":" + runtime.getCurrentStackFrame().getInstructionCounter() + " - EXECUTING: " + instruction + " - " + runtime.getStack() + " - " + runtime.getScope());
+			//System.out.println(runtime.getNestedFunctionDefinitionCount() + ":" + runtime.getCurrentStackFrame().getInstructionCounter() + " - EXECUTING: " + instruction + " - " + runtime.getStack() + " - " + runtime.getScope());
 		} catch (Exception e) {
-			System.out.println(runtime.getNestedFunctionDefinitionCount() + ":" + runtime.getCurrentStackFrame().getInstructionCounter() + " - EXECUTING: " + instruction + " - " + runtime.getStack() + " - " + runtime.getScope());
+			//System.out.println(runtime.getNestedFunctionDefinitionCount() + ":" + runtime.getCurrentStackFrame().getInstructionCounter() + " - EXECUTING: " + instruction + " - " + runtime.getStack() + " - " + runtime.getScope());
 			throw e;
 		}
+	}
+	
+	public static List<Instruction> parseFile(String name) {
+		try(InputStream inputStream = Engine.class.getResourceAsStream(name)) {
+			return compile(IOUtils.toString(inputStream));
+		} catch(IOException e) {
+			throw new RuntimeException("Error reading file: " + name, e);
+		}
+	}
+	
+	public static List<Instruction> compile(String program) {
+		Parser parser = Parboiled.createParser(Parser.class);
+		ReportingParseRunner<List<Instruction>> parseRunner = new ReportingParseRunner<List<Instruction>>(parser.Sequence(parser.Program(), BaseParser.EOI));
+		ParsingResult<List<Instruction>> result = parseRunner.run(program);
+		return result.valueStack.pop();
 	}
 }

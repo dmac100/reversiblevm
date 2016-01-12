@@ -13,6 +13,11 @@ public class FunctionValue implements Value {
 	
 	private Scope parentScope;
 	
+	public FunctionValue(Scope parentScope, List<Instruction> instructions) {
+		this.parentScope = parentScope;
+		this.instructions.addAll(instructions);
+	}
+	
 	public FunctionValue(Scope parentScope) {
 		this.parentScope = parentScope;
 	}

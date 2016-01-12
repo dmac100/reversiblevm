@@ -8,6 +8,7 @@ import value.BooleanValue;
 import value.DoubleValue;
 import value.FunctionValue;
 import value.ObjectValue;
+import value.StringValue;
 import value.Value;
 
 public class Runtime {
@@ -105,11 +106,19 @@ public class Runtime {
 		}
 	}
 
-	public Object checkFunctionValue(Value value) throws ExecutionException {
+	public FunctionValue checkFunctionValue(Value value) throws ExecutionException {
 		if(value instanceof FunctionValue) {
 			return (FunctionValue) value;
 		} else {
 			throw new ExecutionException("TypeError: Not a function: " + value);
+		}
+	}
+
+	public StringValue checkStringValue(Value value) throws ExecutionException {
+		if(value instanceof StringValue) {
+			return (StringValue) value;
+		} else {
+			throw new ExecutionException("TypeError: Not a string: " + value);
 		}
 	}
 }

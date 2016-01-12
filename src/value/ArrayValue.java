@@ -11,6 +11,10 @@ public class ArrayValue implements Value {
 	public ArrayValue() {
 	}
 	
+	public ArrayValue(List<Value> values) {
+		this.values = values;
+	}
+
 	public Value get(DoubleValue indexValue) throws ExecutionException {
 		int index = (int)indexValue.getValue();
 		if(index < 0) throw new ExecutionException("Invalid index: " + index);
@@ -33,6 +37,18 @@ public class ArrayValue implements Value {
 	public void push(Value value) {
 		values.add(value);
 	}
+	
+	public DoubleValue length() {
+		return new DoubleValue(values.size());
+	}
+	
+	public void setValues(List<Value> values) {
+		this.values = values;
+	}
+	
+	public List<Value> values() {
+		return new ArrayList<>(values);
+	}
 
 	public static ArrayValue Value() {
 		return new ArrayValue();
@@ -40,11 +56,11 @@ public class ArrayValue implements Value {
 	
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		for(Value value:values) {
-			if(s.length() != 0) {
+		for(int i = 0; i < values.size(); i++) {
+			if(i > 0) {
 				s.append(", ");
 			}
-			s.append(value);
+			s.append(values.get(i));
 		}
 		return "[" + s.toString() + "]";
 	}

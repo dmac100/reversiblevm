@@ -20,10 +20,10 @@ public abstract class NativeFunctionValue implements Value {
 		Stack stack = runtime.getStack();
 		List<Value> params = getParams(runtime, stack);
 		
-		execute(runtime, stack, params);
+		stack.push(execute(runtime, stack, params));
 	}
 	
-	protected abstract void execute(Runtime runtime, Stack stack, List<Value> params);
+	protected abstract Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException;
 
 	private static List<Value> getParams(Runtime runtime, Stack stack) throws ExecutionException {
 		List<Value> params = new ArrayList<>();

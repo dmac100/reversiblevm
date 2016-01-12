@@ -23,20 +23,24 @@ public class EqualInstruction implements Instruction {
 		Stack stack = runtime.getStack();
 		Value value1 = stack.popValue();
 		Value value2 = stack.popValue();
+		stack.push(new BooleanValue(equals(value1, value2)));
+	}
+	
+	public static boolean equals(Value value1, Value value2) {
 		if(value1 instanceof BooleanValue && value2 instanceof BooleanValue) {
-			stack.push(BooleanValue.Value(((BooleanValue)value1).getValue() == ((BooleanValue)value2).getValue()));
+			return ((BooleanValue)value1).getValue() == ((BooleanValue)value2).getValue();
 		} else if(value1 instanceof DoubleValue && value2 instanceof DoubleValue) {
-			stack.push(BooleanValue.Value(((DoubleValue)value1).getValue() == ((DoubleValue)value2).getValue()));
+			return ((DoubleValue)value1).getValue() == ((DoubleValue)value2).getValue();
 		} else if(value1 instanceof FunctionValue && value2 instanceof FunctionValue) {
-			stack.push(BooleanValue.Value((FunctionValue)value1 == (FunctionValue)value2));
+			return ((FunctionValue)value1 == (FunctionValue)value2);
 		} else if(value1 instanceof NativeFunctionValue && value2 instanceof NativeFunctionValue) {
-			stack.push(BooleanValue.Value((NativeFunctionValue)value1 == (NativeFunctionValue)value2));
+			return ((NativeFunctionValue)value1 == (NativeFunctionValue)value2);
 		} else if(value1 instanceof NullValue && value2 instanceof NullValue) {
-			stack.push(BooleanValue.Value(true));
+			return true;
 		} else if(value1 instanceof StringValue && value2 instanceof StringValue) {
-			stack.push(BooleanValue.Value(((StringValue)value1).getValue().equals(((StringValue)value2).getValue())));
+			return ((StringValue)value1).getValue().equals(((StringValue)value2).getValue());
 		} else {
-			stack.push(BooleanValue.Value(false));
+			return false;
 		}
 	}
 	

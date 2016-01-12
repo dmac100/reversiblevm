@@ -1,5 +1,7 @@
 package value;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -19,6 +21,10 @@ public class ObjectValue implements Value {
 
 	public static ObjectValue Value() {
 		return new ObjectValue();
+	}
+	
+	public List<String> keys() {
+		return new ArrayList<>(values.keySet());
 	}
 	
 	public String toString() {
