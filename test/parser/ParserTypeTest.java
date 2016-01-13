@@ -374,6 +374,12 @@ public class ParserTypeTest {
 		assertParseType("a();", parser.SourceElement());
 		assertParseType("function a() { a(); }", parser.SourceElement());
 	}
+	
+	@Test
+	public void Comment() {
+		assertParseType("//123", parser.Comment());
+		assertParseType("/*123*/", parser.Comment());
+	}
 
 	private void assertParseType(String input, Rule rule) {
 		ParsingResult<Object> result = new ReportingParseRunner<>(parser.Sequence(rule, BaseParser.EOI)).run(input);

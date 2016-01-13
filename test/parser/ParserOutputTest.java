@@ -2,6 +2,9 @@ package parser;
 
 import static org.junit.Assert.assertEquals;
 
+import instruction.Instruction;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -357,6 +360,15 @@ public class ParserOutputTest {
 
 	@Test
 	public void SourceElement() {
+	}
+	
+	@Test
+	public void Comment() {
+		assertParseOutput("// Comment", Arrays.asList("NOP"));
+		assertParseOutput("/* Comment */", Arrays.asList("NOP"));
+		assertParseOutput("/* Comment */ x;", Arrays.asList("LOAD: x", "POP"));
+		assertParseOutput("x; /* Comment */", Arrays.asList("LOAD: x", "POP"));
+		assertParseOutput("x; // Comment", Arrays.asList("LOAD: x", "POP"));
 	}
 	
 	@Test

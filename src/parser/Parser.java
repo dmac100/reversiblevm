@@ -679,7 +679,7 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule Program() {
-		return Sequence(SourceElements(), EOI);
+		return Sequence(Spacing(), OptionalOr(SourceElements(), Nop()), EOI);
 	}
 	
 	public Rule SourceElements() {
@@ -693,9 +693,29 @@ public class Parser extends BaseParser<Instructions> {
 		);
 	}
 	
+	public Rule Comment() {
+		return FirstOf(
+			Sequence(
+				"//",
+				ZeroOrMore(TestNot(AnyOf("\r\n")), ANY),
+				Optional(OneOrMore(AnyOf(" \r\n\t")))
+			),
+			Sequence(
+				"/*",
+				ZeroOrMore(TestNot("*/"), ANY),
+				"*/",
+				Optional(OneOrMore(AnyOf(" \r\n\t")))
+			)
+		);
+	}
+
+	public Rule Spacing() {
+		return ZeroOrMore(FirstOf(Comment(), AnyOf(" \r\n\t")));
+	}
+	
 	@SuppressSubnodes
 	public Rule Terminal(Object value) {
-		return Sequence(value, Optional(OneOrMore(FirstOf(" ", "\r", "\n", "\t"))));
+		return Sequence(value, Spacing());
 	}
 	
 	/**
