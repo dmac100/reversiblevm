@@ -358,6 +358,7 @@ public class ParseAndRunTest {
 		assertOutput("0\n1\n2\n3\n", "for(var x = 0; x < 4; ) { print(x); x = x + 1; }; print();");
 		assertOutput("0\n1\n2\n3\n", "for(var x = 0, y = 1; x < 4; x = x + y) { print(x); }; print();");
 		assertOutput("0\n1\n2\n3\n", "for(var x = 0, y = 1; x < 4; ) { print(x); x = x + y; }; print();");
+		assertOutput("0\n1\n3\n6\n", "for(x = 0, y = 1; x < 8; x = x + y, y = y + 1) { print(x); }; print();");
 	}
 	
 	@Test

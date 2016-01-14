@@ -461,7 +461,15 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule Expression() {
-		return AssignmentExpression();
+		return Sequence(
+			AssignmentExpression(),
+			ZeroOrMore(
+				push(Instructions(pop(), Instructions(Pop()))),
+				Terminal(","),
+				AssignmentExpression(),
+				push(Instructions(pop(1), pop()))
+			)
+		);
 	}
 	
 	public Rule Statement() {

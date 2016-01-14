@@ -234,6 +234,9 @@ public class ParserOutputTest {
 	
 	@Test
 	public void Expression() {
+		assertParseOutput("a;", Arrays.asList("LOAD: a", "POP"));
+		assertParseOutput("a, b;", Arrays.asList("LOAD: a", "POP", "LOAD: b", "POP"));
+		assertParseOutput("a, b, c;", Arrays.asList("LOAD: a", "POP", "LOAD: b", "POP", "LOAD: c", "POP"));
 	}
 	
 	@Test
