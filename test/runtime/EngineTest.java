@@ -112,7 +112,7 @@ public class EngineTest {
 	@Test
 	public void function() {
 		assertStackValue("3", Arrays.asList(
-			StartFunction(),
+			StartFunction(1),
 			Pop(),
 			Local(Value("x")),
 			Store(Value("x")),
@@ -133,7 +133,7 @@ public class EngineTest {
 		assertStackValue("5", Arrays.asList(
 			Push(Value(5)),
 			Store(Value("x")),
-			StartFunction(),
+			StartFunction(0),
 			Pop(),
 			Push(Value(10)),
 			Local(Value("x")),

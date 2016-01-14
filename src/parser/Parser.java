@@ -643,14 +643,28 @@ public class Parser extends BaseParser<Instructions> {
 	public Rule FunctionDeclaration() {
 		return Sequence(
 			Terminal("function"),
-			Sequence(Identifier(), push(Instructions(Instructions(Local(Value(match().trim()))), Instructions(Store(Value(match().trim())))))),
+			Sequence(
+				Identifier(),
+				push(Instructions(
+					Instructions(Local(Value(match().trim()))),
+					Instructions(Store(Value(match().trim())))
+				))
+			),
 			Terminal("("),
 			FormalParameterList(),
 			Terminal(")"),
 			Terminal("{"),
 			FunctionBody(),
 			Terminal("}"),
-			push(Instructions(Instructions(StartFunction()), Instructions(Pop()), pop(1), Instructions(Push(NullValue())), pop(), Instructions(EndFunction()), pop()))
+			push(Instructions(
+				Instructions(StartFunction(peek(1).getInstructions().size() / 2)),
+				Instructions(Pop()),
+				pop(1),
+				Instructions(Push(NullValue())),
+				pop(),
+				Instructions(EndFunction()),
+				pop()
+			))
 		);
 	}
 	
@@ -663,7 +677,14 @@ public class Parser extends BaseParser<Instructions> {
 			Terminal("{"),
 			FunctionBody(),
 			Terminal("}"),
-			push(Instructions(Instructions(StartFunction()), Instructions(Pop()), pop(1), Instructions(Push(NullValue())), pop(), Instructions(EndFunction())))
+			push(Instructions(
+				Instructions(StartFunction(peek(1).getInstructions().size() / 2)),
+				Instructions(Pop()),
+				pop(1),
+				Instructions(Push(NullValue())),
+				pop(),
+				Instructions(EndFunction())
+			))
 		);
 	}
 	
@@ -671,7 +692,16 @@ public class Parser extends BaseParser<Instructions> {
 		return Sequence(
 			push(Instructions()),
 			Optional(
-				Sequence(Identifier(), push(Instructions(pop(), Instructions(Local(Value(match().trim()))), Instructions(Store(Value(match().trim())))))),
+				Sequence(
+					Identifier(),
+					push(
+						Instructions(
+							pop(),
+							Instructions(Local(Value(match().trim()))),
+							Instructions(Store(Value(match().trim())))
+						)
+					)
+				),
 				Optional(
 					Terminal(","), FormalParameterList(), push(Instructions(pop(), pop()))
 				)

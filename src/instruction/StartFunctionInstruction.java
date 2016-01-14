@@ -4,16 +4,19 @@ import runtime.Runtime;
 import value.FunctionValue;
 
 public class StartFunctionInstruction implements Instruction {
-	public StartFunctionInstruction() {
+	private int paramCount;
+
+	public StartFunctionInstruction(int paramCount) {
+		this.paramCount = paramCount;
 	}
 	
-	public static Instruction StartFunction() {
-		return new StartFunctionInstruction();
+	public static Instruction StartFunction(int paramCount) {
+		return new StartFunctionInstruction(paramCount);
 	}
 	
 	public void execute(Runtime runtime) {
 		if(runtime.getNestedFunctionDefinitionCount() == 0) {
-			runtime.setCurrentFunctionDefinition(new FunctionValue(runtime.getScope()));
+			runtime.setCurrentFunctionDefinition(new FunctionValue(runtime.getScope(), paramCount));
 		} else {
 			runtime.getCurrentFunctionDefinition().addInstruction(this);
 		}
@@ -21,6 +24,6 @@ public class StartFunctionInstruction implements Instruction {
 	}
 	
 	public String toString() {
-		return "STARTFUNCTION";
+		return "STARTFUNCTION: " + paramCount;
 	}
 }

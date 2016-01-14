@@ -396,6 +396,9 @@ public class ParseAndRunTest {
 		assertOutput("1\n1\n2\n3\n5\n8\n13\n21\n34\n55", "function f(n) { return (n < 2) ? 1 : f(n - 1) + f(n - 2); }; for(var x = 0; x < 10; x++) print(f(x));");
 		assertOutput("2", "function f(n) { return function() { print(n); }; }; var g = f(2); g();");
 		assertOutput("2", "function f(n) { return function() { print(n); }; }; f(2)();");
+		
+		assertOutput("1 null", "function f(x, y) { print(x, y); }; f(1);");
+		assertOutput("1 2", "function f(x, y) { print(x, y); }; f(1, 2, 3);");
 	}
 	
 	@Test

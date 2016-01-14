@@ -27,11 +27,11 @@ public class Engine {
 		try {
 			GlobalScope globalScope = new GlobalScope();
 			
-			FunctionValue includeFunction = new FunctionValue(globalScope, parseFile("/runtime/include.js"));
+			FunctionValue includeFunction = new FunctionValue(globalScope, 0, parseFile("/runtime/include.js"));
 			runtime.addStackFrame(includeFunction);
 			run(runtime);
 			
-			FunctionValue mainFunction = new FunctionValue(globalScope, instructions);
+			FunctionValue mainFunction = new FunctionValue(globalScope, 0, instructions);
 			runtime.addStackFrame(mainFunction);
 			run(runtime);
 		} catch(ExecutionException e) {
