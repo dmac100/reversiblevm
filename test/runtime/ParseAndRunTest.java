@@ -1,25 +1,10 @@
 package runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import instruction.Instruction;
+import static runtime.EngineAsserts.assertOutput;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.parboiled.BaseParser;
-import org.parboiled.Parboiled;
-import org.parboiled.parserunners.ReportingParseRunner;
-import org.parboiled.support.ParseTreeUtils;
-import org.parboiled.support.ParsingResult;
-
-import parser.Instructions;
-import parser.Parser;
 
 public class ParseAndRunTest {
-	private Parser parser = Parboiled.createParser(Parser.class);
-	
 	@Test
 	public void Literal() {
 	}
@@ -441,31 +426,5 @@ public class ParseAndRunTest {
 		assertOutput("1", "print(1);");
 		assertOutput("1 2", "print(1, 2);");
 		assertOutput("1 2 3", "print(1, 2, 3);");
-	}
-	
-	private void assertOutput(String expected, String program) {
-		ParsingResult<Instructions> result = new ReportingParseRunner<Instructions>(parser.Sequence(parser.Program(), BaseParser.EOI)).run(program);
-		System.out.println(ParseTreeUtils.printNodeTree(result));
-		
-		System.out.println("Parse Stack Size: " + result.valueStack.size());
-
-		for(Instructions in:result.valueStack) {
-			System.out.println("Parse Stack: " + in);
-		}
-		
-		List<Instruction> instructions = result.valueStack.pop().getInstructions();
-		
-		System.out.println("Instructions: " + instructions);
-		
-		Runtime runtime = new Runtime();
-		
-		new Engine().run(runtime, instructions);
-		
-		System.out.println("Output: " + runtime.getOutput());
-		
-		assertEquals(expected, StringUtils.join(runtime.getOutput(), "\n"));
-		assertTrue(runtime.getErrors().isEmpty());
-		assertTrue(runtime.getStack().isEmpty());
-		assertTrue(result.valueStack.isEmpty());
 	}
 }

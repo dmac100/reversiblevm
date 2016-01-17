@@ -1,15 +1,12 @@
 package parser;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.parserunners.ReportingParseRunner;
-import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
 
 public class ParserTypeTest {

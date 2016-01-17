@@ -93,6 +93,7 @@ public class Engine {
 		Parser parser = Parboiled.createParser(Parser.class);
 		ReportingParseRunner<Instructions> parseRunner = new ReportingParseRunner<Instructions>(parser.Sequence(parser.Program(), BaseParser.EOI));
 		ParsingResult<Instructions> result = parseRunner.run(program);
+		if(result.valueStack.size() != 1) throw new CompileException("Invalid value stack size: " + result.valueStack.size());
 		return result.valueStack.pop().getInstructions();
 	}
 }

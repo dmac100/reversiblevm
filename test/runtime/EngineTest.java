@@ -17,20 +17,19 @@ import static instruction.StoreInstruction.Store;
 import static instruction.UnaryMinusInstruction.UnaryMinus;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static runtime.EngineAsserts.assertError;
+import static runtime.EngineAsserts.assertOutput;
+import static runtime.EngineAsserts.assertStackValue;
 import static value.BooleanValue.Value;
 import static value.DoubleValue.Value;
 import static value.NullValue.NullValue;
 import static value.StringValue.Value;
 import instruction.Instruction;
-import instruction.JumpIfTrueInstruction;
-import instruction.JumpInstruction;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-
-import value.BooleanValue;
 
 public class EngineTest {
 	@Test
@@ -184,36 +183,5 @@ public class EngineTest {
 			Call(),
 			Pop()
 		));
-	}
-	
-	private static void assertStackValue(String expected, List<Instruction> instructions) {
-		Runtime runtime = new Runtime();
-		
-		new Engine().run(runtime, instructions);
-		
-		assertTrue(runtime.getOutput().isEmpty());
-		assertTrue(runtime.getErrors().isEmpty());
-		assertEquals(expected, runtime.getStack().popValue().toString());
-		assertTrue(runtime.getStack().isEmpty());
-	}
-	
-	private static void assertOutput(String expected, List<Instruction> instructions) {
-		Runtime runtime = new Runtime();
-		
-		new Engine().run(runtime, instructions);
-		
-		assertEquals(Arrays.asList(expected), runtime.getOutput());
-		assertTrue(runtime.getErrors().isEmpty());
-		assertTrue(runtime.getStack().isEmpty());
-	}
-	
-	private static void assertError(String expected, List<Instruction> instructions) {
-		Runtime runtime = new Runtime();
-		
-		new Engine().run(runtime, instructions);
-		
-		assertEquals(expected, runtime.getErrors().get(0));
-		assertTrue(runtime.getOutput().isEmpty());
-		assertTrue(runtime.getStack().isEmpty());
 	}
 }
