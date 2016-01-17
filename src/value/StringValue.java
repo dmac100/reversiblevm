@@ -1,6 +1,8 @@
 package value;
 
-public class StringValue implements Value {
+import java.util.Set;
+
+public class StringValue extends Value {
 	private String value;
 	
 	public StringValue(String value) {
@@ -15,7 +17,7 @@ public class StringValue implements Value {
 		return value;
 	}
 	
-	public String toString() {
+	public String toString(Set<Value> used) {
 		return String.valueOf(value);
 	}
 }

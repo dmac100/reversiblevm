@@ -1,8 +1,8 @@
 package value;
 
-import runtime.Runtime;
+import java.util.Set;
 
-public class DoubleValue implements Value {
+public class DoubleValue extends Value {
 	private double value;
 	
 	public DoubleValue(double value) {
@@ -17,7 +17,7 @@ public class DoubleValue implements Value {
 		return value;
 	}
 	
-	public String toString() {
+	public String toString(Set<Value> used) {
 		int intValue = (int)value;
 		if(intValue == value) {
 			return String.valueOf(intValue);

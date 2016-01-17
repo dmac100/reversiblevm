@@ -66,6 +66,9 @@ public class ParseAndRunTest {
 		
 		assertOutput("5", "a = [3, 4, 5]; print(a[2]);");
 		assertOutput("3", "a = [[1, 2], [3, 4]]; print(a[1][0]);");
+		
+		assertOutput("[[CYCLIC]]", "var a = []; a[0] = a; print(a);");
+		assertOutput("[[0], [0]]", "a = [[0]]; a[1] = a[0]; print(a);");
 	}
 	
 	@Test
@@ -82,6 +85,9 @@ public class ParseAndRunTest {
 		assertOutput("1", "var x = ({ a: 1 }); print(x.a);");
 		assertOutput("1", "var x = ({ a: { b: 1 } }); print(x.a.b);");
 		assertOutput("1", "var x = ({ f: function() { print(1); } }); x.f();");
+		
+		assertOutput("{a:[CYCLIC]}", "var a = {}; a.a = a; print(a);");
+		assertOutput("{a:[1], b:[1]}", "a = {a: [1]}; a.b = a.a; print(a);");
 	}
 	
 	@Test

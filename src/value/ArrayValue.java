@@ -2,10 +2,11 @@ package value;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import runtime.ExecutionException;
 
-public class ArrayValue implements Value {
+public class ArrayValue extends Value {
 	private List<Value> values = new ArrayList<>();
 	
 	public ArrayValue() {
@@ -54,14 +55,20 @@ public class ArrayValue implements Value {
 		return new ArrayValue();
 	}
 	
-	public String toString() {
+	public String toString(Set<Value> used) {
+		if(used.contains(this)) return "[CYCLIC]";
+		used.add(this);
+		
 		StringBuilder s = new StringBuilder();
 		for(int i = 0; i < values.size(); i++) {
 			if(i > 0) {
 				s.append(", ");
 			}
-			s.append(values.get(i));
+			s.append(values.get(i).toString(used));
 		}
+		
+		used.remove(this);
+		
 		return "[" + s.toString() + "]";
 	}
 }

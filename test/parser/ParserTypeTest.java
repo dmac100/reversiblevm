@@ -380,7 +380,7 @@ public class ParserTypeTest {
 		assertParseType("//123", parser.Comment());
 		assertParseType("/*123*/", parser.Comment());
 	}
-
+	
 	private void assertParseType(String input, Rule rule) {
 		ParsingResult<Object> result = new ReportingParseRunner<>(parser.Sequence(rule, BaseParser.EOI)).run(input);
 		//System.out.println(ParseTreeUtils.printNodeTree(result));

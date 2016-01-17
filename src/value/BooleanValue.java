@@ -1,6 +1,8 @@
 package value;
 
-public class BooleanValue implements Value {
+import java.util.Set;
+
+public class BooleanValue extends Value {
 	private boolean value;
 	
 	public BooleanValue(boolean value) {
@@ -15,7 +17,7 @@ public class BooleanValue implements Value {
 		return value;
 	}
 	
-	public String toString() {
+	public String toString(Set<Value> used) {
 		return value ? "true" : "false";
 	}
 }

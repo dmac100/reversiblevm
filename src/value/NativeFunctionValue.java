@@ -3,16 +3,17 @@ package value;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import runtime.ExecutionException;
 import runtime.Runtime;
 import runtime.Stack;
 
-public abstract class NativeFunctionValue implements Value {
+public abstract class NativeFunctionValue extends Value {
 	public NativeFunctionValue() {
 	}
 	
-	public String toString() {
+	public String toString(Set<Value> used) {
 		return "[NativeFunction]";
 	}
 

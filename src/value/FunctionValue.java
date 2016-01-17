@@ -4,11 +4,12 @@ import instruction.Instruction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import runtime.NonGlobalScope;
 import runtime.Scope;
 
-public class FunctionValue implements Value {
+public class FunctionValue extends Value {
 	private final List<Instruction> instructions = new ArrayList<>();
 	private final int paramCount;
 	
@@ -41,7 +42,7 @@ public class FunctionValue implements Value {
 		return paramCount;
 	}
 	
-	public String toString() {
+	public String toString(Set<Value> used) {
 		return "[Function]";
 		//return "[" + instructions + "]";
 	}

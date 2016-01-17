@@ -1,11 +1,13 @@
 package value;
 
-public class NullValue implements Value {
+import java.util.Set;
+
+public class NullValue extends Value {
 	public static Value NullValue() {
 		return new NullValue();
 	}
 	
-	public String toString() {
+	public String toString(Set<Value> used) {
 		return "null";
 	}
 }
