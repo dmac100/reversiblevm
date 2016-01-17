@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import runtime.ExecutionException;
+
 public class ObjectValue extends Value {
 	private SortedMap<String, Value> values = new TreeMap<>();
 	
@@ -14,15 +16,27 @@ public class ObjectValue extends Value {
 	}
 	
 	public Value get(StringValue name) {
-		if(!values.containsKey(name.getValue())) {
-			return new NullValue();
-		} else {
+		if(values.containsKey(name.getValue())) {
 			return values.get(name.getValue());
+		} else if(values.get("prototype") instanceof ObjectValue) {
+			return ((ObjectValue)values.get("prototype")).get(name);
+		} else {
+			return new NullValue();
 		}
 	}
 	
-	public void set(StringValue name, Value value) {
+	public void set(StringValue name, Value value) throws ExecutionException {
 		values.put(name.getValue(), value);
+		checkCyclicPrototype(new HashSet<>());
+	}
+
+	private void checkCyclicPrototype(HashSet<Object> used) throws ExecutionException {
+		if(used.contains(this)) throw new ExecutionException("TypeError: Cyclic prototype");
+		used.add(this);
+		
+		if(values.get("prototype") instanceof ObjectValue) {
+			((ObjectValue)values.get("prototype")).checkCyclicPrototype(used);
+		}
 	}
 
 	public static ObjectValue Value() {

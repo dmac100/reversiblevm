@@ -46,6 +46,5 @@ public class EngineAsserts {
 		
 		assertEquals(expected, runtime.getErrors().get(0));
 		assertTrue(runtime.getOutput().isEmpty());
-		assertTrue(runtime.getStack().isEmpty());
 	}
 }
