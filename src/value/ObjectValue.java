@@ -14,7 +14,11 @@ public class ObjectValue extends Value {
 	}
 	
 	public Value get(StringValue name) {
-		return values.get(name.getValue());
+		if(!values.containsKey(name.getValue())) {
+			return new NullValue();
+		} else {
+			return values.get(name.getValue());
+		}
 	}
 	
 	public void set(StringValue name, Value value) {
