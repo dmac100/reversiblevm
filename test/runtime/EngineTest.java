@@ -15,8 +15,6 @@ import static instruction.PushInstruction.Push;
 import static instruction.StartFunctionInstruction.StartFunction;
 import static instruction.StoreInstruction.Store;
 import static instruction.UnaryMinusInstruction.UnaryMinus;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static runtime.EngineAsserts.assertError;
 import static runtime.EngineAsserts.assertOutput;
 import static runtime.EngineAsserts.assertStackValue;
@@ -24,10 +22,8 @@ import static value.BooleanValue.Value;
 import static value.DoubleValue.Value;
 import static value.NullValue.NullValue;
 import static value.StringValue.Value;
-import instruction.Instruction;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -35,8 +31,9 @@ public class EngineTest {
 	@Test
 	public void printHello() {
 		assertOutput("Hello World!", Arrays.asList(
+			Push(NullValue()),
 			Push(Value("Hello World!")),
-			Push(Value(1)),
+			Push(Value(2)),
 			Load(Value("print")),
 			Call(),
 			Pop()
@@ -151,14 +148,16 @@ public class EngineTest {
 	@Test
 	public void jump() {
 		assertOutput("6", Arrays.asList(
-			Jump(Value(5)),
+			Jump(Value(6)),
+			Push(NullValue()),
 			Push(Value(5)),
-			Push(Value(1)),
+			Push(Value(2)),
 			Load(Value("print")),
 			Call(),
 			Pop(),
+			Push(NullValue()),
 			Push(Value(6)),
-			Push(Value(1)),
+			Push(Value(2)),
 			Load(Value("print")),
 			Call(),
 			Pop()
@@ -169,16 +168,18 @@ public class EngineTest {
 	public void jumpiftrue() {
 		assertOutput("6", Arrays.asList(
 			Push(Value(true)),
-			JumpIfTrue(Value(5)),
+			JumpIfTrue(Value(6)),
+			Push(NullValue()),
 			Push(Value(5)),
-			Push(Value(1)),
+			Push(Value(2)),
 			Load(Value("print")),
 			Call(),
 			Pop(),
 			Push(Value(false)),
-			JumpIfTrue(Value(5)),
+			JumpIfTrue(Value(6)),
+			Push(NullValue()),
 			Push(Value(6)),
-			Push(Value(1)),
+			Push(Value(2)),
 			Load(Value("print")),
 			Call(),
 			Pop()

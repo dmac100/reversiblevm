@@ -123,7 +123,6 @@ public class Parser extends BaseParser<Instructions> {
 
 	public Rule PrimaryExpression() {
 		return FirstOf(
-			Terminal("this"),
 			Literal(),
 			Sequence(Identifier(), push(Instructions(Load(Value(match().trim()))))),
 			ArrayLiteral(),
@@ -183,11 +182,11 @@ public class Parser extends BaseParser<Instructions> {
 	
 	public Rule CallExpression() {
 		return Sequence(
-			Sequence(MemberExpression(), Arguments(), push(
-				Instructions(pop(2), pop(), pop(), Instructions(Call()))
+			Sequence(MemberExpression(), push(Instructions(Push(NullValue()))), Arguments(), push(
+				Instructions(pop(2), pop(2), pop(), pop(), Instructions(Call()))
 			)),
 			ZeroOrMore(FirstOf(
-				Sequence(Arguments(), push(Instructions(pop(2), pop(), pop(), Instructions(Call())))),
+				Sequence(push(Instructions(Push(NullValue()))), Arguments(), push(Instructions(pop(2), pop(2), pop(), pop(), Instructions(Call())))),
 				Sequence(Terminal("["), Expression(), Terminal("]")),
 				Sequence(Terminal("."), Identifier())
 			))
@@ -196,7 +195,12 @@ public class Parser extends BaseParser<Instructions> {
 	
 	public Rule Arguments() {
 		return FirstOf(	
-			Sequence(Terminal("("), Terminal(")"), push(Instructions(Instructions(Push(Value(0))), Instructions(Swap()))), push(Instructions())),
+			Sequence(
+				Terminal("("),
+				Terminal(")"),
+				push(Instructions(Push(Value(1)), Swap())),
+				push(Instructions())
+			),
 			Sequence(Terminal("("), ArgumentList(), Terminal(")"))
 		);
 	}
@@ -204,7 +208,7 @@ public class Parser extends BaseParser<Instructions> {
 	public Rule ArgumentList() {
 		Var<Integer> argCount = new Var<Integer>();
 		return Sequence(
-			argCount.set(1),
+			argCount.set(2),
 			AssignmentExpression(), push(Instructions(pop(), Instructions(Swap()))),
 			ZeroOrMore(
 				Terminal(","),
@@ -690,20 +694,26 @@ public class Parser extends BaseParser<Instructions> {
 	
 	public Rule FormalParameterList() {
 		return Sequence(
-			push(Instructions()),
+			push(Instructions(
+				Instructions(Local(Value("this"))),
+				Instructions(Store(Value("this")))
+			)),
 			Optional(
-				Sequence(
-					Identifier(),
-					push(
-						Instructions(
-							pop(),
-							Instructions(Local(Value(match().trim()))),
-							Instructions(Store(Value(match().trim())))
-						)
-					)
-				),
-				Optional(
-					Terminal(","), FormalParameterList(), push(Instructions(pop(), pop()))
+				FormalParameter(), push(Instructions(pop(), pop())),
+				ZeroOrMore(
+					Terminal(","), FormalParameter(), push(Instructions(pop(), pop()))
+				)
+			)
+		);
+	}
+	
+	public Rule FormalParameter() {
+		return Sequence(
+			Identifier(),
+			push(
+				Instructions(
+					Instructions(Local(Value(match().trim()))),
+					Instructions(Store(Value(match().trim())))
 				)
 			)
 		);
