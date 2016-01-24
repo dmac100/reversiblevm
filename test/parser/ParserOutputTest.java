@@ -375,13 +375,21 @@ public class ParserOutputTest {
 	public void CallExpression() {
 		assertParseOutput("f();", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "POP"));
 		assertParseOutput("f(3);", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 3", "SWAP", "PUSH: 2", "SWAP", "CALL", "POP"));
-		assertParseOutput("f(3)(4);", Arrays.asList("PUSH: null", "PUSH: null", "LOAD: f", "PUSH: 3", "SWAP", "PUSH: 2", "SWAP", "CALL", "PUSH: 4", "SWAP", "PUSH: 2", "SWAP", "CALL", "POP"));
-		assertParseOutput("f(3)(4, 5);", Arrays.asList("PUSH: null", "PUSH: null", "LOAD: f", "PUSH: 3", "SWAP", "PUSH: 2", "SWAP", "CALL", "PUSH: 4", "SWAP", "PUSH: 5", "SWAP", "PUSH: 3", "SWAP", "CALL", "POP"));
+		assertParseOutput("f(3)(4);", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 3", "SWAP", "PUSH: 2", "SWAP", "CALL", "PUSH: null", "SWAP", "PUSH: 4", "SWAP", "PUSH: 2", "SWAP", "CALL", "POP"));
+		assertParseOutput("f(3)(4, 5);", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 3", "SWAP", "PUSH: 2", "SWAP", "CALL", "PUSH: null", "SWAP", "PUSH: 4", "SWAP", "PUSH: 5", "SWAP", "PUSH: 3", "SWAP", "CALL", "POP"));
 		
 		assertParseOutput("f(3, 4);", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 3", "SWAP", "PUSH: 4", "SWAP", "PUSH: 3", "SWAP", "CALL", "POP"));
 		assertParseOutput("f(3, 4, 5);", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 3", "SWAP", "PUSH: 4", "SWAP", "PUSH: 5", "SWAP", "PUSH: 4", "SWAP", "CALL", "POP"));
 		
-		assertParseOutput("f()()();", Arrays.asList("PUSH: null", "PUSH: null", "PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "PUSH: 1", "SWAP", "CALL", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("f()()();", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "PUSH: null", "SWAP", "PUSH: 1", "SWAP", "CALL", "PUSH: null", "SWAP", "PUSH: 1", "SWAP", "CALL", "POP"));
+		
+		assertParseOutput("a.f();", Arrays.asList("LOAD: a", "DUP", "GETPROPERTY: f", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("a.b.f();", Arrays.asList("LOAD: a", "GETPROPERTY: b", "DUP", "GETPROPERTY: f", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("a.b[0].f();", Arrays.asList("LOAD: a", "GETPROPERTY: b", "PUSH: 0", "GETELEMENT", "DUP", "GETPROPERTY: f", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("a.b[0]();", Arrays.asList("LOAD: a", "GETPROPERTY: b", "DUP", "PUSH: 0", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("a[0]();", Arrays.asList("LOAD: a", "DUP", "PUSH: 0", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("a[0][0]();", Arrays.asList("LOAD: a", "PUSH: 0", "GETELEMENT", "DUP", "PUSH: 0", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("a.b[0]()();", Arrays.asList("LOAD: a", "GETPROPERTY: b", "DUP", "PUSH: 0", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "PUSH: null", "SWAP", "PUSH: 1", "SWAP", "CALL", "POP"));
 	}
 	
 	private void assertParseOutput(String input, List<String> instructions) {
@@ -393,6 +401,10 @@ public class ParserOutputTest {
 		
 		System.out.println("EXPECTED: " + expected);
 		System.out.println("  ACTUAL: " + actual);
+		
+		for(Object value:result.valueStack) {
+			System.out.println("VALUE STACK ITEM: " + value);
+		}
 		
 		assertEquals(expected, actual);
 	}

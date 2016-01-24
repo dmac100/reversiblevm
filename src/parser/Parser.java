@@ -47,6 +47,8 @@ import static value.BooleanValue.Value;
 import static value.DoubleValue.Value;
 import static value.NullValue.NullValue;
 import static value.StringValue.Value;
+import instruction.Dup2Instruction;
+import instruction.DupInstruction;
 import instruction.GetElementInstruction;
 import instruction.GetPropertyInstruction;
 import instruction.Instruction;
@@ -55,6 +57,7 @@ import instruction.NewArrayInstruction;
 import instruction.NewObjectInstruction;
 import instruction.NopInstruction;
 import instruction.PushElementInstruction;
+import instruction.PushInstruction;
 import instruction.ReturnInstruction;
 import instruction.SetPropertyInstruction;
 import instruction.StoreInstruction;
@@ -74,6 +77,7 @@ import org.parboiled.trees.ImmutableTreeNode;
 import org.parboiled.trees.MutableTreeNodeImpl;
 
 import value.DoubleValue;
+import value.NullValue;
 
 @BuildParseTree
 public class Parser extends BaseParser<Instructions> {
@@ -171,8 +175,17 @@ public class Parser extends BaseParser<Instructions> {
 			FunctionExpression(),
 			PrimaryExpression()
 		), ZeroOrMore(FirstOf(
-			Sequence(Terminal("["), Expression(), push(Instructions(pop(1), pop(), Instructions(GetElementInstruction()))), Terminal("]")),
-			Sequence(Terminal("."), Identifier(), push(Instructions(pop(), Instructions(GetProperty(Value(match().trim()))))))
+			Sequence(
+				Terminal("["),
+				Expression(),
+				push(Instructions(pop(1), pop(), Instructions(GetElementInstruction()))),
+				Terminal("]")
+			),
+			Sequence(
+				Terminal("."),
+				Identifier(),
+				push(Instructions(pop(), Instructions(GetProperty(Value(match().trim())))))
+			)
 		)));
 	}
 	
@@ -182,11 +195,20 @@ public class Parser extends BaseParser<Instructions> {
 	
 	public Rule CallExpression() {
 		return Sequence(
-			Sequence(MemberExpression(), push(Instructions(Push(NullValue()))), Arguments(), push(
-				Instructions(pop(2), pop(2), pop(), pop(), Instructions(Call()))
+			Sequence(MemberExpression(), Arguments(), push(
+				Instructions(insertThis(pop(2)), pop(), pop(), Instructions(Call()))
 			)),
 			ZeroOrMore(FirstOf(
-				Sequence(push(Instructions(Push(NullValue()))), Arguments(), push(Instructions(pop(2), pop(2), pop(), pop(), Instructions(Call())))),
+				Sequence(
+					Arguments(),
+					push(Instructions(
+						pop(2),
+						Instructions(Push(NullValue()), Swap()),
+						pop(),
+						pop(),
+						Instructions(Call())
+					))
+				),
 				Sequence(Terminal("["), Expression(), Terminal("]")),
 				Sequence(Terminal("."), Identifier())
 			))
@@ -771,5 +793,24 @@ public class Parser extends BaseParser<Instructions> {
 	 */
 	public Rule OptionalOr(Rule optional, Instruction instruction) {
 		return FirstOf(optional, push(Instructions(instruction)));
+	}
+	
+	/**
+	 * Modifies memberExpression instructions to leave the value of this as the second value on the stack.
+	 */
+	public static Instructions insertThis(Instructions memberExpression) {
+		List<Instruction> instructions = memberExpression.getInstructions();
+		for(int i = instructions.size() - 1; i >= 0; i--) {
+			if(instructions.get(i) instanceof GetElementInstruction) {
+				instructions.add(i - 1, new DupInstruction());
+				return Instructions(instructions);
+			}
+			if(instructions.get(i) instanceof GetPropertyInstruction) {
+				instructions.add(i, new DupInstruction());
+				return Instructions(instructions);
+			}
+		}
+		instructions.add(0, new PushInstruction(new NullValue()));
+		return Instructions(instructions);
 	}
 }
