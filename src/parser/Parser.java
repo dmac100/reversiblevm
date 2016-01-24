@@ -209,8 +209,17 @@ public class Parser extends BaseParser<Instructions> {
 						Instructions(Call())
 					))
 				),
-				Sequence(Terminal("["), Expression(), Terminal("]")),
-				Sequence(Terminal("."), Identifier())
+				Sequence(
+					Terminal("["),
+					Expression(),
+					push(Instructions(pop(1), pop(), Instructions(GetElementInstruction()))),
+					Terminal("]")
+				),
+				Sequence(
+					Terminal("."),
+					Identifier(),
+					push(Instructions(pop(), Instructions(GetProperty(Value(match().trim())))))
+				)
 			))
 		);
 	}
