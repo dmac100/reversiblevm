@@ -47,6 +47,7 @@ import static value.BooleanValue.Value;
 import static value.DoubleValue.Value;
 import static value.NullValue.NullValue;
 import static value.StringValue.Value;
+import instruction.CallInstruction;
 import instruction.Dup2Instruction;
 import instruction.DupInstruction;
 import instruction.GetElementInstruction;
@@ -202,8 +203,7 @@ public class Parser extends BaseParser<Instructions> {
 				Sequence(
 					Arguments(),
 					push(Instructions(
-						pop(2),
-						Instructions(Push(NullValue()), Swap()),
+						insertThis(pop(2)),
 						pop(),
 						pop(),
 						Instructions(Call())
@@ -810,6 +810,10 @@ public class Parser extends BaseParser<Instructions> {
 	public static Instructions insertThis(Instructions memberExpression) {
 		List<Instruction> instructions = memberExpression.getInstructions();
 		for(int i = instructions.size() - 1; i >= 0; i--) {
+			if(instructions.get(i) instanceof CallInstruction) {
+				instructions.add(0, new PushInstruction(new NullValue()));
+				return Instructions(instructions);
+			}
 			if(instructions.get(i) instanceof GetElementInstruction) {
 				instructions.add(i - 1, new DupInstruction());
 				return Instructions(instructions);
