@@ -94,6 +94,8 @@ public class Engine {
 		ReportingParseRunner<Instructions> parseRunner = new ReportingParseRunner<Instructions>(parser.Sequence(parser.Program(), BaseParser.EOI));
 		ParsingResult<Instructions> result = parseRunner.run(program);
 		if(result.valueStack.size() != 1) throw new CompileException("Invalid value stack size: " + result.valueStack.size());
-		return result.valueStack.pop().getInstructions();
+		List<Instruction> instructions = result.valueStack.pop().getInstructions();
+		//instructions = new Optimizer().optimize(instructions);
+		return instructions;
 	}
 }
