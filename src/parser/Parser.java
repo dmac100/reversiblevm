@@ -47,38 +47,14 @@ import static value.BooleanValue.Value;
 import static value.DoubleValue.Value;
 import static value.NullValue.NullValue;
 import static value.StringValue.Value;
-import instruction.CallInstruction;
-import instruction.Dup2Instruction;
-import instruction.DupInstruction;
-import instruction.GetElementInstruction;
-import instruction.GetPropertyInstruction;
 import instruction.Instruction;
-import instruction.LoadInstruction;
-import instruction.NewArrayInstruction;
-import instruction.NewObjectInstruction;
-import instruction.NopInstruction;
-import instruction.PushElementInstruction;
-import instruction.PushInstruction;
 import instruction.ReturnInstruction;
-import instruction.SetPropertyInstruction;
-import instruction.StoreInstruction;
-import instruction.SwapInstruction;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.support.Var;
-import org.parboiled.trees.ImmutableTreeNode;
-import org.parboiled.trees.MutableTreeNodeImpl;
-
-import value.DoubleValue;
-import value.NullValue;
 
 @BuildParseTree
 public class Parser extends BaseParser<Instructions> {
@@ -195,15 +171,27 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule CallExpression() {
+		Var<CallableInstructions> callable = new Var<>();
+		
 		return Sequence(
-			Sequence(MemberExpression(), Arguments(), push(
-				Instructions(insertThis(pop(2)), pop(), pop(), Instructions(Call()))
-			)),
+			Sequence(
+				MemberExpression(),
+				Arguments(),
+				callable.set(new CallableInstructions(pop(2))),
+				push(Instructions(
+					Instructions(callable.get().getPrefix()),
+					Instructions(callable.get().getRead()),
+					pop(),
+					pop(),
+					Instructions(Call())
+				))
+			),
 			ZeroOrMore(FirstOf(
 				Sequence(
 					Arguments(),
 					push(Instructions(
-						insertThis(pop(2)),
+						Instructions(Push(NullValue())),
+						Instructions(pop(2)),
 						pop(),
 						pop(),
 						Instructions(Call())
@@ -802,28 +790,5 @@ public class Parser extends BaseParser<Instructions> {
 	 */
 	public Rule OptionalOr(Rule optional, Instruction instruction) {
 		return FirstOf(optional, push(Instructions(instruction)));
-	}
-	
-	/**
-	 * Modifies memberExpression instructions to leave the value of this as the second value on the stack.
-	 */
-	public static Instructions insertThis(Instructions memberExpression) {
-		List<Instruction> instructions = memberExpression.getInstructions();
-		for(int i = instructions.size() - 1; i >= 0; i--) {
-			if(instructions.get(i) instanceof CallInstruction) {
-				instructions.add(0, new PushInstruction(new NullValue()));
-				return Instructions(instructions);
-			}
-			if(instructions.get(i) instanceof GetElementInstruction) {
-				instructions.add(i - 1, new DupInstruction());
-				return Instructions(instructions);
-			}
-			if(instructions.get(i) instanceof GetPropertyInstruction) {
-				instructions.add(i, new DupInstruction());
-				return Instructions(instructions);
-			}
-		}
-		instructions.add(0, new PushInstruction(new NullValue()));
-		return Instructions(instructions);
-	}
+	}	
 }

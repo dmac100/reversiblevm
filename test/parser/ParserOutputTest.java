@@ -387,18 +387,21 @@ public class ParserOutputTest {
 		assertParseOutput("a.f()();", Arrays.asList("PUSH: null", "LOAD: a", "DUP", "GETPROPERTY: f", "PUSH: 1", "SWAP", "CALL", "PUSH: 1", "SWAP", "CALL", "POP"));
 		assertParseOutput("a.b.f();", Arrays.asList("LOAD: a", "GETPROPERTY: b", "DUP", "GETPROPERTY: f", "PUSH: 1", "SWAP", "CALL", "POP"));
 		assertParseOutput("a.b[0].f();", Arrays.asList("LOAD: a", "GETPROPERTY: b", "PUSH: 0", "GETELEMENT", "DUP", "GETPROPERTY: f", "PUSH: 1", "SWAP", "CALL", "POP"));
-		assertParseOutput("a.b[0]();", Arrays.asList("LOAD: a", "GETPROPERTY: b", "DUP", "PUSH: 0", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
-		assertParseOutput("a[0]();", Arrays.asList("LOAD: a", "DUP", "PUSH: 0", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
-		assertParseOutput("a[0][0]();", Arrays.asList("LOAD: a", "PUSH: 0", "GETELEMENT", "DUP", "PUSH: 0", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
-		assertParseOutput("a.b[0]()();", Arrays.asList("PUSH: null", "LOAD: a", "GETPROPERTY: b", "DUP", "PUSH: 0", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("a.b[0]();", Arrays.asList("LOAD: a", "GETPROPERTY: b", "PUSH: 0", "DUP2", "POP", "SWAP2", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("a[0]();", Arrays.asList("LOAD: a", "PUSH: 0", "DUP2", "POP", "SWAP2", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("a[0][0]();", Arrays.asList("LOAD: a", "PUSH: 0", "GETELEMENT", "PUSH: 0", "DUP2", "POP", "SWAP2", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("a.b[0]()();", Arrays.asList("PUSH: null", "LOAD: a", "GETPROPERTY: b", "PUSH: 0", "DUP2", "POP", "SWAP2", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "PUSH: 1", "SWAP", "CALL", "POP"));
 		
 		assertParseOutput("f()[0];", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "PUSH: 0", "GETELEMENT", "POP"));
 		assertParseOutput("f().a;", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "GETPROPERTY: a", "POP"));
 		assertParseOutput("f()[0].a;", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "PUSH: 0", "GETELEMENT", "GETPROPERTY: a", "POP"));
 		assertParseOutput("f().a[0];", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "GETPROPERTY: a", "PUSH: 0", "GETELEMENT", "POP"));
-		assertParseOutput("f().a[0]();", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "GETPROPERTY: a", "DUP", "PUSH: 0", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("f().a[0]();", Arrays.asList("PUSH: null", "PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "GETPROPERTY: a", "PUSH: 0", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
 		
 		assertParseOutput("a.b.c();", Arrays.asList("LOAD: a", "GETPROPERTY: b", "DUP", "GETPROPERTY: c", "PUSH: 1", "SWAP", "CALL", "POP"));
+		
+		assertParseOutput("a.b[c.d]();", Arrays.asList("LOAD: a", "GETPROPERTY: b", "LOAD: c", "GETPROPERTY: d", "DUP2", "POP", "SWAP2", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("a.b[1 + 1]();", Arrays.asList("LOAD: a", "GETPROPERTY: b", "PUSH: 1", "PUSH: 1", "ADD", "DUP2", "POP", "SWAP2", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
 	}
 	
 	private void assertParseOutput(String input, List<String> instructions) {
