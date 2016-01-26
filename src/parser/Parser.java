@@ -117,8 +117,23 @@ public class Parser extends BaseParser<Instructions> {
 			Terminal("["),
 			push(Instructions(NewArray())),
 			Optional(
-				ZeroOrMore(AssignmentExpression(), Terminal(","), push(Instructions(pop(1), Instructions(Dup()), pop(), Instructions(PushElement())))),
-				AssignmentExpression(), push(Instructions(pop(1), Instructions(Dup()), pop(), Instructions(PushElement())))
+				ZeroOrMore(
+					AssignmentExpression(),
+					Terminal(","),
+					push(Instructions(
+						pop(1),
+						Instructions(Dup()),
+						pop(),
+						Instructions(PushElement())
+					))
+				),
+				AssignmentExpression(),
+				push(Instructions(
+					pop(1),
+					Instructions(Dup()),
+					pop(),
+					Instructions(PushElement())
+				))
 			),
 			Terminal("]")
 		);
@@ -397,7 +412,13 @@ public class Parser extends BaseParser<Instructions> {
 			Optional(
 				Terminal("&&"),
 				LogicalANDExpression(),
-				push(Instructions(pop(1), Instructions(Dup()), Instructions(JumpIfFalse(Value(peek().size() + 1))), pop(), Instructions(And())))
+				push(Instructions(
+					pop(1),
+					Instructions(Dup()),
+					Instructions(JumpIfFalse(Value(peek().size() + 1))),
+					pop(),
+					Instructions(And())
+				))
 			)
 		);
 	}
@@ -407,7 +428,13 @@ public class Parser extends BaseParser<Instructions> {
 			Optional(
 				Terminal("||"),
 				LogicalORExpression(),
-				push(Instructions(pop(1), Instructions(Dup()), Instructions(JumpIfTrue(Value(peek().size() + 1))), pop(), Instructions(Or())))
+				push(Instructions(
+					pop(1),
+					Instructions(Dup()),
+					Instructions(JumpIfTrue(Value(peek().size() + 1))),
+					pop(),
+					Instructions(Or())
+				))
 			)
 		);
 	}
@@ -513,7 +540,13 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule StatementList() {
-		return Sequence(push(Instructions()), ZeroOrMore(Statement(), push(Instructions(pop(1), pop()))));
+		return Sequence(
+			push(Instructions()),
+			ZeroOrMore(
+				Statement(),
+				push(Instructions(pop(1), pop()))
+			)
+		);
 	}
 	
 	public Rule VariableStatement() {
@@ -521,7 +554,14 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule VariableDeclarationList() {
-		return Sequence(VariableDeclaration(), ZeroOrMore(Terminal(","), VariableDeclaration(), push(Instructions(pop(1), pop()))));
+		return Sequence(
+			VariableDeclaration(),
+			ZeroOrMore(
+				Terminal(","),
+				VariableDeclaration(),
+				push(Instructions(pop(1), pop()))
+			)
+		);
 	}
 	
 	public Rule VariableDeclaration() {
@@ -530,7 +570,14 @@ public class Parser extends BaseParser<Instructions> {
 			Identifier(),
 			name.set(match().trim()),
 			push(Instructions(Local(Value(name.get())))),
-			Optional(Initialiser(), push(Instructions(pop(), pop(), Instructions(Store(Value(name.get()))))))
+			Optional(
+				Initialiser(),
+				push(Instructions(
+					pop(),
+					pop(),
+					Instructions(Store(Value(name.get())))
+				))
+			)
 		);
 	}
 	
@@ -543,7 +590,12 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule ExpressionStatement() {
-		return Sequence(TestNot(FirstOf("{", "function")), Expression(), push(Instructions(pop(), Instructions(Pop()))), Terminal(";"));
+		return Sequence(
+			TestNot(FirstOf("{", "function")),
+			Expression(),
+			push(Instructions(pop(), Instructions(Pop()))),
+			Terminal(";")
+		);
 	}
 	
 	public Rule IfStatement() {
