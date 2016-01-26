@@ -57,10 +57,12 @@ public class ObjectValue extends Value {
 		
 		StringBuilder s = new StringBuilder();
 		for(String key:values.keySet()) {
-			if(s.length() != 0) {
-				s.append(", ");
+			if(!key.equals("prototype")) {
+				if(s.length() != 0) {
+					s.append(", ");
+				}
+				s.append(key + ":" + values.get(key).toString(used));
 			}
-			s.append(key + ":" + values.get(key).toString(used));
 		}
 		
 		used.remove(this);

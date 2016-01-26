@@ -36,6 +36,10 @@ public class Runtime {
 		return getCurrentStackFrame().getScope();
 	}
 	
+	public Scope getGlobalScope() {
+		return stackFrames.get(0).getScope();
+	}
+	
 	public void throwError(String error) {
 		System.err.println("Error: " + error);
 		errors.add(error);

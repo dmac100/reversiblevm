@@ -1,82 +1,82 @@
-ArrayProto.every = function(self, callback) {
-	var length = ArrayProto.length(self);
+ArrayProto.every = function(callback) {
+	var length = this.length();
 	for(var i = 0; i < length; i++) {
-		if(!callback(self[i])) {
+		if(!callback(this[i])) {
 			return false;
 		}
 	}
 	return true;
 };
 
-ArrayProto.filter = function(self, callback) {
+ArrayProto.filter = function(callback) {
 	var a = [];
-	var length = ArrayProto.length(self);
+	var length = this.length();
 	for(var i = 0; i < length; i++) {
-		if(callback(self[i])) {
-			ArrayProto.push(a, self[i]);
+		if(callback(this[i])) {
+			a.push(this[i]);
 		}
 	}
 	return a;
 };
 
-ArrayProto.find = function(self, callback) {
-	var length = ArrayProto.length(self);
+ArrayProto.find = function(callback) {
+	var length = this.length();
 	for(var i = 0; i < length; i++) {
-		if(callback(self[i])) {
-			return self[i];
+		if(callback(this[i])) {
+			return this[i];
 		}
 	}
 	return null;
 };
 
-ArrayProto.findIndex = function(self, callback) {
-	var length = ArrayProto.length(self);
+ArrayProto.findIndex = function(callback) {
+	var length = this.length();
 	for(var i = 0; i < length; i++) {
-		if(callback(self[i])) {
+		if(callback(this[i])) {
 			return i;
 		}
 	}
 	return -1;
 };
 
-ArrayProto.forEach = function(self, callback) {
-	var length = ArrayProto.length(self);
+ArrayProto.forEach = function(callback) {
+	var length = this.length();
 	for(var i = 0; i < length; i++) {
-		callback(self[i]);
+		callback(this[i]);
 	}
 };
 
-ArrayProto.map = function(self, callback) {
+ArrayProto.map = function(callback) {
 	var a = [];
-	var length = ArrayProto.length(self);
+	var length = this.length();
 	for(var i = 0; i < length; i++) {
-		ArrayProto.push(a, callback(self[i]));
+		a.push(callback(this[i]));
 	}
 	return a;
 };
 
-ArrayProto.reduce = function(self, callback, initialValue) {
+ArrayProto.reduce = function(callback, initialValue) {
 	var value = initialValue;
-	var length = ArrayProto.length(self);
+	var length = this.length();
 	for(var i = 0; i < length; i++) {
-		value = callback(value, self[i]);
+		value = callback(value, this[i]);
 	}
 	return value;
 };
 
-ArrayProto.reduceRight = function(self, callback, initialValue) {
+ArrayProto.reduceRight = function(callback, initialValue) {
 	var value = initialValue;
-	var length = ArrayProto.length(self);
+	var length = this.length();
 	for(var i = length - 1; i >= 0; i--) {
-		value = callback(value, self[i]);
+		value = callback(value, this[i]);
 	}
 	return value;
 };
 
-ArrayProto.some = function(self, callback) {
-	var length = ArrayProto.length(self);
+ArrayProto.some = function(callback) {
+	var length = this.length();
 	for(var i = 0; i < length; i++) {
-		if(callback(self[i])) {
+		if(callback(this[i])) {
 			return true;
 		}
 	}
