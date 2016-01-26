@@ -1,5 +1,6 @@
 package runtime;
 
+import static runtime.EngineAsserts.assertError;
 import static runtime.EngineAsserts.assertOutput;
 
 import org.junit.Test;
@@ -156,6 +157,11 @@ public class ParseAndRunTest {
 	public void AdditiveExpression() {
 		assertOutput("5", "print(2 + 3);");
 		assertOutput("2", "print(5 - 3);");
+		
+		assertOutput("23", "print('2' + 3);");
+		assertOutput("23", "print(2 + '3');");
+		assertOutput("23", "print('2' + '3');");
+		assertError("TypeError: Not a double: false", "print(2 + false);");
 	}
 	
 	@Test
