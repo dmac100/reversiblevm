@@ -1,5 +1,8 @@
 package runtime;
 
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import instruction.GetPropertyInstruction;
 import instruction.Instruction;
@@ -12,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 
 interface Replacement<T> {
 	T replace(List<? extends T> matched);
@@ -58,17 +62,21 @@ public class Optimizer {
 
 	private static List<Instruction> applyReplacements(List<Instruction> list) {
 		list = replace(list,
-			Arrays.asList(isA(PushInstruction.class), isA(PopInstruction.class)),
+			Arrays.asList(
+				anyOf(
+					instanceOf(PushInstruction.class),
+					instanceOf(LoadInstruction.class)
+				),
+				instanceOf(PopInstruction.class)
+			),
 			new ArrayList<Replacement<Instruction>>()
 		);
 		
 		list = replace(list,
-			Arrays.asList(isA(LoadInstruction.class), isA(PopInstruction.class)),
-			new ArrayList<Replacement<Instruction>>()
-		);
-		
-		list = replace(list,
-			Arrays.asList(isA(GetPropertyInstruction.class), isA(PopInstruction.class)),
+			Arrays.asList(
+				instanceOf(GetPropertyInstruction.class),
+				instanceOf(PopInstruction.class)
+			),
 			Arrays.asList(ConstantReplacement(new PopInstruction()))
 		);
 		
@@ -77,7 +85,7 @@ public class Optimizer {
 
 	private static <T> List<T> replace(
 		List<? extends T> list,
-		List<? extends Matcher<? extends T>> matchers,
+		List<? extends Matcher<? extends Object>> matchers,
 		List<? extends Replacement<T>> replacement
 	) {
 		List<T> newList = new ArrayList<>();
