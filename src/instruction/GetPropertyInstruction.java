@@ -9,18 +9,18 @@ import value.StringValue;
 import value.Value;
 
 public class GetPropertyInstruction implements Instruction {
-	private StringValue name;
+	private final String name;
 	
-	public GetPropertyInstruction(StringValue name) {
+	public GetPropertyInstruction(String name) {
 		this.name = name;
 	}
 	
-	public static Instruction GetProperty(StringValue name) {
+	public static Instruction GetProperty(String name) {
 		return new GetPropertyInstruction(name);
 	}
 	
 	public String getName() {
-		return name.getValue();
+		return name;
 	}
 	
 	public void execute(Runtime runtime) throws ExecutionException {

@@ -1,24 +1,22 @@
 package instruction;
 
-import runtime.Scope;
 import runtime.Runtime;
-import runtime.Stack;
-import value.StringValue;
+import runtime.Scope;
 
 public class LocalInstruction implements Instruction {
-	private StringValue name;
+	private final String name;
 
-	public LocalInstruction(StringValue name) {
+	public LocalInstruction(String name) {
 		this.name = name;
 	}
 	
-	public static Instruction Local(StringValue value) {
+	public static Instruction Local(String value) {
 		return new LocalInstruction(value);
 	}
 	
 	public void execute(Runtime runtime) {
 		Scope scope = runtime.getScope();
-		scope.create(name.getValue());
+		scope.create(name);
 	}
 	
 	public String toString() {

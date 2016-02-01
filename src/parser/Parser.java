@@ -105,7 +105,7 @@ public class Parser extends BaseParser<Instructions> {
 	public Rule PrimaryExpression() {
 		return FirstOf(
 			Literal(),
-			Sequence(Identifier(), push(Instructions(Load(Value(match().trim()))))),
+			Sequence(Identifier(), push(Instructions(Load(match().trim())))),
 			ArrayLiteral(),
 			ObjectLiteral(),
 			Sequence(Terminal("("), Expression(), Terminal(")"))
@@ -154,7 +154,7 @@ public class Parser extends BaseParser<Instructions> {
 	
 	public Rule PropertyNameAndValueList() {
 		return Sequence(
-			Identifier(), push(Instructions(SetProperty(Value(match().trim())))),
+			Identifier(), push(Instructions(SetProperty(match().trim()))),
 			Terminal(":"),
 			AssignmentExpression(),
 			push(Instructions(Instructions(Dup()), pop(), pop())),
@@ -176,7 +176,7 @@ public class Parser extends BaseParser<Instructions> {
 			Sequence(
 				Terminal("."),
 				Identifier(),
-				push(Instructions(pop(), Instructions(GetProperty(Value(match().trim())))))
+				push(Instructions(pop(), Instructions(GetProperty(match().trim()))))
 			)
 		)));
 	}
@@ -221,7 +221,7 @@ public class Parser extends BaseParser<Instructions> {
 				Sequence(
 					Terminal("."),
 					Identifier(),
-					push(Instructions(pop(), Instructions(GetProperty(Value(match().trim())))))
+					push(Instructions(pop(), Instructions(GetProperty(match().trim()))))
 				)
 			))
 		);
@@ -415,7 +415,7 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(
 					pop(1),
 					Instructions(Dup()),
-					Instructions(JumpIfFalse(Value(peek().size() + 2))),
+					Instructions(JumpIfFalse(peek().size() + 2)),
 					pop(),
 					Instructions(And())
 				))
@@ -431,7 +431,7 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(
 					pop(1),
 					Instructions(Dup()),
-					Instructions(JumpIfTrue(Value(peek().size() + 2))),
+					Instructions(JumpIfTrue(peek().size() + 2)),
 					pop(),
 					Instructions(Or())
 				))
@@ -448,9 +448,9 @@ public class Parser extends BaseParser<Instructions> {
 				AssignmentExpression(),
 				push(Instructions(
 					pop(2),
-					Instructions(JumpIfFalse(Value(peek(1).size() + 2))),
+					Instructions(JumpIfFalse(peek(1).size() + 2)),
 					pop(1),
-					Instructions(Jump(Value(peek().size() + 1))),
+					Instructions(Jump(peek().size() + 1)),
 					pop()
 				))
 			)
@@ -569,13 +569,13 @@ public class Parser extends BaseParser<Instructions> {
 		return Sequence(
 			Identifier(),
 			name.set(match().trim()),
-			push(Instructions(Local(Value(name.get())))),
+			push(Instructions(Local(name.get()))),
 			Optional(
 				Initialiser(),
 				push(Instructions(
 					pop(),
 					pop(),
-					Instructions(Store(Value(name.get())))
+					Instructions(Store(name.get()))
 				))
 			)
 		);
@@ -604,9 +604,9 @@ public class Parser extends BaseParser<Instructions> {
 				Terminal("if"), Terminal("("), Expression(), Terminal(")"), Statement(), Terminal("else"), Statement(),
 				push(Instructions(
 					pop(2),
-					Instructions(JumpIfFalse(Value(peek(1).size() + 2))),
+					Instructions(JumpIfFalse(peek(1).size() + 2)),
 					pop(1),
-					Instructions(Jump(Value(peek().size() + 1))),
+					Instructions(Jump(peek().size() + 1)),
 					pop()
 				))
 			),
@@ -614,7 +614,7 @@ public class Parser extends BaseParser<Instructions> {
 				Terminal("if"), Terminal("("), Expression(), Terminal(")"), Statement(),
 				push(Instructions(
 					pop(1),
-					Instructions(JumpIfFalse(Value(peek().size() + 1))),
+					Instructions(JumpIfFalse(peek().size() + 1)),
 					pop()
 				))
 			)
@@ -628,16 +628,16 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(
 					peek(1),
 					peek(),
-					Instructions(JumpIfTrue(Value(-pop().size() - pop().size())))
+					Instructions(JumpIfTrue(-pop().size() - pop().size()))
 				))
 			),
 			Sequence(
 				Terminal("while"), Terminal("("), Expression(), Terminal(")"), Statement(),
 				push(Instructions(
 					peek(1),
-					Instructions(JumpIfFalse(Value(peek().size() + 2))),
+					Instructions(JumpIfFalse(peek().size() + 2)),
 					peek(),
-					Instructions(Jump(Value(-pop().size() - pop().size() - 1)))
+					Instructions(Jump(-pop().size() - pop().size() - 1))
 				))
 			),
 			Sequence(
@@ -654,11 +654,11 @@ public class Parser extends BaseParser<Instructions> {
 					pop(3),
 					Instructions(Pop()),
 					peek(2),
-					Instructions(JumpIfFalse(Value(peek(0).size() + peek(1).size() + 3))),
+					Instructions(JumpIfFalse(peek(0).size() + peek(1).size() + 3)),
 					peek(0),
 					peek(1),
 					Instructions(Pop()),
-					Instructions(Jump(Value(-pop().size() - pop().size() - pop().size() - 2)))
+					Instructions(Jump(-pop().size() - pop().size() - pop().size() - 2))
 				))
 			),
 			Sequence(
@@ -675,11 +675,11 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(
 					pop(3),
 					peek(2),
-					Instructions(JumpIfFalse(Value(peek(0).size() + peek(1).size() + 3))),
+					Instructions(JumpIfFalse(peek(0).size() + peek(1).size() + 3)),
 					peek(0),
 					peek(1),
 					Instructions(Pop()),
-					Instructions(Jump(Value(-pop().size() - pop().size() - pop().size() - 2)))
+					Instructions(Jump(-pop().size() - pop().size() - pop().size() - 2))
 				))
 			)
 		);
@@ -721,8 +721,8 @@ public class Parser extends BaseParser<Instructions> {
 			Sequence(
 				Identifier(),
 				push(Instructions(
-					Instructions(Local(Value(match().trim()))),
-					Instructions(Store(Value(match().trim())))
+					Instructions(Local(match().trim())),
+					Instructions(Store(match().trim()))
 				))
 			),
 			Terminal("("),
@@ -766,8 +766,8 @@ public class Parser extends BaseParser<Instructions> {
 	public Rule FormalParameterList() {
 		return Sequence(
 			push(Instructions(
-				Instructions(Local(Value("this"))),
-				Instructions(Store(Value("this")))
+				Instructions(Local("this")),
+				Instructions(Store("this"))
 			)),
 			Optional(
 				FormalParameter(), push(Instructions(pop(), pop())),
@@ -783,8 +783,8 @@ public class Parser extends BaseParser<Instructions> {
 			Identifier(),
 			push(
 				Instructions(
-					Instructions(Local(Value(match().trim()))),
-					Instructions(Store(Value(match().trim())))
+					Instructions(Local(match().trim())),
+					Instructions(Store(match().trim()))
 				)
 			)
 		);

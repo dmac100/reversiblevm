@@ -3,27 +3,26 @@ package instruction;
 import runtime.Runtime;
 import runtime.Scope;
 import runtime.Stack;
-import value.StringValue;
 
 public class LoadInstruction implements Instruction {
-	private StringValue name;
+	private final String name;
 
-	public LoadInstruction(StringValue name) {
+	public LoadInstruction(String name) {
 		this.name = name;
 	}
 	
 	public String getName() {
-		return name.getValue();
+		return name;
 	}
 	
-	public static Instruction Load(StringValue value) {
+	public static Instruction Load(String value) {
 		return new LoadInstruction(value);
 	}
 	
 	public void execute(Runtime runtime) {
 		Stack stack = runtime.getStack();
 		Scope scope = runtime.getScope();
-		stack.push(scope.get(name.getValue()));
+		stack.push(scope.get(name));
 	}
 	
 	public String toString() {

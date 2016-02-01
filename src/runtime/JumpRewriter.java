@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import value.DoubleValue;
-
 /**
  * Allows converting of instruction lists between offset jumps and labeled jumps.
  */
@@ -174,11 +172,11 @@ public class JumpRewriter {
 	 */
 	private static Instruction getOffsetInstruction(Instruction instruction, int offset) {
 		if(instruction instanceof LabeledJumpInstruction) {
-			return new JumpInstruction(new DoubleValue(offset));
+			return new JumpInstruction(offset);
 		} else if(instruction instanceof LabeledJumpIfTrueInstruction) {
-			return new JumpIfTrueInstruction(new DoubleValue(offset));
+			return new JumpIfTrueInstruction(offset);
 		} else if(instruction instanceof LabeledJumpIfFalseInstruction) {
-			return new JumpIfFalseInstruction(new DoubleValue(offset));
+			return new JumpIfFalseInstruction(offset);
 		}
 		return null;
 	}

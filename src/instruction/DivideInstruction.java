@@ -4,7 +4,6 @@ import runtime.ExecutionException;
 import runtime.Runtime;
 import runtime.Stack;
 import value.DoubleValue;
-import value.Value;
 
 public class DivideInstruction implements Instruction {
 	public DivideInstruction() {

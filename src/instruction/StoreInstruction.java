@@ -3,27 +3,26 @@ package instruction;
 import runtime.Runtime;
 import runtime.Scope;
 import runtime.Stack;
-import value.StringValue;
 
 public class StoreInstruction implements Instruction {
-	private StringValue name;
+	private final String name;
 
-	public StoreInstruction(StringValue name) {
+	public StoreInstruction(String name) {
 		this.name = name;
 	}
 	
 	public String getName() {
-		return name.getValue();
+		return name;
 	}
 	
-	public static Instruction Store(StringValue value) {
+	public static Instruction Store(String value) {
 		return new StoreInstruction(value);
 	}
 	
 	public void execute(Runtime runtime) {
 		Stack stack = runtime.getStack();
 		Scope scope = runtime.getScope();
-		scope.set(name.getValue(), stack.popValue());
+		scope.set(name, stack.popValue());
 	}
 	
 	public String toString() {

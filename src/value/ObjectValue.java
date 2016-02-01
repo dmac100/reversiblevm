@@ -15,9 +15,9 @@ public class ObjectValue extends Value {
 	public ObjectValue() {
 	}
 	
-	public Value get(StringValue name) {
-		if(values.containsKey(name.getValue())) {
-			return values.get(name.getValue());
+	public Value get(String name) {
+		if(values.containsKey(name)) {
+			return values.get(name);
 		} else if(values.get("prototype") instanceof ObjectValue) {
 			return ((ObjectValue)values.get("prototype")).get(name);
 		} else {
@@ -25,8 +25,8 @@ public class ObjectValue extends Value {
 		}
 	}
 	
-	public void set(StringValue name, Value value) throws ExecutionException {
-		values.put(name.getValue(), value);
+	public void set(String name, Value value) throws ExecutionException {
+		values.put(name, value);
 		checkCyclicPrototype(new HashSet<>());
 	}
 

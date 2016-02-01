@@ -43,14 +43,14 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		stringProto.set(new StringValue("length"), new NativeFunctionValue() {
+		stringProto.set("length", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				return new DoubleValue(string.length());
 			}
 		});
 		
-		stringProto.set(new StringValue("charAt"), new NativeFunctionValue() {
+		stringProto.set("charAt", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				int index = (int)runtime.checkDoubleValue(params.get(1)).getValue();
@@ -58,7 +58,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		stringProto.set(new StringValue("concat"), new NativeFunctionValue() {
+		stringProto.set("concat", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				String other = runtime.checkStringValue(params.get(1)).getValue();
@@ -66,7 +66,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		stringProto.set(new StringValue("endsWith"), new NativeFunctionValue() {
+		stringProto.set("endsWith", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				String other = runtime.checkStringValue(params.get(1)).getValue();
@@ -74,7 +74,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		stringProto.set(new StringValue("indexOf"), new NativeFunctionValue() {
+		stringProto.set("indexOf", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				String other = runtime.checkStringValue(params.get(1)).getValue();
@@ -82,7 +82,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		stringProto.set(new StringValue("lastIndexOf"), new NativeFunctionValue() {
+		stringProto.set("lastIndexOf", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				String other = runtime.checkStringValue(params.get(1)).getValue();
@@ -90,7 +90,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		stringProto.set(new StringValue("repeat"), new NativeFunctionValue() {
+		stringProto.set("repeat", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				int count = (int)runtime.checkDoubleValue(params.get(1)).getValue();
@@ -102,7 +102,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		stringProto.set(new StringValue("substring"), new NativeFunctionValue() {
+		stringProto.set("substring", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				int start = (int)runtime.checkDoubleValue(params.get(1)).getValue();
@@ -115,7 +115,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		stringProto.set(new StringValue("split"), new NativeFunctionValue() {
+		stringProto.set("split", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				String separator = runtime.checkStringValue(params.get(1)).getValue();
@@ -130,7 +130,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		stringProto.set(new StringValue("startsWith"), new NativeFunctionValue() {
+		stringProto.set("startsWith", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				String other = runtime.checkStringValue(params.get(1)).getValue();
@@ -138,28 +138,28 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		stringProto.set(new StringValue("toLowerCase"), new NativeFunctionValue() {
+		stringProto.set("toLowerCase", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				return new StringValue(string.toLowerCase());
 			}
 		});
 		
-		stringProto.set(new StringValue("toUpperCase"), new NativeFunctionValue() {
+		stringProto.set("toUpperCase", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				return new StringValue(string.toUpperCase());
 			}
 		});
 		
-		stringProto.set(new StringValue("trim"), new NativeFunctionValue() {
+		stringProto.set("trim", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				return new StringValue(string.trim());
 			}
 		});
 		
-		objectProto.set(new StringValue("keys"), new NativeFunctionValue() {
+		objectProto.set("keys", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				List<String> keys = runtime.checkObjectValue(params.get(0)).keys();
 				List<Value> list = new ArrayList<>();
@@ -172,14 +172,14 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		arrayProto.set(new StringValue("length"), new NativeFunctionValue() {
+		arrayProto.set("length", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				return array.length();
 			}
 		});
 		
-		arrayProto.set(new StringValue("concat"), new NativeFunctionValue() {
+		arrayProto.set("concat", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				ArrayValue other = runtime.checkArrayValue(params.get(1));
@@ -194,7 +194,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		arrayProto.set(new StringValue("indexOf"), new NativeFunctionValue() {
+		arrayProto.set("indexOf", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				Value value = params.get(1);
@@ -208,7 +208,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		arrayProto.set(new StringValue("join"), new NativeFunctionValue() {
+		arrayProto.set("join", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				List<Value> array = runtime.checkArrayValue(params.get(0)).values();
 				String separator = runtime.checkStringValue(params.get(1)).getValue();
@@ -223,7 +223,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		arrayProto.set(new StringValue("lastIndexOf"), new NativeFunctionValue() {
+		arrayProto.set("lastIndexOf", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				Value value = params.get(1);
@@ -237,7 +237,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		arrayProto.set(new StringValue("slice"), new NativeFunctionValue() {
+		arrayProto.set("slice", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				List<Value> array = runtime.checkArrayValue(params.get(0)).values();
 				int start = (int)runtime.checkDoubleValue(params.get(1)).getValue();
@@ -254,7 +254,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		arrayProto.set(new StringValue("sort"), new NativeFunctionValue() {
+		arrayProto.set("sort", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				for(int i = 0; i < array.length().getValue(); i++) {
@@ -272,7 +272,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		arrayProto.set(new StringValue("pop"), new NativeFunctionValue() {
+		arrayProto.set("pop", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				List<Value> values = array.values();
@@ -286,7 +286,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		arrayProto.set(new StringValue("push"), new NativeFunctionValue() {
+		arrayProto.set("push", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				Value value = params.get(1);
@@ -297,7 +297,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		arrayProto.set(new StringValue("reverse"), new NativeFunctionValue() {
+		arrayProto.set("reverse", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				List<Value> values = array.values();
@@ -307,7 +307,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		arrayProto.set(new StringValue("shift"), new NativeFunctionValue() {
+		arrayProto.set("shift", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				List<Value> values = array.values();
@@ -321,7 +321,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		arrayProto.set(new StringValue("unshift"), new NativeFunctionValue() {
+		arrayProto.set("unshift", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				Value value = params.get(1);
@@ -332,7 +332,7 @@ public class GlobalScope implements Scope {
 			}
 		});
 		
-		arrayProto.set(new StringValue("splice"), new NativeFunctionValue() {
+		arrayProto.set("splice", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				int index = (int)runtime.checkDoubleValue(params.get(1)).getValue();

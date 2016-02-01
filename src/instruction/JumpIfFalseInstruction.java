@@ -5,16 +5,15 @@ import runtime.Runtime;
 import runtime.Stack;
 import runtime.StackFrame;
 import value.BooleanValue;
-import value.DoubleValue;
 
 public class JumpIfFalseInstruction implements Instruction {
-	private DoubleValue offset;
+	private final int offset;
 
-	public JumpIfFalseInstruction(DoubleValue offset) {
+	public JumpIfFalseInstruction(int offset) {
 		this.offset = offset;
 	}
 	
-	public static Instruction JumpIfFalse(DoubleValue offset) {
+	public static Instruction JumpIfFalse(int offset) {
 		return new JumpIfFalseInstruction(offset);
 	}
 	
@@ -23,15 +22,15 @@ public class JumpIfFalseInstruction implements Instruction {
 		BooleanValue value = runtime.checkBooleanValue(stack.popValue());
 		if(!value.getValue()) {
 			StackFrame stackFrame = runtime.getCurrentStackFrame();
-			stackFrame.setInstructionCounter(stackFrame.getInstructionCounter() + (int)offset.getValue() - 1);
+			stackFrame.setInstructionCounter(stackFrame.getInstructionCounter() + offset - 1);
 		}
 	}
 	
 	public int getOffset() {
-		return (int)offset.getValue();
+		return offset;
 	}
 	
 	public String toString() {
-		return "JUMPIFFALSE: " + (int)offset.getValue();
+		return "JUMPIFFALSE: " + offset;
 	}
 }

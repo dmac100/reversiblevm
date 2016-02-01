@@ -34,7 +34,7 @@ public class EngineTest {
 			Push(NullValue()),
 			Push(Value("Hello World!")),
 			Push(Value(2)),
-			Load(Value("print")),
+			Load("print"),
 			Call(),
 			Pop()
 		));
@@ -96,11 +96,11 @@ public class EngineTest {
 	public void variables() {
 		assertStackValue("3", Arrays.asList(
 			Push(Value(1)),
-			Store(Value("x")),
+			Store("x"),
 			Push(Value(2)),
-			Store(Value("y")),
-			Load(Value("x")),
-			Load(Value("y")),
+			Store("y"),
+			Load("x"),
+			Load("y"),
 			Add()
 		));
 	}
@@ -110,16 +110,16 @@ public class EngineTest {
 		assertStackValue("3", Arrays.asList(
 			StartFunction(1),
 			Pop(),
-			Local(Value("x")),
-			Store(Value("x")),
-			Load(Value("x")),
+			Local("x"),
+			Store("x"),
+			Load("x"),
 			Push(Value(1)),
 			Add(),
 			EndFunction(),
-			Store(Value("f")),
+			Store("f"),
 			Push(Value(2)),
 			Push(Value(1)),
-			Load(Value("f")),
+			Load("f"),
 			Call()
 		));
 	}
@@ -128,37 +128,37 @@ public class EngineTest {
 	public void functionScope() {
 		assertStackValue("5", Arrays.asList(
 			Push(Value(5)),
-			Store(Value("x")),
+			Store("x"),
 			StartFunction(0),
 			Pop(),
 			Push(Value(10)),
-			Local(Value("x")),
-			Store(Value("x")),
+			Local("x"),
+			Store("x"),
 			Push(NullValue()),
 			EndFunction(),
-			Store(Value("f")),
+			Store("f"),
 			Push(Value(0)),
-			Load(Value("f")),
+			Load("f"),
 			Call(),
 			Pop(),
-			Load(Value("x"))
+			Load("x")
 		));
 	}
 	
 	@Test
 	public void jump() {
 		assertOutput("6", Arrays.asList(
-			Jump(Value(7)),
+			Jump(7),
 			Push(NullValue()),
 			Push(Value(5)),
 			Push(Value(2)),
-			Load(Value("print")),
+			Load("print"),
 			Call(),
 			Pop(),
 			Push(NullValue()),
 			Push(Value(6)),
 			Push(Value(2)),
-			Load(Value("print")),
+			Load("print"),
 			Call(),
 			Pop()
 		));
@@ -168,19 +168,19 @@ public class EngineTest {
 	public void jumpiftrue() {
 		assertOutput("6", Arrays.asList(
 			Push(Value(true)),
-			JumpIfTrue(Value(7)),
+			JumpIfTrue(7),
 			Push(NullValue()),
 			Push(Value(5)),
 			Push(Value(2)),
-			Load(Value("print")),
+			Load("print"),
 			Call(),
 			Pop(),
 			Push(Value(false)),
-			JumpIfTrue(Value(7)),
+			JumpIfTrue(7),
 			Push(NullValue()),
 			Push(Value(6)),
 			Push(Value(2)),
-			Load(Value("print")),
+			Load("print"),
 			Call(),
 			Pop()
 		));

@@ -4,7 +4,7 @@ import runtime.ExecutionException;
 import runtime.Runtime;
 
 public class LabeledJumpIfTrueInstruction implements Instruction {
-	private String label;
+	private final String label;
 
 	public LabeledJumpIfTrueInstruction(String label) {
 		this.label = label;

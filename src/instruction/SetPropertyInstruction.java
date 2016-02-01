@@ -4,17 +4,16 @@ import runtime.ExecutionException;
 import runtime.Runtime;
 import runtime.Stack;
 import value.ObjectValue;
-import value.StringValue;
 import value.Value;
 
 public class SetPropertyInstruction implements Instruction {
-	private StringValue name;
+	private final String name;
 	
-	public SetPropertyInstruction(StringValue name) {
+	public SetPropertyInstruction(String name) {
 		this.name = name;
 	}
 	
-	public static Instruction SetProperty(StringValue name) {
+	public static Instruction SetProperty(String name) {
 		return new SetPropertyInstruction(name);
 	}
 	

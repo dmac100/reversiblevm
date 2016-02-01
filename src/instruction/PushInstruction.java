@@ -4,7 +4,7 @@ import runtime.Runtime;
 import value.Value;
 
 public class PushInstruction implements Instruction {
-	private Value value;
+	private final Value value;
 
 	public PushInstruction(Value value) {
 		this.value = value;

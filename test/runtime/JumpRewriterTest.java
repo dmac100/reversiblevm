@@ -17,11 +17,11 @@ public class JumpRewriterTest {
 	@Test
 	public void convertToLabelledJumps() {
 		List<Instruction> converted = JumpRewriter.convertToLabelledJumps(Arrays.asList(
-			Jump(Value(2)),
+			Jump(2),
 			Push(Value(1)),
 			Push(Value(2)),
 			Push(Value(3)),
-			Jump(Value(-2))
+			Jump(-2)
 		));
 		
 		assertEquals(Arrays.asList(
