@@ -27,6 +27,10 @@ public class JumpIfTrueInstruction implements Instruction {
 		}
 	}
 	
+	public int getOffset() {
+		return (int)offset.getValue();
+	}
+	
 	public String toString() {
 		return "JUMPIFTRUE: " + (int)offset.getValue();
 	}

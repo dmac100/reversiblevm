@@ -21,6 +21,10 @@ public class JumpInstruction implements Instruction {
 		stackFrame.setInstructionCounter(stackFrame.getInstructionCounter() + (int)offset.getValue());
 	}
 	
+	public int getOffset() {
+		return (int)offset.getValue();
+	}
+	
 	public String toString() {
 		return "JUMP: " + (int)offset.getValue();
 	}
