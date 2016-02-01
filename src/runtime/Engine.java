@@ -55,8 +55,6 @@ public class Engine {
 			
 			Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
 			
-			//System.out.println(frame + ":" + frame.getInstructionCounter() + " - INSTRUCTION: " + instruction);
-			
 			if(runtime.getNestedFunctionDefinitionCount() == 0) {
 				execute(runtime, instruction);
 			} else {
@@ -95,7 +93,7 @@ public class Engine {
 		ParsingResult<Instructions> result = parseRunner.run(program);
 		if(result.valueStack.size() != 1) throw new CompileException("Invalid value stack size: " + result.valueStack.size());
 		List<Instruction> instructions = result.valueStack.pop().getInstructions();
-		//instructions = new Optimizer().optimize(instructions);
+		instructions = new Optimizer().optimize(instructions);
 		return instructions;
 	}
 }

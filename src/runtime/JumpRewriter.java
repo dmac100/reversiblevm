@@ -35,19 +35,21 @@ public class JumpRewriter {
 		List<Instruction> newList = new ArrayList<>();
 		
 		int count = 1;
-		for(int i = 0; i < instructions.size(); i++) {
+		for(int i = 0; i <= instructions.size(); i++) {
 			if(jumpLabels.containsKey(i)) {
 				for(String label:jumpLabels.get(i)) {
 					newList.add(new LabelInstruction(label));
 				}
 			}
 			
-			Instruction labeledInstruction = getLabeledInstruction(instructions.get(i), String.valueOf(count));
-			if(labeledInstruction == null) {
-				newList.add(instructions.get(i));
-			} else {
-				newList.add(labeledInstruction);
-				count++;
+			if(i < instructions.size()) {
+				Instruction labeledInstruction = getLabeledInstruction(instructions.get(i), String.valueOf(count));
+				if(labeledInstruction == null) {
+					newList.add(instructions.get(i));
+				} else {
+					newList.add(labeledInstruction);
+					count++;
+				}
 			}
 		}
 		
@@ -86,19 +88,20 @@ public class JumpRewriter {
 	/**
 	 * Returns a list of instructions containing offset jumps based on the label positions.
 	 */
-	private static List<Instruction> createOffsetList(List<Instruction> ins, Map<String, Integer> labelPositions) {
+	private static List<Instruction> createOffsetList(List<Instruction> instructions, Map<String, Integer> labelPositions) {
 		List<Instruction> newList = new ArrayList<>();
 		
 		int offset = 0;
-		for(int i = 0; i < ins.size(); i++) {
-			if(ins.get(i) instanceof LabelInstruction) {
+		for(int i = 0; i < instructions.size(); i++) {
+			if(instructions.get(i) instanceof LabelInstruction) {
 				offset++;
 			} else {
-				String label = getLabel(ins.get(i));
+				String label = getLabel(instructions.get(i));
 				if(label == null) {
-					newList.add(ins.get(i));
+					newList.add(instructions.get(i));
 				} else {
-					newList.add(getOffsetInstruction(ins.get(i), labelPositions.get(label) - i + offset));
+					int jumpOffset = labelPositions.get(label) - i + offset;
+					newList.add(getOffsetInstruction(instructions.get(i), jumpOffset));
 				}
 			}
 		}

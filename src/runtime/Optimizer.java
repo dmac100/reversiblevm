@@ -1,7 +1,6 @@
 package runtime;
 
 import static org.hamcrest.Matchers.isA;
-import instruction.GetElementInstruction;
 import instruction.GetPropertyInstruction;
 import instruction.Instruction;
 import instruction.LoadInstruction;
@@ -13,25 +12,31 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 
 interface Replacement<T> {
 	T replace(List<? extends T> matched);
 }
 
 public class Optimizer {
-	public List<Instruction> optimize(List<Instruction> list) {
-		//int initialSize = list.size();
+	public List<Instruction> optimize(List<Instruction> instructions) {
+		instructions = JumpRewriter.convertToLabelledJumps(instructions);
+		instructions = optimizeInstructions(instructions);
+		instructions = JumpRewriter.convertToOffsetJumps(instructions);
+		return instructions;
+	}
+	
+	private List<Instruction> optimizeInstructions(List<Instruction> instructions) {
+		//int initialSize = instructions.size();
 		
 		while(true) {
-			List<Instruction> newList = applyReplacements(list);
+			List<Instruction> newList = applyReplacements(instructions);
 			
-			if(newList.equals(list)) {
-				//System.out.println("Initial Size: " + initialSize + " - New Size: " + list.size());
-				return list;
+			if(newList.equals(instructions)) {
+				//System.out.println("Initial Size: " + initialSize + " - New Size: " + instructions.size());
+				return instructions;
 			}
 			
-			list = newList;
+			instructions = newList;
 		}
 	}
 	
