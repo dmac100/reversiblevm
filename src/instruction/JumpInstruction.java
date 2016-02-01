@@ -18,7 +18,7 @@ public class JumpInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		StackFrame stackFrame = runtime.getCurrentStackFrame();
-		stackFrame.setInstructionCounter(stackFrame.getInstructionCounter() + (int)offset.getValue());
+		stackFrame.setInstructionCounter(stackFrame.getInstructionCounter() + (int)offset.getValue() - 1);
 	}
 	
 	public int getOffset() {

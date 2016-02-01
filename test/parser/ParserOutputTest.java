@@ -184,17 +184,17 @@ public class ParserOutputTest {
 	
 	@Test
 	public void LogicalANDExpression() {
-		assertParseOutput("true && false;", Arrays.asList("PUSH: true", "DUP", "JUMPIFFALSE: 2", "PUSH: false", "AND", "POP"));
+		assertParseOutput("true && false;", Arrays.asList("PUSH: true", "DUP", "JUMPIFFALSE: 3", "PUSH: false", "AND", "POP"));
 	}
 	
 	@Test
 	public void LogicalORExpression() {
-		assertParseOutput("true || false;", Arrays.asList("PUSH: true", "DUP", "JUMPIFTRUE: 2", "PUSH: false", "OR", "POP"));
+		assertParseOutput("true || false;", Arrays.asList("PUSH: true", "DUP", "JUMPIFTRUE: 3", "PUSH: false", "OR", "POP"));
 	}
 	
 	@Test
 	public void ConditionalExpression() {
-		assertParseOutput("x ? y : z;", Arrays.asList("LOAD: x", "JUMPIFFALSE: 2", "LOAD: y", "JUMP: 1", "LOAD: z", "POP"));
+		assertParseOutput("x ? y : z;", Arrays.asList("LOAD: x", "JUMPIFFALSE: 3", "LOAD: y", "JUMP: 2", "LOAD: z", "POP"));
 	}
 	
 	@Test
@@ -286,17 +286,17 @@ public class ParserOutputTest {
 	
 	@Test
 	public void IfStatement() {
-		assertParseOutput("if(x) { a; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 2", "LOAD: a", "POP"));
-		assertParseOutput("if(x) { a; } else { b; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 3", "LOAD: a", "POP", "JUMP: 2", "LOAD: b", "POP"));
-		assertParseOutput("if(x) { a; } else if(y) { b; } else { c; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 3", "LOAD: a", "POP", "JUMP: 7", "LOAD: y", "JUMPIFFALSE: 3", "LOAD: b", "POP", "JUMP: 2", "LOAD: c", "POP"));
+		assertParseOutput("if(x) { a; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 3", "LOAD: a", "POP"));
+		assertParseOutput("if(x) { a; } else { b; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 4", "LOAD: a", "POP", "JUMP: 3", "LOAD: b", "POP"));
+		assertParseOutput("if(x) { a; } else if(y) { b; } else { c; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 4", "LOAD: a", "POP", "JUMP: 8", "LOAD: y", "JUMPIFFALSE: 4", "LOAD: b", "POP", "JUMP: 3", "LOAD: c", "POP"));
 	}
 	
 	@Test
 	public void IterationStatement() {
-		assertParseOutput("do { a; } while(x);", Arrays.asList("LOAD: a", "POP", "LOAD: x", "JUMPIFTRUE: -4"));
-		assertParseOutput("while(x) { b; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 3", "LOAD: b", "POP", "JUMP: -5"));
-		assertParseOutput("for(x; y; z) { b; }", Arrays.asList("LOAD: x", "POP", "LOAD: y", "JUMPIFFALSE: 5", "LOAD: b", "POP", "LOAD: z", "POP", "JUMP: -7"));
-		assertParseOutput("for(var x; y; z) { b; }", Arrays.asList("LOCAL: x", "LOAD: y", "JUMPIFFALSE: 5", "LOAD: b", "POP", "LOAD: z", "POP", "JUMP: -7"));
+		assertParseOutput("do { a; } while(x);", Arrays.asList("LOAD: a", "POP", "LOAD: x", "JUMPIFTRUE: -3"));
+		assertParseOutput("while(x) { b; }", Arrays.asList("LOAD: x", "JUMPIFFALSE: 4", "LOAD: b", "POP", "JUMP: -4"));
+		assertParseOutput("for(x; y; z) { b; }", Arrays.asList("LOAD: x", "POP", "LOAD: y", "JUMPIFFALSE: 6", "LOAD: b", "POP", "LOAD: z", "POP", "JUMP: -6"));
+		assertParseOutput("for(var x; y; z) { b; }", Arrays.asList("LOCAL: x", "LOAD: y", "JUMPIFFALSE: 6", "LOAD: b", "POP", "LOAD: z", "POP", "JUMP: -6"));
 	}
 	
 	@Test

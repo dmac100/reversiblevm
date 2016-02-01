@@ -23,7 +23,7 @@ public class JumpIfFalseInstruction implements Instruction {
 		BooleanValue value = runtime.checkBooleanValue(stack.popValue());
 		if(!value.getValue()) {
 			StackFrame stackFrame = runtime.getCurrentStackFrame();
-			stackFrame.setInstructionCounter(stackFrame.getInstructionCounter() + (int)offset.getValue());
+			stackFrame.setInstructionCounter(stackFrame.getInstructionCounter() + (int)offset.getValue() - 1);
 		}
 	}
 	

@@ -148,7 +148,7 @@ public class EngineTest {
 	@Test
 	public void jump() {
 		assertOutput("6", Arrays.asList(
-			Jump(Value(6)),
+			Jump(Value(7)),
 			Push(NullValue()),
 			Push(Value(5)),
 			Push(Value(2)),
@@ -168,7 +168,7 @@ public class EngineTest {
 	public void jumpiftrue() {
 		assertOutput("6", Arrays.asList(
 			Push(Value(true)),
-			JumpIfTrue(Value(6)),
+			JumpIfTrue(Value(7)),
 			Push(NullValue()),
 			Push(Value(5)),
 			Push(Value(2)),
@@ -176,7 +176,7 @@ public class EngineTest {
 			Call(),
 			Pop(),
 			Push(Value(false)),
-			JumpIfTrue(Value(6)),
+			JumpIfTrue(Value(7)),
 			Push(NullValue()),
 			Push(Value(6)),
 			Push(Value(2)),

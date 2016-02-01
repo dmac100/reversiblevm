@@ -415,7 +415,7 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(
 					pop(1),
 					Instructions(Dup()),
-					Instructions(JumpIfFalse(Value(peek().size() + 1))),
+					Instructions(JumpIfFalse(Value(peek().size() + 2))),
 					pop(),
 					Instructions(And())
 				))
@@ -431,7 +431,7 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(
 					pop(1),
 					Instructions(Dup()),
-					Instructions(JumpIfTrue(Value(peek().size() + 1))),
+					Instructions(JumpIfTrue(Value(peek().size() + 2))),
 					pop(),
 					Instructions(Or())
 				))
@@ -448,9 +448,9 @@ public class Parser extends BaseParser<Instructions> {
 				AssignmentExpression(),
 				push(Instructions(
 					pop(2),
-					Instructions(JumpIfFalse(Value(peek(1).size() + 1))),
+					Instructions(JumpIfFalse(Value(peek(1).size() + 2))),
 					pop(1),
-					Instructions(Jump(Value(peek().size()))),
+					Instructions(Jump(Value(peek().size() + 1))),
 					pop()
 				))
 			)
@@ -604,9 +604,9 @@ public class Parser extends BaseParser<Instructions> {
 				Terminal("if"), Terminal("("), Expression(), Terminal(")"), Statement(), Terminal("else"), Statement(),
 				push(Instructions(
 					pop(2),
-					Instructions(JumpIfFalse(Value(peek(1).size() + 1))),
+					Instructions(JumpIfFalse(Value(peek(1).size() + 2))),
 					pop(1),
-					Instructions(Jump(Value(peek().size()))),
+					Instructions(Jump(Value(peek().size() + 1))),
 					pop()
 				))
 			),
@@ -614,7 +614,7 @@ public class Parser extends BaseParser<Instructions> {
 				Terminal("if"), Terminal("("), Expression(), Terminal(")"), Statement(),
 				push(Instructions(
 					pop(1),
-					Instructions(JumpIfFalse(Value(peek().size()))),
+					Instructions(JumpIfFalse(Value(peek().size() + 1))),
 					pop()
 				))
 			)
@@ -628,16 +628,16 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(
 					peek(1),
 					peek(),
-					Instructions(JumpIfTrue(Value(-pop().size() - pop().size() - 1)))
+					Instructions(JumpIfTrue(Value(-pop().size() - pop().size())))
 				))
 			),
 			Sequence(
 				Terminal("while"), Terminal("("), Expression(), Terminal(")"), Statement(),
 				push(Instructions(
 					peek(1),
-					Instructions(JumpIfFalse(Value(peek().size() + 1))),
+					Instructions(JumpIfFalse(Value(peek().size() + 2))),
 					peek(),
-					Instructions(Jump(Value(-pop().size() - pop().size() - 2)))
+					Instructions(Jump(Value(-pop().size() - pop().size() - 1)))
 				))
 			),
 			Sequence(
@@ -654,11 +654,11 @@ public class Parser extends BaseParser<Instructions> {
 					pop(3),
 					Instructions(Pop()),
 					peek(2),
-					Instructions(JumpIfFalse(Value(peek(0).size() + peek(1).size() + 2))),
+					Instructions(JumpIfFalse(Value(peek(0).size() + peek(1).size() + 3))),
 					peek(0),
 					peek(1),
 					Instructions(Pop()),
-					Instructions(Jump(Value(-pop().size() - pop().size() - pop().size() - 3)))
+					Instructions(Jump(Value(-pop().size() - pop().size() - pop().size() - 2)))
 				))
 			),
 			Sequence(
@@ -675,11 +675,11 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(
 					pop(3),
 					peek(2),
-					Instructions(JumpIfFalse(Value(peek(0).size() + peek(1).size() + 2))),
+					Instructions(JumpIfFalse(Value(peek(0).size() + peek(1).size() + 3))),
 					peek(0),
 					peek(1),
 					Instructions(Pop()),
-					Instructions(Jump(Value(-pop().size() - pop().size() - pop().size() - 3)))
+					Instructions(Jump(Value(-pop().size() - pop().size() - pop().size() - 2)))
 				))
 			)
 		);
