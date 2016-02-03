@@ -19,6 +19,9 @@ import parser.Parser;
 import value.FunctionValue;
 
 public class Engine {
+	private static final Parser parser = Parboiled.createParser(Parser.class);
+	private static final List<Instruction> includeInstructions = parseFile("/runtime/include.js");
+	
 	public void run(List<Instruction> instructions) {
 		run(new Runtime(), instructions);
 	}
@@ -27,7 +30,7 @@ public class Engine {
 		try {
 			GlobalScope globalScope = new GlobalScope();
 			
-			FunctionValue includeFunction = new FunctionValue(globalScope, 0, parseFile("/runtime/include.js"));
+			FunctionValue includeFunction = new FunctionValue(globalScope, 0, includeInstructions);
 			runtime.addStackFrame(includeFunction);
 			run(runtime);
 			
@@ -88,7 +91,6 @@ public class Engine {
 	}
 	
 	public static List<Instruction> compile(String program) {
-		Parser parser = Parboiled.createParser(Parser.class);
 		ReportingParseRunner<Instructions> parseRunner = new ReportingParseRunner<Instructions>(parser.Sequence(parser.Program(), BaseParser.EOI));
 		ParsingResult<Instructions> result = parseRunner.run(program);
 		if(result.valueStack.size() != 1) throw new CompileException("Invalid value stack size: " + result.valueStack.size());
