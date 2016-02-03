@@ -52,11 +52,9 @@ import instruction.ReturnInstruction;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.support.Var;
 
-@BuildParseTree
 public class Parser extends BaseParser<Instructions> {
 	public Rule Literal() {
 		return FirstOf(
@@ -463,32 +461,35 @@ public class Parser extends BaseParser<Instructions> {
 		return FirstOf(
 			Sequence(
 				LeftHandSideExpression(),
-				Terminal("="),
-				assignment.set(new AssignmentInstructions(pop())),
-				AssignmentExpression(),
-				push(Instructions(
-					Instructions(assignment.get().getPrefix()),
-					Instructions(assignment.get().getDup()),
-					pop(),
-					Instructions(assignment.get().getWrite()),
-					Instructions(assignment.get().getRead())
-				))
-			),
-			Sequence(
-				LeftHandSideExpression(),
-				CompoundAssignmentOperator(),
-				assignment.set(new AssignmentInstructions(pop(1))),
-				AssignmentExpression(),
-				push(Instructions(
-					Instructions(assignment.get().getPrefix()),
-					Instructions(assignment.get().getDup()),
-					Instructions(assignment.get().getDup()),
-					Instructions(assignment.get().getRead()),
-					pop(),
-					pop(),
-					Instructions(assignment.get().getWrite()),
-					Instructions(assignment.get().getRead())
-				))
+				FirstOf(
+					Sequence(
+						Terminal("="),
+						assignment.set(new AssignmentInstructions(pop())),
+						AssignmentExpression(),
+						push(Instructions(
+							Instructions(assignment.get().getPrefix()),
+							Instructions(assignment.get().getDup()),
+							pop(),
+							Instructions(assignment.get().getWrite()),
+							Instructions(assignment.get().getRead())
+						))
+					),
+					Sequence(
+						CompoundAssignmentOperator(),
+						assignment.set(new AssignmentInstructions(pop(1))),
+						AssignmentExpression(),
+						push(Instructions(
+							Instructions(assignment.get().getPrefix()),
+							Instructions(assignment.get().getDup()),
+							Instructions(assignment.get().getDup()),
+							Instructions(assignment.get().getRead()),
+							pop(),
+							pop(),
+							Instructions(assignment.get().getWrite()),
+							Instructions(assignment.get().getRead())
+						))
+					)
+				)
 			),
 			ConditionalExpression()
 		);
