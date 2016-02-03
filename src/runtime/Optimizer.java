@@ -2,20 +2,20 @@ package runtime;
 
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
+import instruction.DupInstruction;
+import instruction.GetElementInstruction;
 import instruction.GetPropertyInstruction;
 import instruction.Instruction;
 import instruction.LoadInstruction;
 import instruction.PopInstruction;
 import instruction.PushInstruction;
+import instruction.SwapInstruction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 
 interface Replacement<T> {
 	T replace(List<? extends T> matched);
@@ -61,24 +61,48 @@ public class Optimizer {
 	}
 
 	private static List<Instruction> applyReplacements(List<Instruction> list) {
-		list = replace(list,
-			Arrays.asList(
-				anyOf(
-					instanceOf(PushInstruction.class),
-					instanceOf(LoadInstruction.class)
-				),
-				instanceOf(PopInstruction.class)
+		list = replace(list, Arrays.asList(
+			anyOf(
+				instanceOf(PushInstruction.class),
+				instanceOf(LoadInstruction.class)
 			),
-			new ArrayList<Replacement<Instruction>>()
-		);
+			instanceOf(PopInstruction.class)
+		), new ArrayList<Replacement<Instruction>>());
 		
-		list = replace(list,
-			Arrays.asList(
-				instanceOf(GetPropertyInstruction.class),
-				instanceOf(PopInstruction.class)
-			),
-			Arrays.asList(ConstantReplacement(new PopInstruction()))
-		);
+		list = replace(list, Arrays.asList(
+			instanceOf(GetPropertyInstruction.class),
+			instanceOf(PopInstruction.class)
+		), Arrays.asList(ConstantReplacement(new PopInstruction())));
+		
+		list = replace(list, Arrays.asList(
+			instanceOf(LoadInstruction.class),
+			instanceOf(PushInstruction.class),
+			instanceOf(SwapInstruction.class)
+		), Arrays.asList(IndexedReplacement(1), IndexedReplacement(0)));
+		
+		list = replace(list, Arrays.asList(
+			instanceOf(LoadInstruction.class),
+			instanceOf(DupInstruction.class),
+			instanceOf(GetPropertyInstruction.class),
+			instanceOf(PushInstruction.class),
+			instanceOf(SwapInstruction.class)
+		), Arrays.asList(IndexedReplacement(0), IndexedReplacement(3), IndexedReplacement(0), IndexedReplacement(2)));
+		
+		list = replace(list, Arrays.asList(
+			instanceOf(LoadInstruction.class),
+			instanceOf(LoadInstruction.class),
+			instanceOf(LoadInstruction.class),
+			instanceOf(GetElementInstruction.class),
+			instanceOf(SwapInstruction.class)
+		), Arrays.asList(IndexedReplacement(1), IndexedReplacement(2), IndexedReplacement(3), IndexedReplacement(0)));
+		
+		list = replace(list, Arrays.asList(
+			instanceOf(LoadInstruction.class),
+			instanceOf(LoadInstruction.class),
+			instanceOf(LoadInstruction.class),
+			instanceOf(GetElementInstruction.class),
+			instanceOf(SwapInstruction.class)
+		), Arrays.asList(IndexedReplacement(1), IndexedReplacement(2), IndexedReplacement(3), IndexedReplacement(0)));
 		
 		return list;
 	}
