@@ -242,7 +242,6 @@ public class ParserTypeTest {
 		assertParseType("if(a) a();", parser.Statement());
 		assertParseType("while(a) { a(); }", parser.Statement());
 		assertParseType("return a;", parser.Statement());
-		assertParseType("switch(a) { default: a(); }", parser.Statement());
 	}
 
 	@Test
@@ -303,31 +302,6 @@ public class ParserTypeTest {
 	@Test
 	public void ReturnStatement() {
 		assertParseType("return 1;", parser.ReturnStatement());
-	}
-
-	@Test
-	public void SwitchStatement() {
-		assertParseType("switch(a) { default: a(); }", parser.SwitchStatement());
-	}
-
-	@Test
-	public void CaseBlock() {
-		assertParseType("{ default: a(); }", parser.CaseBlock());
-	}
-
-	@Test
-	public void CaseClauses() {
-		assertParseType("case 1: a(); case 2: b();", parser.CaseClauses());
-	}
-
-	@Test
-	public void CaseClause() {
-		assertParseType("case 1: a();", parser.CaseClause());
-	}
-
-	@Test
-	public void DefaultClause() {
-		assertParseType("default: a();", parser.DefaultClause());
 	}
 
 	@Test

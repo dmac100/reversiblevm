@@ -488,7 +488,7 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule CompoundAssignmentOperator() {
-		return FirstOf(	
+		return FirstOf(
 			Sequence(Terminal("*="), push(Instructions(Multiply()))),
 			Sequence(Terminal("/="), push(Instructions(Divide()))),
 			Sequence(Terminal("%="), push(Instructions(Modulo()))),
@@ -523,7 +523,6 @@ public class Parser extends BaseParser<Instructions> {
 			ReturnStatement(),
 			IfStatement(),
 			IterationStatement(),
-			SwitchStatement(),
 			ExpressionStatement()
 		);
 	}
@@ -683,29 +682,6 @@ public class Parser extends BaseParser<Instructions> {
 			Terminal("return"), push(Instructions(ReturnInstruction.Return())),
 			Optional(Expression(), push(Instructions(Instructions(Pop()), pop(), pop()))), Terminal(";")
 		);
-	}
-	
-	public Rule SwitchStatement() {
-		return Sequence(Terminal("switch"), Terminal("("), Expression(), Terminal(")"), CaseBlock());
-	}
-	
-	public Rule CaseBlock() {
-		return FirstOf(
-			Sequence(Terminal("{"), Optional(CaseClauses()), Terminal("}")),
-			Sequence(Terminal("{"), Optional(CaseClauses()), DefaultClause(), Optional(CaseClauses()), Terminal("}"))
-		);
-	}
-	
-	public Rule CaseClauses() {
-		return OneOrMore(CaseClause());
-	}
-	
-	public Rule CaseClause() {
-		return Sequence(Terminal("case"), Expression(), Terminal(":"), StatementList());
-	}
-	
-	public Rule DefaultClause() {
-		return Sequence(Terminal("default"), Terminal(":"), StatementList());
 	}
 	
 	public Rule FunctionDeclaration() {
