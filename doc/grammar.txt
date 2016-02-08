@@ -1,0 +1,83 @@
+Program:
+	(Statement | FunctionDeclaration)*
+
+Expression:
+	AssignmentExpression `,` ...
+
+AssignmentExpression
+	LeftHandSideExpression `=` AssignmentExpression
+	...
+
+LeftHandSideExpression:
+	CallExpression | MemberExpression
+
+MemberExpression:
+	(FunctionExpression | PrimaryExpression) ((`[` Expression `]`) | (`.` Identifier))*
+
+CallExpression:
+	(MemberExpression `(` AssignmentExpression `,` ... `)`) ((`(` AssignmentExpression `,` ... `)`) | (`[` Expression `]`) | (`.` Identifier))*
+
+PrimaryExpression:
+	Literal
+	Identifier
+	ArrayLiteral
+	ObjectLiteral
+	`(` Expression `)`
+
+Literal:
+	NullLiteral: `null`
+	BooleanLiteral: `true` | `false`
+	NumericLiteral: [0-9\.\-]+
+	StringLiteral: `'` ... `'` | `"` ... `"`
+
+Identifier:
+	[a-zA-Z$_][a-zA-Z0-9$_]*
+
+ArrayLiteral:
+	`[` AssignmentExpression `,` ... `]`
+
+ObjectLiteral:
+	`{` Identifier `:` AssignmentExpression `,` ... `}`
+
+Statement:
+	Block
+	VariableStatement
+	EmptyStatement
+	ReturnStatement
+	IfStatement
+	IterationStatement
+	ExpressionStatement
+
+Block:
+	`{` Statement ... `}`
+
+VariableStatement:
+	`var` Identifier `=` AssignmentExpression `,` ... `;`
+
+EmptyStatement:
+	`;`
+
+ReturnStatement:
+	`return` Expression? `;`
+
+IfStatement:
+	`if` `(` Expression `)` Statement (`else` Statement)?
+
+IterationStatement:
+	`do` Statement `while` `(` Expression `)` `;`
+	`while` `(` Expression `)` Statement
+	`for` `(` Expression? `;` Expression? `;` Expression? `)` Statement
+	`for` `(` `var` Identifier `=` AssignmentExpression `,` ... `;` Expression? `;` Expression? `)` Statement
+
+ExpressionStatement:
+	Expression `;`
+
+FunctionDeclaration:
+	`function` Identifier `(` Identifier `,` ... `)` `{` (Statement | FunctionDeclaration)* `}`
+
+FunctionExpression:
+	`function` `(` Identifier `,` ... `)` `{` (Statement | FunctionDeclaration)* `}`
+
+Comment:
+	`//` ...
+	`/*` ... `*/`
