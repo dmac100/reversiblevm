@@ -86,11 +86,6 @@ public class ParserTypeTest {
 	}
 
 	@Test
-	public void NewExpression() {
-		assertParseType("a", parser.NewExpression());
-	}
-
-	@Test
 	public void CallExpression() {
 		assertParseType("a()", parser.CallExpression());
 		assertParseType("a()()", parser.CallExpression());

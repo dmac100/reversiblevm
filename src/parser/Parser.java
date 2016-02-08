@@ -137,10 +137,6 @@ public class Parser extends BaseParser<Instructions> {
 		);
 	}
 	
-	public Rule Elision() {
-		return OneOrMore(Terminal(","));
-	}
-	
 	public Rule ObjectLiteral() {
 		return Sequence(
 			push(Instructions(NewObject())),
@@ -177,10 +173,6 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(pop(), Instructions(GetProperty(match().trim()))))
 			)
 		)));
-	}
-	
-	public Rule NewExpression() {
-		return MemberExpression();
 	}
 	
 	public Rule CallExpression() {
@@ -256,7 +248,7 @@ public class Parser extends BaseParser<Instructions> {
 	public Rule LeftHandSideExpression() {
 		return FirstOf(	
 			CallExpression(),
-			NewExpression()
+			MemberExpression()
 		);
 	}
 	
