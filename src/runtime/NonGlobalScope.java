@@ -1,12 +1,14 @@
 package runtime;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import value.NullValue;
 import value.Value;
 
-public class NonGlobalScope implements Scope {
+public class NonGlobalScope implements Scope, HasState {
 	private final Scope parentScope;
 	private final Map<String, Value> values = new HashMap<>();
 	
@@ -42,5 +44,18 @@ public class NonGlobalScope implements Scope {
 	
 	public String toString() {
 		return values + " -> " + parentScope;
+	}
+
+	@Override
+	public String getState(String prefix, Set<Object> used) {
+		StringBuilder s = new StringBuilder();
+		for(String name:values.keySet()) {
+			s.append(prefix + "Name: " + name).append("\n");
+			s.append(values.get(name).getState(prefix + "  ", new HashSet<>())).append("\n");
+		}
+		s.append(prefix + "ParentScope:").append("\n");
+		s.append(parentScope.getState(prefix + "  ", used));
+		
+		return s.toString().replaceAll("\\s+$", "");
 	}
 }

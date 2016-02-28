@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import runtime.ExecutionException;
+import runtime.HasState;
 
-public class ArrayValue extends Value {
+public class ArrayValue extends Value implements HasState {
 	private List<Value> values = new ArrayList<>();
 	
 	public ArrayValue() {
@@ -70,5 +71,20 @@ public class ArrayValue extends Value {
 		used.remove(this);
 		
 		return "[" + s.toString() + "]";
+	}
+	
+	public String getState(String prefix, Set<Object> used) {
+		if(used.contains(this)) return prefix + "[CYCLIC]";
+		used.add(this);
+		
+		StringBuilder s = new StringBuilder();
+		s.append(prefix + "Array:").append("\n");
+		for(int i = 0; i < values.size(); i++) {
+			s.append(values.get(i).getState(prefix + "  ", used)).append("\n");
+		}
+		
+		used.remove(this);
+		
+		return s.toString().replaceAll("\\s+$", "");
 	}
 }

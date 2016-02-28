@@ -1,7 +1,9 @@
 package runtime;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import value.ArrayValue;
 import value.BooleanValue;
@@ -11,7 +13,7 @@ import value.ObjectValue;
 import value.StringValue;
 import value.Value;
 
-public class Runtime {
+public class Runtime implements HasState {
 	private Stack stack = new Stack();
 	private List<StackFrame> stackFrames = new ArrayList<>();
 	private FunctionValue currentFunctionDefinition = null;
@@ -124,5 +126,27 @@ public class Runtime {
 		} else {
 			throw new ExecutionException("TypeError: Not a string: " + value);
 		}
+	}
+	
+	public String getState(String prefix, Set<Object> used) {
+		StringBuilder s = new StringBuilder();
+		
+		s.append("Runtime:").append("\n");
+		s.append("  Stack: ").append("\n");
+		s.append(stack.getState("    ", used));
+		s.append("  StackFrames:").append("\n");
+		for(StackFrame stackFrame:stackFrames) {
+			s.append("    StackFrame:").append("\n");
+			s.append(stackFrame.getState("      ", used)).append("\n");
+		}
+		if(currentFunctionDefinition != null) {
+			s.append("  CurrentFunction: ").append("\n");
+			s.append("  " + currentFunctionDefinition.getState("  ", new HashSet<>())).append("\n");
+		}
+		s.append("  NestedFunctionDefinitionCount: " + nestedFunctionDefinitionCount).append("\n");
+		s.append("  Errors: " + errors).append("\n");
+		s.append("  Output: " + output);
+		
+		return s.toString();
 	}
 }

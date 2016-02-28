@@ -5,8 +5,10 @@ import instruction.EqualInstruction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import value.ArrayValue;
 import value.BooleanValue;
@@ -17,7 +19,7 @@ import value.ObjectValue;
 import value.StringValue;
 import value.Value;
 
-public class GlobalScope implements Scope {
+public class GlobalScope implements Scope, HasState {
 	private Map<String, Value> values = new HashMap<>();
 	
 	public GlobalScope() {
@@ -375,5 +377,16 @@ public class GlobalScope implements Scope {
 	public String toString() {
 		return "{GLOBALS}";
 		//return values.toString();
+	}
+	
+	@Override
+	public String getState(String prefix, Set<Object> used) {
+		StringBuilder s = new StringBuilder();
+		for(String name:values.keySet()) {
+			s.append(prefix + "Name: " + name).append("\n");
+			s.append(values.get(name).getState(prefix + "  ", used)).append("\n");
+		}
+		
+		return s.toString().replaceAll("\\s+$", "");
 	}
 }

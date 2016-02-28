@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import runtime.HasState;
 import runtime.NonGlobalScope;
 import runtime.Scope;
 
-public class FunctionValue extends Value {
+public class FunctionValue extends Value implements HasState {
 	private final List<Instruction> instructions = new ArrayList<>();
 	private final int paramCount;
 	
@@ -45,5 +46,14 @@ public class FunctionValue extends Value {
 	public String toString(Set<Value> used) {
 		return "[Function]";
 		//return "[" + instructions + "]";
+	}
+	
+	public String getState(String prefix, Set<Object> used) {
+		StringBuilder s = new StringBuilder();
+		s.append(prefix + "Instructions: " + instructions).append("\n");
+		s.append(prefix + "ParentScope: ").append("\n");
+		s.append(parentScope.getState(prefix + "  ", used));
+		return s.toString();
+		
 	}
 }

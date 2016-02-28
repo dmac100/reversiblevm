@@ -8,8 +8,9 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import runtime.ExecutionException;
+import runtime.HasState;
 
-public class ObjectValue extends Value {
+public class ObjectValue extends Value implements HasState {
 	private SortedMap<String, Value> values = new TreeMap<>();
 	
 	public ObjectValue() {
@@ -68,5 +69,22 @@ public class ObjectValue extends Value {
 		used.remove(this);
 		
 		return "{" + s.toString() + "}";
+	}
+	
+	public String getState(String prefix, Set<Object> used) {
+		if(used.contains(this)) return prefix + "[CYCLIC]";
+		used.add(this);
+		
+		StringBuilder s = new StringBuilder();
+		s.append(prefix + "Object:").append("\n");
+		for(String key:values.keySet()) {
+			s.append(prefix + "  Key: " + key).append("\n");
+			s.append(prefix + "  Value:").append("\n");
+			s.append(values.get(key).getState(prefix + "    ", used)).append("\n");
+		}
+		
+		used.remove(this);
+		
+		return s.toString().replaceAll("\\s+$", "");
 	}
 }

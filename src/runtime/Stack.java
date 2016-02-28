@@ -2,12 +2,11 @@ package runtime;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import value.DoubleValue;
-import value.NativeFunctionValue;
 import value.Value;
 
-public class Stack {
+public class Stack implements HasState {
 	private List<Value> stack = new ArrayList<>();
 
 	public boolean isEmpty() {
@@ -25,5 +24,13 @@ public class Stack {
 	
 	public String toString() {
 		return stack.toString();
+	}
+
+	public String getState(String prefix, Set<Object> used) {
+		StringBuilder s = new StringBuilder();
+		for(Value value:stack) {
+			s.append(value.getState(prefix, used)).append("\n");
+		}
+		return s.toString();
 	}
 }
