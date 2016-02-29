@@ -22,57 +22,61 @@ public class Engine {
 	private static final Parser parser = Parboiled.createParser(Parser.class);
 	private static final List<Instruction> includeInstructions = parseFile("/runtime/include.js");
 	
-	public void run(List<Instruction> instructions) {
-		run(new Runtime(), instructions);
+	private final Runtime runtime;
+	private final List<Instruction> instructions;
+	
+	public Engine(List<Instruction> instructions) {
+		this(new Runtime(), instructions);
 	}
 	
-	public void run(Runtime runtime, List<Instruction> instructions) {
+	public Engine(Runtime runtime, List<Instruction> instructions) throws ExecutionException {
+		this.runtime = runtime;
+		this.instructions = instructions;
+		
+		GlobalScope globalScope = new GlobalScope();
+		
+		runtime.addStackFrame(new FunctionValue(globalScope, 0, includeInstructions));
+		run();
+		
+		runtime.addStackFrame(new FunctionValue(globalScope, 0, instructions));
+	}
+	
+	public void run() {
 		try {
-			GlobalScope globalScope = new GlobalScope();
-			
-			FunctionValue includeFunction = new FunctionValue(globalScope, 0, includeInstructions);
-			runtime.addStackFrame(includeFunction);
-			run(runtime);
-			
-			FunctionValue mainFunction = new FunctionValue(globalScope, 0, instructions);
-			runtime.addStackFrame(mainFunction);
-			run(runtime);
+			while(runtime.getCurrentStackFrame() != null) {
+				stepForward();
+			}
 		} catch(ExecutionException e) {
 			System.err.println("Error: " + e.getMessage());
 			runtime.getErrors().add(e.getMessage());
 		}
 	}
 	
-	private void run(Runtime runtime) throws ExecutionException {
-		while(true) {
-			StackFrame frame = runtime.getCurrentStackFrame();
-			if(frame == null) {
-				return;
-			}
-			FunctionValue function = frame.getFunction();
-			
-			if(frame.getInstructionCounter() >= function.getInstructions().size()) {
-				runtime.popStackFrame();
-				continue;
-			}
-			
-			Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
-			
-			if(runtime.getNestedFunctionDefinitionCount() == 0) {
-				execute(runtime, instruction);
-			} else {
-				if(instruction instanceof StartFunctionInstruction || instruction instanceof EndFunctionInstruction) {
-					execute(runtime, instruction);
-				} else {
-					runtime.getCurrentFunctionDefinition().addInstruction(instruction);
-				}
-			}
-			
-			frame.setInstructionCounter(frame.getInstructionCounter() + 1);
+	private void stepForward() {
+		StackFrame frame = runtime.getCurrentStackFrame();
+		FunctionValue function = frame.getFunction();
+		
+		if(frame.getInstructionCounter() >= function.getInstructions().size()) {
+			runtime.popStackFrame();
+			return;
 		}
+		
+		Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
+		
+		if(runtime.getNestedFunctionDefinitionCount() == 0) {
+			execute(instruction);
+		} else {
+			if(instruction instanceof StartFunctionInstruction || instruction instanceof EndFunctionInstruction) {
+				execute(instruction);
+			} else {
+				runtime.getCurrentFunctionDefinition().addInstruction(instruction);
+			}
+		}
+		
+		frame.setInstructionCounter(frame.getInstructionCounter() + 1);
 	}
 
-	private void execute(Runtime runtime, Instruction instruction) throws ExecutionException {
+	private void execute(Instruction instruction) throws ExecutionException {
 		try {
 			instruction.execute(runtime);
 			//System.out.println(runtime.getNestedFunctionDefinitionCount() + ":" + runtime.getCurrentStackFrame().getInstructionCounter() + " - EXECUTING: " + instruction + " - " + runtime.getStack() + " - " + runtime.getScope());

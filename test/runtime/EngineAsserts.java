@@ -23,7 +23,7 @@ public class EngineAsserts {
 	
 	public static void assertStackValue(String expected, List<Instruction> instructions) {
 		Runtime runtime = new Runtime();
-		new Engine().run(runtime, instructions);
+		new Engine(runtime, instructions).run();
 		
 		assertTrue(runtime.getOutput().isEmpty());
 		assertTrue(runtime.getErrors().isEmpty());
@@ -33,7 +33,7 @@ public class EngineAsserts {
 	
 	public static void assertOutput(String expected, List<Instruction> instructions) {
 		Runtime runtime = new Runtime();
-		new Engine().run(runtime, instructions);
+		new Engine(runtime, instructions).run();
 		
 		assertEquals(expected, StringUtils.join(runtime.getOutput(), "\n"));
 		assertTrue(runtime.getErrors().isEmpty());
@@ -42,7 +42,7 @@ public class EngineAsserts {
 	
 	public static void assertError(String expected, List<Instruction> instructions) {
 		Runtime runtime = new Runtime();
-		new Engine().run(runtime, instructions);
+		new Engine(runtime, instructions).run();
 		
 		assertEquals(expected, runtime.getErrors().get(0));
 		assertTrue(runtime.getOutput().isEmpty());
