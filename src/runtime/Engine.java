@@ -33,7 +33,7 @@ public class Engine {
 		this.runtime = runtime;
 		this.instructions = instructions;
 		
-		GlobalScope globalScope = new GlobalScope();
+		GlobalScope globalScope = new GlobalScope(runtime.getUndoStack());
 		
 		runtime.addStackFrame(new FunctionValue(globalScope, 0, includeInstructions));
 		run();
@@ -53,6 +53,8 @@ public class Engine {
 	}
 	
 	public void stepForward() {
+		runtime.getUndoStack().saveUndoPoint();
+		
 		StackFrame frame = runtime.getCurrentStackFrame();
 		FunctionValue function = frame.getFunction();
 		
@@ -77,6 +79,7 @@ public class Engine {
 	}
 	
 	public void stepBackward() {
+		runtime.getUndoStack().undo();
 	}
 
 	private void execute(Instruction instruction) throws ExecutionException {

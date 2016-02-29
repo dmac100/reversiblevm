@@ -14,7 +14,9 @@ import value.StringValue;
 import value.Value;
 
 public class Runtime implements HasState {
-	private Stack stack = new Stack();
+	private UndoStack undoStack = new UndoStack();
+	
+	private Stack stack = new Stack(undoStack);
 	private List<StackFrame> stackFrames = new ArrayList<>();
 	private FunctionValue currentFunctionDefinition = null;
 	private int nestedFunctionDefinitionCount = 0;
@@ -23,7 +25,12 @@ public class Runtime implements HasState {
 	private List<String> output = new ArrayList<>();
 	
 	public void addStackFrame(FunctionValue function) {
-		stackFrames.add(new StackFrame(function, new NonGlobalScope(function.getParentScope())));
+		NonGlobalScope scope = new NonGlobalScope(function.getParentScope(), undoStack);
+		addStackFrame(new StackFrame(function, scope, undoStack));
+	}
+	
+	public void addStackFrame(StackFrame frame) {
+		stackFrames.add(frame);
 	}
 	
 	public StackFrame getCurrentStackFrame() {
@@ -31,7 +38,17 @@ public class Runtime implements HasState {
 	}
 	
 	public StackFrame popStackFrame() {
-		return stackFrames.isEmpty() ? null : stackFrames.remove(stackFrames.size() - 1);
+		if(stackFrames.isEmpty()) return null;
+		
+		final StackFrame frame = stackFrames.remove(stackFrames.size() - 1);
+		
+		undoStack.add(new Runnable() {
+			public void run() {
+				stackFrames.add(frame);
+			}
+		});
+		
+		return frame;
 	}
 	
 	public Scope getScope() {
@@ -62,6 +79,10 @@ public class Runtime implements HasState {
 	
 	public List<String> getErrors() {
 		return errors;
+	}
+	
+	public UndoStack getUndoStack() {
+		return undoStack;
 	}
 	
 	public FunctionValue getCurrentFunctionDefinition() {

@@ -20,9 +20,12 @@ import value.StringValue;
 import value.Value;
 
 public class GlobalScope implements Scope, HasState {
-	private Map<String, Value> values = new HashMap<>();
+	private final UndoStack undoStack;
+	private final Map<String, Value> values = new HashMap<>();
 	
-	public GlobalScope() {
+	public GlobalScope(UndoStack undoStack) {
+		this.undoStack = undoStack;
+		
 		ObjectValue objectProto = new ObjectValue();
 		ObjectValue stringProto = new ObjectValue();
 		ObjectValue arrayProto = new ObjectValue();
@@ -360,12 +363,31 @@ public class GlobalScope implements Scope, HasState {
 		}
 	}
 
-	public void set(String name, Value value) {
+	public void set(final String name, final Value value) {
+		if(values.containsKey(name)) {
+			final Value oldValue = values.get(name);
+			undoStack.add(new Runnable() {
+				public void run() {
+					values.put(name, oldValue);
+				}
+			});
+		} else {
+			undoStack.add(new Runnable() {
+				public void run() {
+					values.remove(name);
+				}
+			});
+		}
 		values.put(name, value);
 	}
 	
-	public void create(String name) {
+	public void create(final String name) {
 		if(!values.containsKey(name)) {
+			undoStack.add(new Runnable() {
+				public void run() {
+					values.remove(name);
+				}
+			});
 			values.put(name, new NullValue());
 		}
 	}
@@ -375,12 +397,12 @@ public class GlobalScope implements Scope, HasState {
 	}
 	
 	public String toString() {
-		return "{GLOBALS}";
-		//return values.toString();
+		return "[GLOBALS]";
 	}
 	
 	@Override
 	public String getState(String prefix, Set<Object> used) {
+		//return prefix + "[GLOBALS]";
 		StringBuilder s = new StringBuilder();
 		for(String name:values.keySet()) {
 			s.append(prefix + "Name: " + name).append("\n");

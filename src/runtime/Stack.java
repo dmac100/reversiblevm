@@ -7,7 +7,12 @@ import java.util.Set;
 import value.Value;
 
 public class Stack implements HasState {
-	private List<Value> stack = new ArrayList<>();
+	private final UndoStack undoStack;
+	private final List<Value> stack = new ArrayList<>();
+	
+	public Stack(UndoStack undoStack) {
+		this.undoStack = undoStack;
+	}
 
 	public boolean isEmpty() {
 		return stack.isEmpty();
@@ -15,10 +20,20 @@ public class Stack implements HasState {
 	
 	public void push(Value value) {
 		stack.add(value);
+		undoStack.add(new Runnable() {
+			public void run() {
+				stack.remove(stack.size() - 1);
+			}
+		});
 	}
 	
 	public Value popValue() {
-		Value value = stack.remove(stack.size() - 1);
+		final Value value = stack.remove(stack.size() - 1);
+		undoStack.add(new Runnable() {
+			public void run() {
+				stack.add(value);
+			}
+		});
 		return (Value) value;
 	}
 	

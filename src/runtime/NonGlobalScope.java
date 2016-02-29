@@ -10,10 +10,12 @@ import value.Value;
 
 public class NonGlobalScope implements Scope, HasState {
 	private final Scope parentScope;
+	private final UndoStack undoStack;
 	private final Map<String, Value> values = new HashMap<>();
 	
-	public NonGlobalScope(Scope parentScope) {
+	public NonGlobalScope(Scope parentScope, UndoStack undoStack) {
 		this.parentScope = parentScope;
+		this.undoStack = undoStack;
 	}
 	
 	public Value get(String name) {
@@ -24,16 +26,27 @@ public class NonGlobalScope implements Scope, HasState {
 		}
 	}
 
-	public void set(String name, Value value) {
+	public void set(final String name, final Value value) {
 		if(values.containsKey(name)) {
+			final Value oldValue = values.get(name);
+			undoStack.add(new Runnable() {
+				public void run() {
+					values.put(name, oldValue);
+				}
+			});
 			values.put(name, value);
 		} else {
 			parentScope.set(name, value);
 		}
 	}
 
-	public void create(String name) {
+	public void create(final String name) {
 		if(!values.containsKey(name)) {
+			undoStack.add(new Runnable() {
+				public void run() {
+					values.remove(name);
+				}
+			});
 			values.put(name, new NullValue());
 		}
 	}

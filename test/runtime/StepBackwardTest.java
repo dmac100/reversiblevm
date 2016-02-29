@@ -11,6 +11,7 @@ import org.junit.Test;
 public class StepBackwardTest {
 	@Test
 	public void test() {
+		assertStepBackward("var x = 1; x = 2;");
 		assertStepBackward("x = 1; x = 2;");
 	}
 
