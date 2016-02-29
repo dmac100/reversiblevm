@@ -128,6 +128,10 @@ public class Runtime implements HasState {
 		}
 	}
 	
+	public String getState() {
+		return getState("", new HashSet<>());
+	}
+	
 	public String getState(String prefix, Set<Object> used) {
 		StringBuilder s = new StringBuilder();
 		

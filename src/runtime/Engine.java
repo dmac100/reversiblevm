@@ -52,7 +52,7 @@ public class Engine {
 		}
 	}
 	
-	private void stepForward() {
+	public void stepForward() {
 		StackFrame frame = runtime.getCurrentStackFrame();
 		FunctionValue function = frame.getFunction();
 		
@@ -74,6 +74,9 @@ public class Engine {
 		}
 		
 		frame.setInstructionCounter(frame.getInstructionCounter() + 1);
+	}
+	
+	public void stepBackward() {
 	}
 
 	private void execute(Instruction instruction) throws ExecutionException {
