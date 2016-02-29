@@ -49,11 +49,16 @@ public class FunctionValue extends Value implements HasState {
 	}
 	
 	public String getState(String prefix, Set<Object> used) {
+		if(used.contains(this)) return prefix + "[CYCLIC]";
+		used.add(this);
+		
 		StringBuilder s = new StringBuilder();
 		s.append(prefix + "Instructions: " + instructions).append("\n");
 		s.append(prefix + "ParentScope: ").append("\n");
 		s.append(parentScope.getState(prefix + "  ", used));
-		return s.toString();
 		
+		used.remove(this);
+		
+		return s.toString();
 	}
 }

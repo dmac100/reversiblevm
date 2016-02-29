@@ -61,13 +61,18 @@ public class NonGlobalScope implements Scope, HasState {
 
 	@Override
 	public String getState(String prefix, Set<Object> used) {
+		if(used.contains(this)) return prefix + "[CYCLIC]";
+		used.add(this);
+		
 		StringBuilder s = new StringBuilder();
 		for(String name:values.keySet()) {
 			s.append(prefix + "Name: " + name).append("\n");
-			s.append(values.get(name).getState(prefix + "  ", new HashSet<>())).append("\n");
+			s.append(values.get(name).getState(prefix + "  ", used)).append("\n");
 		}
 		s.append(prefix + "ParentScope:").append("\n");
 		s.append(parentScope.getState(prefix + "  ", used));
+		
+		used.remove(this);
 		
 		return s.toString().replaceAll("\\s+$", "");
 	}

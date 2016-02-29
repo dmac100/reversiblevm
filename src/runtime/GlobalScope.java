@@ -26,9 +26,9 @@ public class GlobalScope implements Scope, HasState {
 	public GlobalScope(UndoStack undoStack) {
 		this.undoStack = undoStack;
 		
-		ObjectValue objectProto = new ObjectValue();
-		ObjectValue stringProto = new ObjectValue();
-		ObjectValue arrayProto = new ObjectValue();
+		ObjectValue objectProto = new ObjectValue(undoStack);
+		ObjectValue stringProto = new ObjectValue(undoStack);
+		ObjectValue arrayProto = new ObjectValue(undoStack);
 		
 		values.put("ObjectProto", objectProto);
 		values.put("StringProto", stringProto);
@@ -131,7 +131,7 @@ public class GlobalScope implements Scope, HasState {
 				if(string.endsWith(separator)) {
 					list.add(new StringValue(""));
 				}
-				return new ArrayValue(list);
+				return new ArrayValue(list, runtime.getUndoStack());
 			}
 		});
 		
@@ -173,7 +173,7 @@ public class GlobalScope implements Scope, HasState {
 						list.add(new StringValue(key));
 					}
 				}
-				return new ArrayValue(list);
+				return new ArrayValue(list, runtime.getUndoStack());
 			}
 		});
 		
@@ -195,7 +195,7 @@ public class GlobalScope implements Scope, HasState {
 				for(Value value:other.values()) {
 					list.add(value);
 				}
-				return new ArrayValue(list);
+				return new ArrayValue(list, runtime.getUndoStack());
 			}
 		});
 		
@@ -255,7 +255,7 @@ public class GlobalScope implements Scope, HasState {
 				for(int i = start; i < end; i++) {
 					list.add(array.get(i));
 				}
-				return new ArrayValue(list);
+				return new ArrayValue(list, runtime.getUndoStack());
 			}
 		});
 		
@@ -350,7 +350,7 @@ public class GlobalScope implements Scope, HasState {
 					}
 				}
 				array.setValues(values);
-				return new ArrayValue(removed);
+				return new ArrayValue(removed, runtime.getUndoStack());
 			}
 		});
 	}

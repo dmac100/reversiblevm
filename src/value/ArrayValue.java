@@ -6,15 +6,19 @@ import java.util.Set;
 
 import runtime.ExecutionException;
 import runtime.HasState;
+import runtime.UndoStack;
 
 public class ArrayValue extends Value implements HasState {
+	private final UndoStack undoStack;
 	private List<Value> values = new ArrayList<>();
 	
-	public ArrayValue() {
+	public ArrayValue(UndoStack undoStack) {
+		this.undoStack = undoStack;
 	}
 	
-	public ArrayValue(List<Value> values) {
+	public ArrayValue(List<Value> values, UndoStack undoStack) {
 		this.values = values;
+		this.undoStack = undoStack;
 	}
 
 	public Value get(DoubleValue indexValue) throws ExecutionException {
@@ -28,8 +32,25 @@ public class ArrayValue extends Value implements HasState {
 	}
 	
 	public void set(DoubleValue indexValue, Value value) throws ExecutionException {
-		int index = (int)indexValue.getValue();
+		final int index = (int)indexValue.getValue();
 		if(index < 0) throw new ExecutionException("Invalid index: " + index);
+		if(index < values.size()) {
+			final Value oldValue = values.get(index);
+			undoStack.add(new Runnable() {
+				public void run() {
+					values.set(index, oldValue);
+				}
+			});
+		} else {
+			final int oldSize = values.size();
+			undoStack.add(new Runnable() {
+				public void run() {
+					while(values.size() > oldSize) {
+						values.remove(values.size() - 1);
+					}
+				}
+			});
+		}
 		while(values.size() <= index) {
 			values.add(new NullValue());
 		}
@@ -37,6 +58,11 @@ public class ArrayValue extends Value implements HasState {
 	}
 	
 	public void push(Value value) {
+		undoStack.add(new Runnable() {
+			public void run() {
+				values.remove(values.size() - 1);
+			}
+		});
 		values.add(value);
 	}
 	
@@ -45,6 +71,12 @@ public class ArrayValue extends Value implements HasState {
 	}
 	
 	public void setValues(List<Value> values) {
+		final List<Value> oldValues = new ArrayList<>(values);
+		undoStack.add(new Runnable() {
+			public void run() {
+				ArrayValue.this.values = oldValues;
+			}
+		});
 		this.values = values;
 	}
 	
@@ -52,10 +84,6 @@ public class ArrayValue extends Value implements HasState {
 		return new ArrayList<>(values);
 	}
 
-	public static ArrayValue Value() {
-		return new ArrayValue();
-	}
-	
 	public String toString(Set<Value> used) {
 		if(used.contains(this)) return "[CYCLIC]";
 		used.add(this);

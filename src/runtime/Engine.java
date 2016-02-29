@@ -55,27 +55,29 @@ public class Engine {
 	public void stepForward() {
 		runtime.getUndoStack().saveUndoPoint();
 		
-		StackFrame frame = runtime.getCurrentStackFrame();
-		FunctionValue function = frame.getFunction();
-		
-		if(frame.getInstructionCounter() >= function.getInstructions().size()) {
-			runtime.popStackFrame();
-			return;
-		}
-		
-		Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
-		
-		if(runtime.getNestedFunctionDefinitionCount() == 0) {
-			execute(instruction);
-		} else {
-			if(instruction instanceof StartFunctionInstruction || instruction instanceof EndFunctionInstruction) {
+		do {
+			StackFrame frame = runtime.getCurrentStackFrame();
+			FunctionValue function = frame.getFunction();
+			
+			if(frame.getInstructionCounter() >= function.getInstructions().size()) {
+				runtime.popStackFrame();
+				return;
+			}
+
+			Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
+			
+			if(runtime.getNestedFunctionDefinitionCount() == 0) {
 				execute(instruction);
 			} else {
-				runtime.getCurrentFunctionDefinition().addInstruction(instruction);
+				if(instruction instanceof StartFunctionInstruction || instruction instanceof EndFunctionInstruction) {
+					execute(instruction);
+				} else {
+					runtime.getCurrentFunctionDefinition().addInstruction(instruction);
+				}
 			}
-		}
-		
-		frame.setInstructionCounter(frame.getInstructionCounter() + 1);
+			
+			frame.setInstructionCounter(frame.getInstructionCounter() + 1);
+		} while(runtime.getNestedFunctionDefinitionCount() > 0);
 	}
 	
 	public void stepBackward() {

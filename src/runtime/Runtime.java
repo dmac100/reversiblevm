@@ -31,6 +31,12 @@ public class Runtime implements HasState {
 	
 	public void addStackFrame(StackFrame frame) {
 		stackFrames.add(frame);
+		
+		undoStack.add(new Runnable() {
+			public void run() {
+				stackFrames.remove(stackFrames.size() - 1);
+			}
+		});
 	}
 	
 	public StackFrame getCurrentStackFrame() {
@@ -61,11 +67,21 @@ public class Runtime implements HasState {
 	
 	public void throwError(String error) {
 		System.err.println("Error: " + error);
+		undoStack.add(new Runnable() {
+			public void run() {
+				errors.remove(output.size() - 1);
+			}
+		});
 		errors.add(error);
 	}
 	
 	public void print(String value) {
 		System.out.println(value);
+		undoStack.add(new Runnable() {
+			public void run() {
+				output.remove(output.size() - 1);
+			}
+		});
 		output.add(value);
 	}
 

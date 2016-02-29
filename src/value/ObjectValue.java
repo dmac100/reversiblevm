@@ -9,11 +9,14 @@ import java.util.TreeMap;
 
 import runtime.ExecutionException;
 import runtime.HasState;
+import runtime.UndoStack;
 
 public class ObjectValue extends Value implements HasState {
-	private SortedMap<String, Value> values = new TreeMap<>();
+	private final SortedMap<String, Value> values = new TreeMap<>();
+	private final UndoStack undoStack;
 	
-	public ObjectValue() {
+	public ObjectValue(UndoStack undoStack) {
+		this.undoStack = undoStack;
 	}
 	
 	public Value get(String name) {
@@ -26,7 +29,22 @@ public class ObjectValue extends Value implements HasState {
 		}
 	}
 	
-	public void set(String name, Value value) throws ExecutionException {
+	public void set(final String name, final Value value) throws ExecutionException {
+		if(values.containsKey(name)) {
+			final Value oldValue = values.get(name);
+			undoStack.add(new Runnable() {
+				public void run() {
+					values.put(name, oldValue);
+				}
+			});
+		} else {
+			undoStack.add(new Runnable() {
+				public void run() {
+					values.remove(name);
+				}
+			});
+		}
+		
 		values.put(name, value);
 		checkCyclicPrototype(new HashSet<>());
 	}
@@ -40,10 +58,6 @@ public class ObjectValue extends Value implements HasState {
 		}
 	}
 
-	public static ObjectValue Value() {
-		return new ObjectValue();
-	}
-	
 	public List<String> keys() {
 		return new ArrayList<>(values.keySet());
 	}
