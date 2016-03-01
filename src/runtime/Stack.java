@@ -20,7 +20,7 @@ public class Stack implements HasState {
 	
 	public void push(Value value) {
 		stack.add(value);
-		undoStack.add(new Runnable() {
+		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
 				stack.remove(stack.size() - 1);
 			}
@@ -29,7 +29,7 @@ public class Stack implements HasState {
 	
 	public Value popValue() {
 		final Value value = stack.remove(stack.size() - 1);
-		undoStack.add(new Runnable() {
+		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
 				stack.add(value);
 			}

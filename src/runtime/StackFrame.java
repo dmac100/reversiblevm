@@ -8,13 +8,11 @@ import value.FunctionValue;
 public class StackFrame implements HasState {
 	private final FunctionValue function;
 	private final Scope scope;
-	private final UndoStack undoStack;
 	private int instructionCounter = 0;
 
 	public StackFrame(FunctionValue function, Scope scope, UndoStack undoStack) {
 		this.function = function;
 		this.scope = scope;
-		this.undoStack = undoStack;
 	}
 	
 	public int getInstructionCounter() {
@@ -22,12 +20,6 @@ public class StackFrame implements HasState {
 	}
 	
 	public void setInstructionCounter(int instructionCounter) {
-		final int oldInstructionCounter = this.instructionCounter;
-		undoStack.add(new Runnable() {
-			public void run() {
-				StackFrame.this.instructionCounter = oldInstructionCounter;
-			}
-		});
 		this.instructionCounter = instructionCounter;
 	}
 	

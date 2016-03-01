@@ -54,16 +54,17 @@ public class Engine {
 	
 	public void stepForward() {
 		runtime.getUndoStack().saveUndoPoint();
+		runtime.getUndoStack().addInstructionCounterUndo(runtime.getCurrentStackFrame().getInstructionCounter());
 		
-		do {
-			StackFrame frame = runtime.getCurrentStackFrame();
-			FunctionValue function = frame.getFunction();
-			
-			if(frame.getInstructionCounter() >= function.getInstructions().size()) {
-				runtime.popStackFrame();
-				return;
-			}
+		StackFrame frame = runtime.getCurrentStackFrame();
+		FunctionValue function = frame.getFunction();
+		
+		if(frame.getInstructionCounter() >= function.getInstructions().size()) {
+			runtime.popStackFrame();
+			return;
+		}
 
+		do {
 			Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
 			
 			if(runtime.getNestedFunctionDefinitionCount() == 0) {
@@ -81,7 +82,7 @@ public class Engine {
 	}
 	
 	public void stepBackward() {
-		runtime.getUndoStack().undo();
+		runtime.getUndoStack().undo(runtime);
 	}
 
 	private void execute(Instruction instruction) throws ExecutionException {

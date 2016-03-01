@@ -32,7 +32,7 @@ public class Runtime implements HasState {
 	public void addStackFrame(StackFrame frame) {
 		stackFrames.add(frame);
 		
-		undoStack.add(new Runnable() {
+		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
 				stackFrames.remove(stackFrames.size() - 1);
 			}
@@ -48,7 +48,7 @@ public class Runtime implements HasState {
 		
 		final StackFrame frame = stackFrames.remove(stackFrames.size() - 1);
 		
-		undoStack.add(new Runnable() {
+		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
 				stackFrames.add(frame);
 			}
@@ -67,7 +67,7 @@ public class Runtime implements HasState {
 	
 	public void throwError(String error) {
 		System.err.println("Error: " + error);
-		undoStack.add(new Runnable() {
+		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
 				errors.remove(output.size() - 1);
 			}
@@ -77,7 +77,7 @@ public class Runtime implements HasState {
 	
 	public void print(String value) {
 		System.out.println(value);
-		undoStack.add(new Runnable() {
+		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
 				output.remove(output.size() - 1);
 			}

@@ -32,13 +32,13 @@ public class ObjectValue extends Value implements HasState {
 	public void set(final String name, final Value value) throws ExecutionException {
 		if(values.containsKey(name)) {
 			final Value oldValue = values.get(name);
-			undoStack.add(new Runnable() {
+			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.put(name, oldValue);
 				}
 			});
 		} else {
-			undoStack.add(new Runnable() {
+			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.remove(name);
 				}

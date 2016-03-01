@@ -366,13 +366,13 @@ public class GlobalScope implements Scope, HasState {
 	public void set(final String name, final Value value) {
 		if(values.containsKey(name)) {
 			final Value oldValue = values.get(name);
-			undoStack.add(new Runnable() {
+			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.put(name, oldValue);
 				}
 			});
 		} else {
-			undoStack.add(new Runnable() {
+			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.remove(name);
 				}
@@ -383,7 +383,7 @@ public class GlobalScope implements Scope, HasState {
 	
 	public void create(final String name) {
 		if(!values.containsKey(name)) {
-			undoStack.add(new Runnable() {
+			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.remove(name);
 				}

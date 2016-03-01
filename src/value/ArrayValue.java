@@ -36,14 +36,14 @@ public class ArrayValue extends Value implements HasState {
 		if(index < 0) throw new ExecutionException("Invalid index: " + index);
 		if(index < values.size()) {
 			final Value oldValue = values.get(index);
-			undoStack.add(new Runnable() {
+			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.set(index, oldValue);
 				}
 			});
 		} else {
 			final int oldSize = values.size();
-			undoStack.add(new Runnable() {
+			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					while(values.size() > oldSize) {
 						values.remove(values.size() - 1);
@@ -58,7 +58,7 @@ public class ArrayValue extends Value implements HasState {
 	}
 	
 	public void push(Value value) {
-		undoStack.add(new Runnable() {
+		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
 				values.remove(values.size() - 1);
 			}
@@ -72,7 +72,7 @@ public class ArrayValue extends Value implements HasState {
 	
 	public void setValues(List<Value> values) {
 		final List<Value> oldValues = new ArrayList<>(values);
-		undoStack.add(new Runnable() {
+		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
 				ArrayValue.this.values = oldValues;
 			}
