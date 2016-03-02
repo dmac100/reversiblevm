@@ -14,12 +14,22 @@ public class Swap2Instruction implements Instruction {
 	
 	public void execute(Runtime runtime) {
 		Stack stack = runtime.getStack();
-		Value value1 = stack.popValue();
-		Value value2 = stack.popValue();
-		Value value3 = stack.popValue();
-		stack.push(value1);
-		stack.push(value3);
-		stack.push(value2);
+		Value value1 = stack.popValue(false);
+		Value value2 = stack.popValue(false);
+		Value value3 = stack.popValue(false);
+		stack.push(value1, false);
+		stack.push(value3, false);
+		stack.push(value2, false);
+	}
+	
+	public void undo(Runtime runtime) {
+		Stack stack = runtime.getStack();
+		Value value1 = stack.popValue(false);
+		Value value2 = stack.popValue(false);
+		Value value3 = stack.popValue(false);
+		stack.push(value2, false);
+		stack.push(value1, false);
+		stack.push(value3, false);
 	}
 	
 	public String toString() {

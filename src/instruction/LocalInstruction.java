@@ -19,6 +19,9 @@ public class LocalInstruction implements Instruction {
 		scope.create(name);
 	}
 	
+	public void undo(Runtime runtime) {
+	}
+	
 	public String toString() {
 		return "LOCAL: " + name;
 	}

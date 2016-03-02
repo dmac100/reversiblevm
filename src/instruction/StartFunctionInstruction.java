@@ -23,6 +23,9 @@ public class StartFunctionInstruction implements Instruction {
 		runtime.setNestedFunctionDefinitionCount(runtime.getNestedFunctionDefinitionCount() + 1);
 	}
 	
+	public void undo(Runtime runtime) {
+	}
+	
 	public String toString() {
 		return "STARTFUNCTION: " + paramCount;
 	}

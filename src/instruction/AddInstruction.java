@@ -17,15 +17,19 @@ public class AddInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		Value value2 = stack.popValue();
-		Value value1 = stack.popValue();
+		Value value2 = stack.popValue(true);
+		Value value1 = stack.popValue(true);
 		if(value1 instanceof StringValue || value2 instanceof StringValue) {
 			String value = value1.toString() + value2.toString();
-			stack.push(StringValue.Value(value));
+			stack.push(StringValue.Value(value), false);
 		} else {
 			double sum = runtime.checkDoubleValue(value1).getValue() + runtime.checkDoubleValue(value2).getValue();
-			stack.push(DoubleValue.Value(sum));
+			stack.push(DoubleValue.Value(sum), false);
 		}
+	}
+	
+	public void undo(Runtime runtime) {
+		runtime.getStack().popValue(false);
 	}
 	
 	public String toString() {

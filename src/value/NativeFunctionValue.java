@@ -21,16 +21,16 @@ public abstract class NativeFunctionValue extends Value {
 		Stack stack = runtime.getStack();
 		List<Value> params = getParams(runtime, stack);
 		
-		stack.push(execute(runtime, stack, params));
+		stack.push(execute(runtime, stack, params), true);
 	}
 	
 	protected abstract Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException;
 
 	private static List<Value> getParams(Runtime runtime, Stack stack) throws ExecutionException {
 		List<Value> params = new ArrayList<>();
-		int numParams = (int) runtime.checkDoubleValue(stack.popValue()).getValue();
+		int numParams = (int) runtime.checkDoubleValue(stack.popValue(true)).getValue();
 		for(int x = 0; x < numParams; x++) {
-			params.add(stack.popValue());
+			params.add(stack.popValue(true));
 		}
 		Collections.reverse(params);
 		return params;

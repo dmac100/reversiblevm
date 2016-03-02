@@ -13,6 +13,9 @@ public class UnaryPlusInstruction implements Instruction {
 	public void execute(Runtime runtime) {
 	}
 	
+	public void undo(Runtime runtime) {
+	}
+	
 	public String toString() {
 		return "UNARYPLUS";
 	}

@@ -18,6 +18,10 @@ public class LabeledJumpInstruction implements Instruction {
 		throw new ExecutionException("Not implemented");
 	}
 	
+	public void undo(Runtime runtime) {
+		throw new ExecutionException("Not implemented");
+	}
+	
 	public String getLabel() {
 		return label;
 	}

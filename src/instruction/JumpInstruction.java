@@ -20,6 +20,9 @@ public class JumpInstruction implements Instruction {
 		stackFrame.setInstructionCounter(stackFrame.getInstructionCounter() + offset - 1);
 	}
 	
+	public void undo(Runtime runtime) {
+	}
+	
 	public int getOffset() {
 		return offset;
 	}

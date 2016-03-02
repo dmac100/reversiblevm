@@ -26,16 +26,20 @@ public class GetPropertyInstruction implements Instruction {
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		
-		Value value = stack.popValue();
+		Value value = stack.popValue(true);
 		if(value instanceof ObjectValue) {
-			runtime.getStack().push(((ObjectValue)value).get(name));
+			runtime.getStack().push(((ObjectValue)value).get(name), false);
 		} else if(value instanceof ArrayValue) {
-			runtime.getStack().push(runtime.checkObjectValue(runtime.getScope().get("ArrayProto")).get(name));
+			runtime.getStack().push(runtime.checkObjectValue(runtime.getScope().get("ArrayProto")).get(name), false);
 		} else if(value instanceof StringValue) {
-			runtime.getStack().push(runtime.checkObjectValue(runtime.getScope().get("StringProto")).get(name));
+			runtime.getStack().push(runtime.checkObjectValue(runtime.getScope().get("StringProto")).get(name), false);
 		} else {
 			throw new ExecutionException("TypeError: Not an object: " + value);
 		}
+	}
+	
+	public void undo(Runtime runtime) {
+		runtime.getStack().popValue(false);
 	}
 	
 	public String toString() {

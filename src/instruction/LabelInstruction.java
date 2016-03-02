@@ -17,6 +17,9 @@ public class LabelInstruction implements Instruction {
 	public void execute(Runtime runtime) throws ExecutionException {
 	}
 	
+	public void undo(Runtime runtime) {
+	}
+	
 	public String getLabel() {
 		return label;
 	}

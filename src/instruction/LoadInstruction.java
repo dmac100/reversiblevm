@@ -22,7 +22,11 @@ public class LoadInstruction implements Instruction {
 	public void execute(Runtime runtime) {
 		Stack stack = runtime.getStack();
 		Scope scope = runtime.getScope();
-		stack.push(scope.get(name));
+		stack.push(scope.get(name), false);
+	}
+	
+	public void undo(Runtime runtime) {
+		runtime.getStack().popValue(false);
 	}
 	
 	public String toString() {

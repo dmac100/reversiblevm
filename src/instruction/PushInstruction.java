@@ -15,7 +15,11 @@ public class PushInstruction implements Instruction {
 	}
 	
 	public void execute(Runtime runtime) {
-		runtime.getStack().push(value);
+		runtime.getStack().push(value, false);
+	}
+	
+	public void undo(Runtime runtime) {
+		runtime.getStack().popValue(false);
 	}
 	
 	public String toString() {

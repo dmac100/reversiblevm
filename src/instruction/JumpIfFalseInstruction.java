@@ -19,11 +19,14 @@ public class JumpIfFalseInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		BooleanValue value = runtime.checkBooleanValue(stack.popValue());
+		BooleanValue value = runtime.checkBooleanValue(stack.popValue(true));
 		if(!value.getValue()) {
 			StackFrame stackFrame = runtime.getCurrentStackFrame();
 			stackFrame.setInstructionCounter(stackFrame.getInstructionCounter() + offset - 1);
 		}
+	}
+	
+	public void undo(Runtime runtime) {
 	}
 	
 	public int getOffset() {

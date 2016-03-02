@@ -16,9 +16,12 @@ public class GetElementInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		DoubleValue index = runtime.checkDoubleValue(stack.popValue());
-		ArrayValue array = runtime.checkArrayValue(stack.popValue());
-		runtime.getStack().push(array.get(index));
+		DoubleValue index = runtime.checkDoubleValue(stack.popValue(true));
+		ArrayValue array = runtime.checkArrayValue(stack.popValue(true));
+		runtime.getStack().push(array.get(index), true);
+	}
+	
+	public void undo(Runtime runtime) {
 	}
 	
 	public String toString() {

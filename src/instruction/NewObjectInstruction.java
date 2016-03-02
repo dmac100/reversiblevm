@@ -14,7 +14,11 @@ public class NewObjectInstruction implements Instruction {
 	public void execute(Runtime runtime) {
 		ObjectValue value = new ObjectValue(runtime.getUndoStack());
 		value.set("prototype", runtime.getGlobalScope().get("ObjectProto"));
-		runtime.getStack().push(value);
+		runtime.getStack().push(value, false);
+	}
+	
+	public void undo(Runtime runtime) {
+		runtime.getStack().popValue(false);
 	}
 	
 	public String toString() {

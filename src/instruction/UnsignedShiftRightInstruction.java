@@ -15,9 +15,13 @@ public class UnsignedShiftRightInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		DoubleValue value2 = runtime.checkDoubleValue(stack.popValue());
-		DoubleValue value1 = runtime.checkDoubleValue(stack.popValue());
-		stack.push(DoubleValue.Value((int)value1.getValue() >>> (int)value2.getValue()));
+		DoubleValue value2 = runtime.checkDoubleValue(stack.popValue(true));
+		DoubleValue value1 = runtime.checkDoubleValue(stack.popValue(true));
+		stack.push(DoubleValue.Value((int)value1.getValue() >>> (int)value2.getValue()), false);
+	}
+	
+	public void undo(Runtime runtime) {
+		runtime.getStack().popValue(false);
 	}
 	
 	public String toString() {

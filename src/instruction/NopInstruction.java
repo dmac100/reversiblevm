@@ -14,6 +14,9 @@ public class NopInstruction implements Instruction {
 	public void execute(Runtime runtime) throws ExecutionException {
 	}
 	
+	public void undo(Runtime runtime) {
+	}
+	
 	public String toString() {
 		return "NOP";
 	}

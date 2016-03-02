@@ -26,17 +26,19 @@ public class Runtime implements HasState {
 	
 	public void addStackFrame(FunctionValue function) {
 		NonGlobalScope scope = new NonGlobalScope(function.getParentScope(), undoStack);
-		addStackFrame(new StackFrame(function, scope, undoStack));
+		addStackFrame(new StackFrame(function, scope, undoStack), true);
 	}
 	
-	public void addStackFrame(StackFrame frame) {
+	public void addStackFrame(StackFrame frame, boolean addToUndoStack) {
 		stackFrames.add(frame);
 		
-		undoStack.addCommandUndo(new Runnable() {
-			public void run() {
-				stackFrames.remove(stackFrames.size() - 1);
-			}
-		});
+		if(addToUndoStack) {
+			undoStack.addCommandUndo(new Runnable() {
+				public void run() {
+					stackFrames.remove(stackFrames.size() - 1);
+				}
+			});
+		}
 	}
 	
 	public StackFrame getCurrentStackFrame() {
@@ -45,16 +47,9 @@ public class Runtime implements HasState {
 	
 	public StackFrame popStackFrame() {
 		if(stackFrames.isEmpty()) return null;
-		
-		final StackFrame frame = stackFrames.remove(stackFrames.size() - 1);
-		
-		undoStack.addCommandUndo(new Runnable() {
-			public void run() {
-				stackFrames.add(frame);
-			}
-		});
-		
-		return frame;
+		undoStack.addInstructionCounterUndo(UndoStack.POPSTACKFRAME);
+		undoStack.addPopStackFrameUndo(stackFrames.get(stackFrames.size() - 1));
+		return stackFrames.remove(stackFrames.size() - 1);
 	}
 	
 	public Scope getScope() {

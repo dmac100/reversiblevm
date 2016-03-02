@@ -12,7 +12,11 @@ public class NewArrayInstruction implements Instruction {
 	}
 	
 	public void execute(Runtime runtime) {
-		runtime.getStack().push(new ArrayValue(runtime.getUndoStack()));
+		runtime.getStack().push(new ArrayValue(runtime.getUndoStack()), false);
+	}
+	
+	public void undo(Runtime runtime) {
+		runtime.getStack().popValue(false);
 	}
 	
 	public String toString() {

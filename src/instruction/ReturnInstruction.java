@@ -18,6 +18,9 @@ public class ReturnInstruction implements Instruction {
 		runtime.popStackFrame();
 	}
 	
+	public void undo(Runtime runtime) {
+	}
+	
 	public String toString() {
 		return "RETURN";
 	}

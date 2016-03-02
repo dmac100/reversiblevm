@@ -18,22 +18,26 @@ public class Stack implements HasState {
 		return stack.isEmpty();
 	}
 	
-	public void push(Value value) {
+	public void push(Value value, boolean addToUndoStack) {
 		stack.add(value);
-		undoStack.addCommandUndo(new Runnable() {
-			public void run() {
-				stack.remove(stack.size() - 1);
-			}
-		});
+		if(addToUndoStack) {
+			undoStack.addCommandUndo(new Runnable() {
+				public void run() {
+					stack.remove(stack.size() - 1);
+				}
+			});
+		}
 	}
 	
-	public Value popValue() {
+	public Value popValue(boolean addToUndoStack) {
 		final Value value = stack.remove(stack.size() - 1);
-		undoStack.addCommandUndo(new Runnable() {
-			public void run() {
-				stack.add(value);
-			}
-		});
+		if(addToUndoStack) {
+			undoStack.addCommandUndo(new Runnable() {
+				public void run() {
+					stack.add(value);
+				}
+			});
+		}
 		return (Value) value;
 	}
 	

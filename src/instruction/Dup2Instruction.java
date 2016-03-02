@@ -15,12 +15,17 @@ public class Dup2Instruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		Value value1 = stack.popValue();
-		Value value2 = stack.popValue();
-		stack.push(value2);
-		stack.push(value1);
-		stack.push(value2);
-		stack.push(value1);
+		Value value1 = stack.popValue(false);
+		Value value2 = stack.popValue(false);
+		stack.push(value2, false);
+		stack.push(value1, false);
+		stack.push(value2, false);
+		stack.push(value1, false);
+	}
+	
+	public void undo(Runtime runtime) {
+		runtime.getStack().popValue(false);
+		runtime.getStack().popValue(false);
 	}
 	
 	public String toString() {
