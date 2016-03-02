@@ -22,10 +22,11 @@ public class StoreInstruction implements Instruction {
 	public void execute(Runtime runtime) {
 		Stack stack = runtime.getStack();
 		Scope scope = runtime.getScope();
-		scope.set(name, stack.popValue(true));
+		scope.set(name, stack.popValue(false, true));
 	}
 	
 	public void undo(Runtime runtime) {
+		runtime.getUndoStack().undoPopValue(runtime);
 	}
 	
 	public String toString() {

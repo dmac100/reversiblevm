@@ -28,9 +28,9 @@ public abstract class NativeFunctionValue extends Value {
 
 	private static List<Value> getParams(Runtime runtime, Stack stack) throws ExecutionException {
 		List<Value> params = new ArrayList<>();
-		int numParams = (int) runtime.checkDoubleValue(stack.popValue(true)).getValue();
+		int numParams = (int) runtime.checkDoubleValue(stack.popValue(true, false)).getValue();
 		for(int x = 0; x < numParams; x++) {
-			params.add(stack.popValue(true));
+			params.add(stack.popValue(true, false));
 		}
 		Collections.reverse(params);
 		return params;

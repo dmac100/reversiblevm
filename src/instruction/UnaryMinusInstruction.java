@@ -16,12 +16,13 @@ public class UnaryMinusInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		DoubleValue value = runtime.checkDoubleValue(stack.popValue(true));
+		DoubleValue value = runtime.checkDoubleValue(stack.popValue(false, true));
 		stack.push(DoubleValue.Value(-value.getValue()), false);
 	}
 	
 	public void undo(Runtime runtime) {
-		runtime.getStack().popValue(false);
+		runtime.getStack().popValue(false, false);
+		runtime.getUndoStack().undoPopValue(runtime);
 	}
 	
 	public String toString() {

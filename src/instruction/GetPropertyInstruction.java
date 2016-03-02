@@ -26,7 +26,7 @@ public class GetPropertyInstruction implements Instruction {
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		
-		Value value = stack.popValue(true);
+		Value value = stack.popValue(false, true);
 		if(value instanceof ObjectValue) {
 			runtime.getStack().push(((ObjectValue)value).get(name), false);
 		} else if(value instanceof ArrayValue) {
@@ -39,7 +39,8 @@ public class GetPropertyInstruction implements Instruction {
 	}
 	
 	public void undo(Runtime runtime) {
-		runtime.getStack().popValue(false);
+		runtime.getStack().popValue(false, false);
+		runtime.getUndoStack().undoPopValue(runtime);
 	}
 	
 	public String toString() {

@@ -16,12 +16,14 @@ public class PushElementInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		Value value = runtime.getStack().popValue(true);
-		ArrayValue array = runtime.checkArrayValue(stack.popValue(true));
+		Value value = runtime.getStack().popValue(false, true);
+		ArrayValue array = runtime.checkArrayValue(stack.popValue(false, true));
 		array.push(value);
 	}
 	
 	public void undo(Runtime runtime) {
+		runtime.getUndoStack().undoPopValue(runtime);
+		runtime.getUndoStack().undoPopValue(runtime);
 	}
 	
 	public String toString() {

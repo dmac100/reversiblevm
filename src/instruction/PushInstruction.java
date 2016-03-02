@@ -19,7 +19,7 @@ public class PushInstruction implements Instruction {
 	}
 	
 	public void undo(Runtime runtime) {
-		runtime.getStack().popValue(false);
+		runtime.getStack().popValue(false, false);
 	}
 	
 	public String toString() {

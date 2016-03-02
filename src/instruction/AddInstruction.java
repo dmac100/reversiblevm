@@ -17,8 +17,8 @@ public class AddInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		Value value2 = stack.popValue(true);
-		Value value1 = stack.popValue(true);
+		Value value2 = stack.popValue(false, true);
+		Value value1 = stack.popValue(false, true);
 		if(value1 instanceof StringValue || value2 instanceof StringValue) {
 			String value = value1.toString() + value2.toString();
 			stack.push(StringValue.Value(value), false);
@@ -29,7 +29,9 @@ public class AddInstruction implements Instruction {
 	}
 	
 	public void undo(Runtime runtime) {
-		runtime.getStack().popValue(false);
+		runtime.getStack().popValue(false, false);
+		runtime.getUndoStack().undoPopValue(runtime);
+		runtime.getUndoStack().undoPopValue(runtime);
 	}
 	
 	public String toString() {

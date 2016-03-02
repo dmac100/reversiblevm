@@ -14,16 +14,16 @@ public class SwapInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) {
 		Stack stack = runtime.getStack();
-		Value value1 = stack.popValue(false);
-		Value value2 = stack.popValue(false);
+		Value value1 = stack.popValue(false, false);
+		Value value2 = stack.popValue(false, false);
 		stack.push(value1, false);
 		stack.push(value2, false);
 	}
 	
 	public void undo(Runtime runtime) {
 		Stack stack = runtime.getStack();
-		Value value1 = stack.popValue(false);
-		Value value2 = stack.popValue(false);
+		Value value1 = stack.popValue(false, false);
+		Value value2 = stack.popValue(false, false);
 		stack.push(value1, false);
 		stack.push(value2, false);
 	}

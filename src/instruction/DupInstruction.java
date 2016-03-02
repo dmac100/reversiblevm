@@ -15,13 +15,13 @@ public class DupInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		Value value = stack.popValue(false);
+		Value value = stack.popValue(false, false);
 		stack.push(value, false);
 		stack.push(value, false);
 	}
 	
 	public void undo(Runtime runtime) {
-		runtime.getStack().popValue(false);
+		runtime.getStack().popValue(false, false);
 	}
 	
 	public String toString() {

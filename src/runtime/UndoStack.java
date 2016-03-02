@@ -1,44 +1,53 @@
 package runtime;
 
 import gnu.trove.list.array.TIntArrayList;
-
 import instruction.Instruction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import value.FunctionValue;
+import value.Value;
 
 public class UndoStack {
 	public final static int POPSTACKFRAME = -1;
 	public final static Runnable UNDOPOINT = null;
 	
-	private final List<Runnable> commands = new ArrayList<>();
-	private final TIntArrayList instructionCounters = new TIntArrayList();
-	private final List<StackFrame> popStackFrames = new ArrayList<>();
+	private final List<Runnable> commandUndos = new ArrayList<>();
+	private final TIntArrayList instructionCounterUndos = new TIntArrayList();
+	private final List<StackFrame> popStackFrameUndos = new ArrayList<>();
+	private final List<Value> popValueUndos = new ArrayList<>();
 	
 	public void addCommandUndo(Runnable command) {
-		commands.add(command);
+		commandUndos.add(command);
 	}
 	
 	public void addInstructionCounterUndo(int instructionCounter) {
-		instructionCounters.add(instructionCounter);
+		instructionCounterUndos.add(instructionCounter);
 	}
 	
 	public void addPopStackFrameUndo(StackFrame stackFrame) {
-		popStackFrames.add(stackFrame);
+		popStackFrameUndos.add(stackFrame);
+	}
+	
+	public void addPopValueUndo(Value value) {
+		popValueUndos.add(value);
+	}
+	
+	public void undoPopValue(Runtime runtime) {
+		Value value = popValueUndos.remove(popValueUndos.size() - 1);
+		runtime.getStack().push(value, false);
 	}
 
 	public void undo(Runtime runtime) {
-		if(!instructionCounters.isEmpty()) {
+		if(!instructionCounterUndos.isEmpty()) {
 			// Undo any pop stack frame.
-			if(instructionCounters.get(instructionCounters.size() - 1) == POPSTACKFRAME) {
-				instructionCounters.removeAt(instructionCounters.size() - 1);
-				StackFrame stackFrame = popStackFrames.remove(popStackFrames.size() - 1);
+			if(instructionCounterUndos.get(instructionCounterUndos.size() - 1) == POPSTACKFRAME) {
+				instructionCounterUndos.removeAt(instructionCounterUndos.size() - 1);
+				StackFrame stackFrame = popStackFrameUndos.remove(popStackFrameUndos.size() - 1);
 				runtime.addStackFrame(stackFrame, false);
 			}
 			
-			int instructionCounter = instructionCounters.get(instructionCounters.size() - 1);
+			int instructionCounter = instructionCounterUndos.get(instructionCounterUndos.size() - 1);
 			
 			// Undo instruction.
 			StackFrame stackFrame = runtime.getCurrentStackFrame();
@@ -51,8 +60,8 @@ public class UndoStack {
 		}
 		
 		// Undo commands.
-		while(!commands.isEmpty()) {
-			Runnable command = commands.remove(commands.size() - 1);
+		while(!commandUndos.isEmpty()) {
+			Runnable command = commandUndos.remove(commandUndos.size() - 1);
 			if(command == UNDOPOINT) {
 				break;
 			}
@@ -60,8 +69,8 @@ public class UndoStack {
 		}
 		
 		// Undo instruction counter changes.
-		if(!instructionCounters.isEmpty()) {
-			int instructionCounter = instructionCounters.removeAt(instructionCounters.size() - 1);
+		if(!instructionCounterUndos.isEmpty()) {
+			int instructionCounter = instructionCounterUndos.removeAt(instructionCounterUndos.size() - 1);
 			if(runtime.getCurrentStackFrame() != null) {
 				runtime.getCurrentStackFrame().setInstructionCounter(instructionCounter);
 			}
@@ -69,6 +78,6 @@ public class UndoStack {
 	}
 
 	public void saveUndoPoint() {
-		commands.add(UNDOPOINT);
+		commandUndos.add(UNDOPOINT);
 	}
 }

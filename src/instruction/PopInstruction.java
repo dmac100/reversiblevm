@@ -11,10 +11,11 @@ public class PopInstruction implements Instruction {
 	}
 	
 	public void execute(Runtime runtime) {
-		runtime.getStack().popValue(true);
+		runtime.getStack().popValue(false, true);
 	}
 	
 	public void undo(Runtime runtime) {
+		runtime.getUndoStack().undoPopValue(runtime);
 	}
 	
 	public String toString() {

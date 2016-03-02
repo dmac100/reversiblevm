@@ -15,13 +15,13 @@ public class NotInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		BooleanValue value = runtime.checkBooleanValue(stack.popValue(false));
+		BooleanValue value = runtime.checkBooleanValue(stack.popValue(false, false));
 		stack.push(BooleanValue.Value(!value.getValue()), false);
 	}
 	
 	public void undo(Runtime runtime) {
 		Stack stack = runtime.getStack();
-		BooleanValue value = runtime.checkBooleanValue(stack.popValue(false));
+		BooleanValue value = runtime.checkBooleanValue(stack.popValue(false, false));
 		stack.push(BooleanValue.Value(!value.getValue()), false);
 	}
 	

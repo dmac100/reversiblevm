@@ -17,7 +17,7 @@ public class CallInstruction implements Instruction {
 	}
 	
 	public void execute(Runtime runtime) throws ExecutionException {
-		Value value = runtime.getStack().popValue(true);
+		Value value = runtime.getStack().popValue(true, false);
 		if(value instanceof NativeFunctionValue) {
 			((NativeFunctionValue)value).execute(runtime);
 		} else if(value instanceof FunctionValue) {
@@ -33,7 +33,7 @@ public class CallInstruction implements Instruction {
 	 * If too few params are passed, add null values. If too many, remove these values.
 	 */
 	private void fixParamCount(Runtime runtime, FunctionValue function) throws ExecutionException {
-		int passedParams = (int) runtime.checkDoubleValue(runtime.getStack().popValue(true)).getValue();
+		int passedParams = (int) runtime.checkDoubleValue(runtime.getStack().popValue(true, false)).getValue();
 		int functionParams = function.getParamCount();
 		
 		for(int x = passedParams; x < functionParams; x++) {
@@ -41,7 +41,7 @@ public class CallInstruction implements Instruction {
 		}
 		
 		for(int x = functionParams; x < passedParams; x++) {
-			runtime.getStack().popValue(true);
+			runtime.getStack().popValue(true, false);
 		}
 		
 		runtime.getStack().push(new DoubleValue(passedParams), true);

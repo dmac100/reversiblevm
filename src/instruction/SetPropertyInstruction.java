@@ -19,12 +19,14 @@ public class SetPropertyInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		Value value = runtime.getStack().popValue(true);
-		ObjectValue object = runtime.checkObjectValue(stack.popValue(true));
+		Value value = runtime.getStack().popValue(false, true);
+		ObjectValue object = runtime.checkObjectValue(stack.popValue(false, true));
 		object.set(name, value);
 	}
 	
 	public void undo(Runtime runtime) {
+		runtime.getUndoStack().undoPopValue(runtime);
+		runtime.getUndoStack().undoPopValue(runtime);
 	}
 	
 	public String toString() {

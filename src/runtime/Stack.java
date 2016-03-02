@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import value.BooleanValue;
+import value.DoubleValue;
+import value.NullValue;
 import value.Value;
 
 public class Stack implements HasState {
@@ -18,7 +21,7 @@ public class Stack implements HasState {
 		return stack.isEmpty();
 	}
 	
-	public void push(Value value, boolean addToUndoStack) {
+	public void push(final Value value, boolean addToUndoStack) {
 		stack.add(value);
 		if(addToUndoStack) {
 			undoStack.addCommandUndo(new Runnable() {
@@ -29,8 +32,9 @@ public class Stack implements HasState {
 		}
 	}
 	
-	public Value popValue(boolean addToUndoStack) {
+	public Value popValue(boolean addToUndoStack, boolean addToPopUndoStack) {
 		final Value value = stack.remove(stack.size() - 1);
+		
 		if(addToUndoStack) {
 			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
@@ -38,6 +42,11 @@ public class Stack implements HasState {
 				}
 			});
 		}
+		
+		if(addToPopUndoStack) {
+			undoStack.addPopValueUndo(value);
+		}
+		
 		return (Value) value;
 	}
 	

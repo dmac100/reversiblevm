@@ -27,7 +27,7 @@ public class EngineAsserts {
 		
 		assertTrue(runtime.getOutput().isEmpty());
 		assertTrue(runtime.getErrors().isEmpty());
-		assertEquals(expected, runtime.getStack().popValue(false).toString());
+		assertEquals(expected, runtime.getStack().popValue(false, false).toString());
 		assertTrue(runtime.getStack().isEmpty());
 	}
 	
