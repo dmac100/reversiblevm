@@ -31,19 +31,33 @@ public class UndoStack {
 	private final TDoubleArrayList popDoubleValueUndos = new TDoubleArrayList();
 	private final TShortArrayList popValueUndoTypes = new TShortArrayList();
 	
+	private final boolean undoEnabled;
+	
+	public UndoStack(boolean undoEnabled) {
+		this.undoEnabled = undoEnabled;
+	}
+	
 	public void addCommandUndo(Runnable command) {
+		if(!undoEnabled) return;
+		
 		commandUndos.add(command);
 	}
 	
 	public void addInstructionCounterUndo(int instructionCounter) {
+		if(!undoEnabled) return;
+		
 		instructionCounterUndos.add(instructionCounter);
 	}
 	
 	public void addPopStackFrameUndo(StackFrame stackFrame) {
+		if(!undoEnabled) return;
+		
 		popStackFrameUndos.add(stackFrame);
 	}
 	
 	public void addPopValueUndo(Value value) {
+		if(!undoEnabled) return;
+		
 		if(value instanceof DoubleValue) {
 			popDoubleValueUndos.add(((DoubleValue)value).getValue());
 			popValueUndoTypes.add(DOUBLETYPE);
@@ -58,6 +72,8 @@ public class UndoStack {
 	}
 	
 	public void undoPopValue(Runtime runtime) {
+		if(!undoEnabled) return;
+		
 		short type = popValueUndoTypes.removeAt(popValueUndoTypes.size() - 1);
 		
 		final Value value;
@@ -77,6 +93,8 @@ public class UndoStack {
 	}
 
 	public void undo(Runtime runtime) {
+		if(!undoEnabled) return;
+		
 		if(!instructionCounterUndos.isEmpty()) {
 			// Undo any pop stack frame.
 			if(instructionCounterUndos.get(instructionCounterUndos.size() - 1) == POPSTACKFRAME) {
@@ -116,6 +134,8 @@ public class UndoStack {
 	}
 
 	public void saveUndoPoint() {
+		if(!undoEnabled) return;
+		
 		commandUndos.add(UNDOPOINT);
 	}
 }
