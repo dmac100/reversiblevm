@@ -1,21 +1,35 @@
 package runtime;
 
+import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.list.array.TShortArrayList;
 import instruction.Instruction;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import value.BooleanValue;
+import value.DoubleValue;
+import value.NullValue;
 import value.Value;
 
 public class UndoStack {
 	public final static int POPSTACKFRAME = -1;
 	public final static Runnable UNDOPOINT = null;
 	
+	private final short DOUBLETYPE = 0;
+	private final short BOOLEANTRUETYPE = 1;
+	private final short BOOLEANFALSETYPE = 2;
+	private final short NULLTYPE = 3;
+	private final short GENERALTYPE = 4;
+	
 	private final List<Runnable> commandUndos = new ArrayList<>();
 	private final TIntArrayList instructionCounterUndos = new TIntArrayList();
 	private final List<StackFrame> popStackFrameUndos = new ArrayList<>();
+	
 	private final List<Value> popValueUndos = new ArrayList<>();
+	private final TDoubleArrayList popDoubleValueUndos = new TDoubleArrayList();
+	private final TShortArrayList popValueUndoTypes = new TShortArrayList();
 	
 	public void addCommandUndo(Runnable command) {
 		commandUndos.add(command);
@@ -30,11 +44,35 @@ public class UndoStack {
 	}
 	
 	public void addPopValueUndo(Value value) {
-		popValueUndos.add(value);
+		if(value instanceof DoubleValue) {
+			popDoubleValueUndos.add(((DoubleValue)value).getValue());
+			popValueUndoTypes.add(DOUBLETYPE);
+		} else if(value instanceof BooleanValue) {
+			popValueUndoTypes.add(((BooleanValue)value).getValue() ? BOOLEANTRUETYPE : BOOLEANFALSETYPE);
+		} else if(value instanceof NullValue) {
+			popValueUndoTypes.add(NULLTYPE);
+		} else {
+			popValueUndoTypes.add(GENERALTYPE);
+			popValueUndos.add(value);
+		}
 	}
 	
 	public void undoPopValue(Runtime runtime) {
-		Value value = popValueUndos.remove(popValueUndos.size() - 1);
+		short type = popValueUndoTypes.removeAt(popValueUndoTypes.size() - 1);
+		
+		final Value value;
+		if(type == DOUBLETYPE) {
+			value = new DoubleValue(popDoubleValueUndos.removeAt(popDoubleValueUndos.size() - 1));
+		} else if(type == BOOLEANTRUETYPE) {
+			value = new BooleanValue(true);
+		} else if(type == BOOLEANFALSETYPE) {
+			value = new BooleanValue(false);
+		} else if(type == NULLTYPE) {
+			value = new NullValue();
+		} else {
+			value = popValueUndos.remove(popValueUndos.size() - 1);
+		}
+		
 		runtime.getStack().push(value, false);
 	}
 
