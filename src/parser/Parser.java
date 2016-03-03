@@ -42,6 +42,11 @@ import static instruction.stack.SwapInstruction.Swap;
 import static instruction.variable.LoadInstruction.Load;
 import static instruction.variable.LocalInstruction.Local;
 import static instruction.variable.StoreInstruction.Store;
+import static instruction.viz.EndVizInstruction.EndVizInstruction;
+import static instruction.viz.NewVizObjectInstruction.NewVizObjectInstruction;
+import static instruction.viz.SetVizPropertyInstruction.SetVizPropertyInstruction;
+import static instruction.viz.StartVizInstruction.StartVizInstruction;
+import static instruction.viz.VizIterateInstruction.VizIterateInstruction;
 import static parser.Instructions.Instructions;
 import static value.BooleanValue.Value;
 import static value.DoubleValue.Value;
@@ -49,6 +54,7 @@ import static value.NullValue.NullValue;
 import static value.StringValue.Value;
 import instruction.Instruction;
 import instruction.function.ReturnInstruction;
+import instruction.viz.VizFilterInstruction;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
@@ -523,7 +529,8 @@ public class Parser extends BaseParser<Instructions> {
 			ReturnStatement(),
 			IfStatement(),
 			IterationStatement(),
-			ExpressionStatement()
+			ExpressionStatement(),
+			VizStatement()
 		);
 	}
 	
@@ -681,6 +688,66 @@ public class Parser extends BaseParser<Instructions> {
 		return Sequence(
 			Terminal("return"), push(Instructions(ReturnInstruction.Return())),
 			Optional(Expression(), push(Instructions(Instructions(Pop()), pop(), pop()))), Terminal(";")
+		);
+	}
+	
+	public Rule VizStatement() {
+		return Sequence(
+			Terminal("@"),
+			push(Instructions()),
+			Optional(
+				Terminal("for"),
+				Terminal("("),
+				VizForExpression(),
+				ZeroOrMore(
+					Terminal(","),
+					VizForExpression(),
+					push(Instructions(pop(1), pop()))
+				),
+				push(Instructions(pop(), pop())),
+				Terminal(")")
+			),
+			Identifier(),
+			push(Instructions(NewVizObjectInstruction(match().trim()))),
+			Terminal("("),
+			Optional(
+				VizProperty(),
+				ZeroOrMore(
+					Terminal(","),
+					VizProperty(),
+					push(Instructions(pop(1), pop()))
+				),
+				push(Instructions(pop(), pop()))
+			),
+			push(Instructions(Instructions(StartVizInstruction()), pop(1), pop(), Instructions(EndVizInstruction()))),
+			Terminal(")"),
+			Terminal(";")
+		);
+	}
+	
+	public Rule VizForExpression() {
+		return FirstOf(
+			Sequence(
+				Identifier(),
+				push(Instructions(VizIterateInstruction(match().trim()))),
+				Terminal("<-"),
+				AssignmentExpression(),
+				push(Instructions(pop(), pop()))
+			),
+			Sequence(
+				AssignmentExpression(),
+				push(Instructions(pop(), Instructions(VizFilterInstruction.VizFilterInstruction())))
+			)
+		);
+	}
+	
+	public Rule VizProperty() {
+		return Sequence(
+			Identifier(),
+			push(Instructions(SetVizPropertyInstruction(match().trim()))),
+			Terminal(":"),
+			AssignmentExpression(),
+			push(Instructions(pop(), pop()))
 		);
 	}
 	
