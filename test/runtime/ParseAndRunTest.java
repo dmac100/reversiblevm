@@ -3,6 +3,8 @@ package runtime;
 import static runtime.EngineAsserts.assertError;
 import static runtime.EngineAsserts.assertOutput;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 public class ParseAndRunTest {
@@ -366,6 +368,14 @@ public class ParseAndRunTest {
 	public void ReturnStatement() {
 		assertOutput("null", "print((function() { return; })());");
 		assertOutput("1", "print((function() { return 1; })());");
+	}
+	
+	@Test
+	public void VizStatement() {
+		assertOutput("1\n2", "print(1); @rect(); print(2);");
+		assertOutput("1\n2", "print(1); @rect(x: 1); print(2);");
+		assertOutput("1\n2", "print(1); @for(x) rect(x: 1); print(2);");
+		assertOutput("1\n2", "print(1); @for(x <- [1]) rect(x: 1); print(2);");
 	}
 	
 	@Test

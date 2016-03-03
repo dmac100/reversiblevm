@@ -3,6 +3,8 @@ package runtime;
 import instruction.Instruction;
 import instruction.function.EndFunctionInstruction;
 import instruction.function.StartFunctionInstruction;
+import instruction.viz.EndVizInstruction;
+import instruction.viz.StartVizInstruction;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,18 +69,23 @@ public class Engine {
 		do {
 			Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
 			
-			if(runtime.getNestedFunctionDefinitionCount() == 0) {
-				execute(instruction);
-			} else {
+			if(runtime.getNestedFunctionDefinitionCount() > 0) {
 				if(instruction instanceof StartFunctionInstruction || instruction instanceof EndFunctionInstruction) {
 					execute(instruction);
 				} else {
 					runtime.getCurrentFunctionDefinition().addInstruction(instruction);
 				}
+			} else if(runtime.isInVizInstruction()) {
+				if(instruction instanceof StartVizInstruction || instruction instanceof EndVizInstruction) {
+					execute(instruction);
+				} else {
+				}
+			} else {
+				execute(instruction);
 			}
 			
 			frame.setInstructionCounter(frame.getInstructionCounter() + 1);
-		} while(runtime.getNestedFunctionDefinitionCount() > 0);
+		} while(runtime.getNestedFunctionDefinitionCount() > 0 || runtime.isInVizInstruction());
 	}
 	
 	public void stepBackward() {

@@ -12,9 +12,11 @@ public class StartVizInstruction implements Instruction {
 	}
 	
 	public void execute(Runtime runtime) {
+		runtime.setInVizInstruction(true);
 	}
 	
 	public void undo(Runtime runtime) {
+		runtime.setInVizInstruction(false);
 	}
 	
 	public String toString() {

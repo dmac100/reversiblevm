@@ -1,6 +1,7 @@
 package runtime;
 
 import static org.junit.Assert.assertEquals;
+import static runtime.EngineAsserts.assertOutput;
 import instruction.Instruction;
 
 import java.util.ArrayList;
@@ -368,6 +369,14 @@ public class StepBackwardTest {
 	public void ReturnStatement() {
 		assertStepBackward("print((function() { return; })());");
 		assertStepBackward("print((function() { return 1; })());");
+	}
+	
+	@Test
+	public void VizStatement() {
+		assertStepBackward("print(1); @rect(); print(2);");
+		assertStepBackward("print(1); @rect(x: 1); print(2);");
+		assertStepBackward("print(1); @for(x) rect(x: 1); print(2);");
+		assertStepBackward("print(1); @for(x <- [1]) rect(x: 1); print(2);");
 	}
 	
 	@Test

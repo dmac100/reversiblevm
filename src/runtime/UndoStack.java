@@ -4,6 +4,8 @@ import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TShortArrayList;
 import instruction.Instruction;
+import instruction.viz.EndVizInstruction;
+import instruction.viz.StartVizInstruction;
 
 import java.util.ArrayList;
 import java.util.List;

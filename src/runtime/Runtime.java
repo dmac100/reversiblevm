@@ -20,6 +20,7 @@ public class Runtime implements HasState {
 	private List<StackFrame> stackFrames = new ArrayList<>();
 	private FunctionValue currentFunctionDefinition = null;
 	private int nestedFunctionDefinitionCount = 0;
+	private boolean inVizInstruction = false;
 	
 	private List<String> errors = new ArrayList<>();
 	private List<String> output = new ArrayList<>();
@@ -111,6 +112,14 @@ public class Runtime implements HasState {
 	public void setNestedFunctionDefinitionCount(int nestedFunctionDefinitionCount) {
 		this.nestedFunctionDefinitionCount = nestedFunctionDefinitionCount;
 	}
+	
+	public boolean isInVizInstruction() {
+		return inVizInstruction;
+	}
+	
+	public void setInVizInstruction(boolean inVizInstruction) {
+		this.inVizInstruction = inVizInstruction;
+	}
 
 	public DoubleValue checkDoubleValue(Value value) throws ExecutionException {
 		if(value instanceof DoubleValue) {
@@ -180,6 +189,7 @@ public class Runtime implements HasState {
 			s.append("  " + currentFunctionDefinition.getState("  ", new HashSet<>())).append("\n");
 		}
 		s.append("  NestedFunctionDefinitionCount: " + nestedFunctionDefinitionCount).append("\n");
+		s.append("  InVizInstruction: " + inVizInstruction).append("\n");
 		s.append("  Errors: " + errors).append("\n");
 		s.append("  Output: " + output);
 		
