@@ -1,10 +1,10 @@
 package runtime;
 
-import static instruction.CallInstruction.Call;
-import static instruction.LoadInstruction.Load;
-import static instruction.PopInstruction.Pop;
-import static instruction.PushInstruction.Push;
-import static instruction.SwapInstruction.Swap;
+import static instruction.function.CallInstruction.Call;
+import static instruction.stack.PopInstruction.Pop;
+import static instruction.stack.PushInstruction.Push;
+import static instruction.stack.SwapInstruction.Swap;
+import static instruction.variable.LoadInstruction.Load;
 import static org.junit.Assert.*;
 import static value.DoubleValue.Value;
 import static value.NullValue.NullValue;

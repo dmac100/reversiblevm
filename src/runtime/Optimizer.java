@@ -2,14 +2,14 @@ package runtime;
 
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.instanceOf;
-import instruction.DupInstruction;
-import instruction.GetElementInstruction;
-import instruction.GetPropertyInstruction;
 import instruction.Instruction;
-import instruction.LoadInstruction;
-import instruction.PopInstruction;
-import instruction.PushInstruction;
-import instruction.SwapInstruction;
+import instruction.array.GetElementInstruction;
+import instruction.object.GetPropertyInstruction;
+import instruction.stack.DupInstruction;
+import instruction.stack.PopInstruction;
+import instruction.stack.PushInstruction;
+import instruction.stack.SwapInstruction;
+import instruction.variable.LoadInstruction;
 
 import java.util.ArrayList;
 import java.util.Arrays;

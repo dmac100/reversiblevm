@@ -1,9 +1,9 @@
 package runtime;
 
-import static instruction.JumpInstruction.Jump;
-import static instruction.LabelInstruction.LabelInstruction;
-import static instruction.LabeledJumpInstruction.LabeledJump;
-import static instruction.PushInstruction.Push;
+import static instruction.jump.JumpInstruction.Jump;
+import static instruction.jump.LabelInstruction.LabelInstruction;
+import static instruction.jump.LabeledJumpInstruction.LabeledJump;
+import static instruction.stack.PushInstruction.Push;
 import static org.junit.Assert.assertEquals;
 import static value.DoubleValue.Value;
 import instruction.Instruction;

@@ -1,21 +1,21 @@
 package parser;
 
-import static instruction.Dup2Instruction.Dup2;
-import static instruction.DupInstruction.Dup;
-import static instruction.Swap2Instruction.Swap2;
-import static instruction.SwapInstruction.Swap;
+import static instruction.stack.Dup2Instruction.Dup2;
+import static instruction.stack.DupInstruction.Dup;
+import static instruction.stack.Swap2Instruction.Swap2;
+import static instruction.stack.SwapInstruction.Swap;
 import static java.util.Collections.singletonList;
 import static value.StringValue.Value;
-import instruction.Dup2Instruction;
-import instruction.GetElementInstruction;
-import instruction.GetPropertyInstruction;
 import instruction.Instruction;
-import instruction.LoadInstruction;
-import instruction.SetElementInstruction;
-import instruction.SetPropertyInstruction;
-import instruction.StoreInstruction;
-import instruction.Swap2Instruction;
-import instruction.SwapInstruction;
+import instruction.array.GetElementInstruction;
+import instruction.array.SetElementInstruction;
+import instruction.object.GetPropertyInstruction;
+import instruction.object.SetPropertyInstruction;
+import instruction.stack.Dup2Instruction;
+import instruction.stack.Swap2Instruction;
+import instruction.stack.SwapInstruction;
+import instruction.variable.LoadInstruction;
+import instruction.variable.StoreInstruction;
 
 import java.util.ArrayList;
 import java.util.List;

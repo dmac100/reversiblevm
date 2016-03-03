@@ -1,8 +1,8 @@
 package runtime;
 
-import instruction.EndFunctionInstruction;
 import instruction.Instruction;
-import instruction.StartFunctionInstruction;
+import instruction.function.EndFunctionInstruction;
+import instruction.function.StartFunctionInstruction;
 
 import java.io.IOException;
 import java.io.InputStream;

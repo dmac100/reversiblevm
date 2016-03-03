@@ -1,15 +1,15 @@
 package parser;
 
-import static instruction.Dup2Instruction.Dup2;
-import static instruction.DupInstruction.Dup;
-import static instruction.PopInstruction.Pop;
-import static instruction.PushInstruction.Push;
-import static instruction.Swap2Instruction.Swap2;
+import static instruction.stack.Dup2Instruction.Dup2;
+import static instruction.stack.DupInstruction.Dup;
+import static instruction.stack.PopInstruction.Pop;
+import static instruction.stack.PushInstruction.Push;
+import static instruction.stack.Swap2Instruction.Swap2;
 import static java.util.Collections.singletonList;
 import static value.NullValue.NullValue;
-import instruction.GetElementInstruction;
-import instruction.GetPropertyInstruction;
 import instruction.Instruction;
+import instruction.array.GetElementInstruction;
+import instruction.object.GetPropertyInstruction;
 
 import java.util.Arrays;
 import java.util.List;

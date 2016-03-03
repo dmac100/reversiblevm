@@ -1,13 +1,13 @@
 package runtime;
 
 import instruction.Instruction;
-import instruction.JumpIfFalseInstruction;
-import instruction.JumpIfTrueInstruction;
-import instruction.JumpInstruction;
-import instruction.LabelInstruction;
-import instruction.LabeledJumpIfFalseInstruction;
-import instruction.LabeledJumpIfTrueInstruction;
-import instruction.LabeledJumpInstruction;
+import instruction.jump.JumpIfFalseInstruction;
+import instruction.jump.JumpIfTrueInstruction;
+import instruction.jump.JumpInstruction;
+import instruction.jump.LabelInstruction;
+import instruction.jump.LabeledJumpIfFalseInstruction;
+import instruction.jump.LabeledJumpIfTrueInstruction;
+import instruction.jump.LabeledJumpInstruction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
