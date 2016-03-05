@@ -16,7 +16,7 @@ import value.StringValue;
 import value.Value;
 
 public class Runtime implements HasState {
-	private UndoStack undoStack = new UndoStack(true);
+	private UndoStack undoStack = new UndoStack();
 	
 	private Stack stack = new Stack(undoStack);
 	private List<StackFrame> stackFrames = new ArrayList<>();

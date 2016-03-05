@@ -4,8 +4,6 @@ import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TShortArrayList;
 import instruction.Instruction;
-import instruction.viz.EndVizInstruction;
-import instruction.viz.StartVizInstruction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +31,13 @@ public class UndoStack {
 	private final TDoubleArrayList popDoubleValueUndos = new TDoubleArrayList();
 	private final TShortArrayList popValueUndoTypes = new TShortArrayList();
 	
-	private final boolean undoEnabled;
+	private boolean undoEnabled = true;
+
+	public boolean isUndoEnabled() {
+		return undoEnabled;
+	}
 	
-	public UndoStack(boolean undoEnabled) {
+	public void setUndoEnabled(boolean undoEnabled) {
 		this.undoEnabled = undoEnabled;
 	}
 	

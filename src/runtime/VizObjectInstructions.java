@@ -20,8 +20,20 @@ public class VizObjectInstructions {
 	}
 
 	public void updateObjects(Runtime runtime) {
+		boolean undoStackEnabled = runtime.getUndoStack().isUndoEnabled();
+		runtime.getUndoStack().setUndoEnabled(true);
+		
 		runtime.getCurrentVizObjects().clear();
 		
+		executeInstructions(runtime);
+		
+		runtime.getUndoStack().setUndoEnabled(undoStackEnabled);
+		
+		vizObjects.addAll(runtime.getCurrentVizObjects());
+		runtime.getCurrentVizObjects().clear();
+	}
+
+	private void executeInstructions(Runtime runtime) {
 		List<Instruction> executedInstructions = new ArrayList<>();
 		
 		executeInstructions(runtime, instructions, executedInstructions);
@@ -31,10 +43,6 @@ public class VizObjectInstructions {
 			instruction.undo(runtime);
 			runtime.getUndoStack().undoCommands();
 		}
-		
-		vizObjects.addAll(runtime.getCurrentVizObjects());
-		
-		runtime.getCurrentVizObjects().clear();
 	}
 
 	private void executeInstructions(Runtime runtime, List<Instruction> instructions, List<Instruction> executedInstructions) {
