@@ -12,6 +12,8 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import value.FunctionValue;
+
 public class VizObjectsTest {
 	@Test
 	public void simple() {
@@ -105,11 +107,22 @@ public class VizObjectsTest {
 			Arrays.asList("rect(x: 1)")
 		));
 	}
+	
+	@Test
+	public void vizObjectsDoNotChangeState() {
+		assertStateNotChanged("@rect();");
+		assertStateNotChanged("@rect(x: 1);");
+		assertStateNotChanged("@for(true) rect(x: 1);");
+		assertStateNotChanged("@for(x <- [1]) rect(x: 1);");
+		assertStateNotChanged("@for(x <- [1]) rect();");
+		assertStateNotChanged("@for(x <- [1], y <- [2]) rect();");
+		assertStateNotChanged("var y = 0; @for(x <- [y++]) rect();");
+		assertStateNotChanged("@for(x <- [print()]) rect();");
+	}
 
 	private static void assertVizObjects(String program, List<List<String>> expectedObjects) {
 		Runtime runtime = new Runtime();
 		List<Instruction> instructions = Engine.compile(program);
-		
 		Engine engine = new Engine(runtime, instructions);
 		
 		List<List<String>> actualObjects = new ArrayList<>();
@@ -155,5 +168,25 @@ public class VizObjectsTest {
 			stringList.add(x.toString());
 		}
 		return stringList;
+	}
+	
+	/**
+	 * Asserts that the state before and after vizObjectInstructions are run is the same.
+	 */
+	private void assertStateNotChanged(String vizObjectInstructions) {
+		Runtime runtime = new Runtime();
+		List<Instruction> instructions = Engine.compile(vizObjectInstructions);
+		runtime.addStackFrame(new FunctionValue(new GlobalScope(runtime.getUndoStack()), 0));
+
+		// Save initial state.
+		String initialState = runtime.getState();
+		int initialUndoStackSize = runtime.getUndoStack().getSize();
+		
+		// Run viz object instructions.
+		new VizObjectInstructions(instructions).updateObjects(runtime);
+		
+		// Check that the state is the same.
+		assertEquals(initialState, runtime.getState());
+		assertEquals(initialUndoStackSize, runtime.getUndoStack().getSize());
 	}
 }
