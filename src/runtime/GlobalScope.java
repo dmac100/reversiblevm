@@ -402,11 +402,11 @@ public class GlobalScope implements Scope, HasState {
 	
 	@Override
 	public String getState(String prefix, Set<Object> used) {
-		//return prefix + "[GLOBALS]";
 		StringBuilder s = new StringBuilder();
 		for(String name:values.keySet()) {
 			s.append(prefix + "Name: " + name).append("\n");
-			s.append(values.get(name).getState(prefix + "  ", used)).append("\n");
+			s.append(prefix + "Value: " + values.get(name).toString()).append("\n");
+			//s.append(values.get(name).getState(prefix + "  ", used)).append("\n");
 		}
 		
 		return s.toString().replaceAll("\\s+$", "");
