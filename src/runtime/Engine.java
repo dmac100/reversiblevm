@@ -57,6 +57,8 @@ public class Engine {
 	}
 	
 	public void stepForward() {
+		if(runtime.getCurrentStackFrame() == null) return;
+		
 		runtime.getUndoStack().saveUndoPoint();
 		runtime.getUndoStack().addInstructionCounterUndo(runtime.getCurrentStackFrame().getInstructionCounter());
 		
