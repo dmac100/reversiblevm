@@ -14,10 +14,15 @@ public class VizIterateInstruction implements Instruction {
 		return new VizIterateInstruction(name);
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	public void execute(Runtime runtime) {
 	}
 	
 	public void undo(Runtime runtime) {
+		runtime.getUndoStack().undoPopValue(runtime);
 	}
 	
 	public String toString() {

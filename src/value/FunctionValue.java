@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Set;
 
 import runtime.HasState;
-import runtime.NonGlobalScope;
 import runtime.Scope;
+import runtime.VizObject;
+import runtime.VizObjectInstructions;
 
 public class FunctionValue extends Value implements HasState {
 	private final List<Instruction> instructions = new ArrayList<>();
 	private final int paramCount;
+	private final List<VizObjectInstructions> vizObjectInstructionsList = new ArrayList<>();
 	
 	private Scope parentScope;
 	
@@ -41,6 +43,18 @@ public class FunctionValue extends Value implements HasState {
 	
 	public int getParamCount() {
 		return paramCount;
+	}
+	
+	public void addVizObjectInstructions(VizObjectInstructions vizObjectInstructions) {
+		vizObjectInstructionsList.add(vizObjectInstructions);
+	}
+	
+	public List<VizObject> getVizObjects() {
+		List<VizObject> objects = new ArrayList<>();
+		for(VizObjectInstructions vizObjectInstructions:vizObjectInstructionsList) {
+			objects.addAll(vizObjectInstructions.getVizObjects());
+		}
+		return objects;
 	}
 	
 	public String toString(Set<Value> used) {

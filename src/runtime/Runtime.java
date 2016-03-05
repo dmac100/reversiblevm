@@ -1,5 +1,7 @@
 package runtime;
 
+import instruction.Instruction;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +22,9 @@ public class Runtime implements HasState {
 	private List<StackFrame> stackFrames = new ArrayList<>();
 	private FunctionValue currentFunctionDefinition = null;
 	private int nestedFunctionDefinitionCount = 0;
+	private List<VizObject> currentVizObjects = new ArrayList<>();
 	private boolean inVizInstruction = false;
+	private List<Instruction> vizInstructions = new ArrayList<>();
 	
 	private List<String> errors = new ArrayList<>();
 	private List<String> output = new ArrayList<>();
@@ -59,6 +63,14 @@ public class Runtime implements HasState {
 	
 	public Scope getGlobalScope() {
 		return stackFrames.get(0).getScope();
+	}
+	
+	public List<VizObject> getVizObjects() {
+		List<VizObject> vizObjects = new ArrayList<>();
+		for(StackFrame stackFrame:stackFrames) {
+			vizObjects.addAll(stackFrame.getFunction().getVizObjects());
+		}
+		return vizObjects;
 	}
 	
 	public void throwError(String error) {
@@ -117,8 +129,16 @@ public class Runtime implements HasState {
 		return inVizInstruction;
 	}
 	
+	public List<VizObject> getCurrentVizObjects() {
+		return currentVizObjects;
+	}
+	
 	public void setInVizInstruction(boolean inVizInstruction) {
 		this.inVizInstruction = inVizInstruction;
+	}
+	
+	public List<Instruction> getCurrentVizInstructions() {
+		return vizInstructions;
 	}
 
 	public DoubleValue checkDoubleValue(Value value) throws ExecutionException {

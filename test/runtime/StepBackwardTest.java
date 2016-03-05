@@ -375,8 +375,10 @@ public class StepBackwardTest {
 	public void VizStatement() {
 		assertStepBackward("print(1); @rect(); print(2);");
 		assertStepBackward("print(1); @rect(x: 1); print(2);");
-		assertStepBackward("print(1); @for(x) rect(x: 1); print(2);");
+		assertStepBackward("print(1); @for(true) rect(x: 1); print(2);");
 		assertStepBackward("print(1); @for(x <- [1]) rect(x: 1); print(2);");
+		
+		assertStepBackward("print(1); function f() { return 1; }; @for(x <- [1]) rect(x: f()); print(2);");
 	}
 	
 	@Test

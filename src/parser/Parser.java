@@ -707,7 +707,7 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(pop(), pop())),
 				Terminal(")")
 			),
-			Identifier(),
+			Sequence(TestNot(Terminal("for"), Terminal("(")), Identifier()),
 			push(Instructions(NewVizObjectInstruction(match().trim()))),
 			Terminal("("),
 			Optional(
@@ -717,7 +717,7 @@ public class Parser extends BaseParser<Instructions> {
 					VizProperty(),
 					push(Instructions(pop(1), pop()))
 				),
-				push(Instructions(pop(), pop()))
+				push(Instructions(pop(1), pop()))
 			),
 			push(Instructions(Instructions(StartVizInstruction()), pop(1), pop(), Instructions(EndVizInstruction()))),
 			Terminal(")"),

@@ -118,13 +118,7 @@ public class UndoStack {
 		}
 		
 		// Undo commands.
-		while(!commandUndos.isEmpty()) {
-			Runnable command = commandUndos.remove(commandUndos.size() - 1);
-			if(command == UNDOPOINT) {
-				break;
-			}
-			command.run();
-		}
+		undoCommands();
 		
 		// Undo instruction counter changes.
 		if(!instructionCounterUndos.isEmpty()) {
@@ -135,9 +129,30 @@ public class UndoStack {
 		}
 	}
 
+	public void undoCommands() {
+		while(!commandUndos.isEmpty()) {
+			Runnable command = commandUndos.remove(commandUndos.size() - 1);
+			if(command == UNDOPOINT) {
+				break;
+			}
+			command.run();
+		}
+	}
+
 	public void saveUndoPoint() {
 		if(!undoEnabled) return;
 		
 		commandUndos.add(UNDOPOINT);
+	}
+	
+	public int getSize() {
+		int size = 0;
+		size += commandUndos.size();
+		size += instructionCounterUndos.size();
+		size += popStackFrameUndos.size();
+		size += popValueUndos.size();
+		size += popDoubleValueUndos.size();
+		size += popValueUndoTypes.size();
+		return size;
 	}
 }

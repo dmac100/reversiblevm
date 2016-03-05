@@ -15,6 +15,7 @@ public class VizFilterInstruction implements Instruction {
 	}
 	
 	public void undo(Runtime runtime) {
+		runtime.getUndoStack().undoPopValue(runtime);
 	}
 	
 	public String toString() {

@@ -79,6 +79,7 @@ public class Engine {
 				if(instruction instanceof StartVizInstruction || instruction instanceof EndVizInstruction) {
 					execute(instruction);
 				} else {
+					runtime.getCurrentVizInstructions().add(instruction);
 				}
 			} else {
 				execute(instruction);

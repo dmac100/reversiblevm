@@ -1,6 +1,6 @@
 package runtime;
 
-import instruction.EqualInstruction;
+import instruction.operator.EqualInstruction;
 
 import java.util.ArrayList;
 import java.util.Collections;

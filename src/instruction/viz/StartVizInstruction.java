@@ -13,6 +13,7 @@ public class StartVizInstruction implements Instruction {
 	
 	public void execute(Runtime runtime) {
 		runtime.setInVizInstruction(true);
+		runtime.getCurrentVizInstructions().clear();
 	}
 	
 	public void undo(Runtime runtime) {
