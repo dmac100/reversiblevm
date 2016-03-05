@@ -157,4 +157,13 @@ public class UndoStack {
 		size += popValueUndoTypes.size();
 		return size;
 	}
+	
+	public void clear() {
+		commandUndos.clear();
+		instructionCounterUndos.clear();
+		popStackFrameUndos.clear();
+		popValueUndos.clear();
+		popDoubleValueUndos.clear();
+		popValueUndoTypes.clear();
+	}
 }
