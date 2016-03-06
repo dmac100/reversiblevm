@@ -1,8 +1,7 @@
-import instruction.Instruction;
-
 import java.util.List;
 
-import runtime.Engine;
+import backend.instruction.Instruction;
+import backend.runtime.Engine;
 
 public class Main {
 	public static void main(String[] args) {
