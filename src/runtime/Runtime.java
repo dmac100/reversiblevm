@@ -7,6 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import observer.ValueChangeObservable;
+import observer.ValueChangeObserver;
+import observer.ValueReadObserver;
+
 import value.ArrayValue;
 import value.BooleanValue;
 import value.DoubleValue;
@@ -14,12 +18,8 @@ import value.FunctionValue;
 import value.ObjectValue;
 import value.StringValue;
 import value.Value;
-import callback.CanFireValueRead;
-import callback.HasCallbacks;
-import callback.ValueChangeCallback;
-import callback.ValueReadCallback;
 
-public class Runtime implements HasState, CanFireValueRead {
+public class Runtime implements HasState, ValueReadObserver {
 	private UndoStack undoStack = new UndoStack();
 	
 	private Stack stack = new Stack(undoStack);
@@ -29,7 +29,7 @@ public class Runtime implements HasState, CanFireValueRead {
 	private List<VizObject> currentVizObjects = new ArrayList<>();
 	private boolean inVizInstruction = false;
 	private List<Instruction> vizInstructions = new ArrayList<>();
-	private Set<ValueReadCallback> valueReadCallbacks = new HashSet<>();
+	private Set<ValueReadObserver> valueReadObservers = new HashSet<>();
 	
 	private List<String> errors = new ArrayList<>();
 	private List<String> output = new ArrayList<>();
@@ -147,17 +147,17 @@ public class Runtime implements HasState, CanFireValueRead {
 		return vizInstructions;
 	}
 	
-	public void addValueReadCallback(ValueReadCallback callback) {
-		valueReadCallbacks.add(callback);
+	public void addValueReadObserver(ValueReadObserver observer) {
+		valueReadObservers.add(observer);
 	}
 	
-	public void clearValueReadCallbacks() {
-		valueReadCallbacks.clear();
+	public void clearValueReadObservers() {
+		valueReadObservers.clear();
 	}
 	
-	public void fireCallbacks(HasCallbacks<ValueChangeCallback> hasValueChangeCallback) {
-		for(ValueReadCallback valueReadCallback:valueReadCallbacks) {
-			valueReadCallback.onValueRead(hasValueChangeCallback);
+	public void onValueRead(ValueChangeObservable valueChangeObservable) {
+		for(ValueReadObserver valueReadObserver:valueReadObservers) {
+			valueReadObserver.onValueRead(valueChangeObservable);
 		}
 	}
 

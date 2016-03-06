@@ -3,13 +3,14 @@ package runtime;
 import instruction.operator.EqualInstruction;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import observer.ValueObserverList;
+import observer.ValueReadObserver;
 
 import value.ArrayValue;
 import value.BooleanValue;
@@ -19,15 +20,11 @@ import value.NullValue;
 import value.ObjectValue;
 import value.StringValue;
 import value.Value;
-import callback.CanFireValueRead;
-import callback.HasCallbacks;
-import callback.ValueChangeCallback;
-import callback.ValueChangeCallbacks;
 
 public class GlobalScope implements Scope, HasState {
 	private final UndoStack undoStack;
 	private final Map<String, Value> values = new HashMap<>();
-	private final ValueChangeCallbacks<String> valueChangeCallbacks = new ValueChangeCallbacks<>();
+	private final ValueObserverList<String> valueObserverList = new ValueObserverList<>();
 	
 	public GlobalScope(UndoStack undoStack) {
 		this.undoStack = undoStack;
@@ -361,8 +358,8 @@ public class GlobalScope implements Scope, HasState {
 		});
 	}
 	
-	public Value get(final String name, CanFireValueRead callbacks) {
-		valueChangeCallbacks.fireReadCallbacks(callbacks, name);
+	public Value get(final String name, ValueReadObserver valueReadObserver) {
+		valueObserverList.onReadValue(valueReadObserver, name);
 		
 		if(values.containsKey(name)) {
 			return values.get(name);
@@ -388,7 +385,7 @@ public class GlobalScope implements Scope, HasState {
 		}
 		values.put(name, value);
 		
-		valueChangeCallbacks.fireWriteCallbacks(name);
+		valueObserverList.onChangeValue(name);
 	}
 	
 	public void create(final String name) {

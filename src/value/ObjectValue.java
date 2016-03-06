@@ -7,28 +7,29 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import observer.ValueObserverList;
+import observer.ValueReadObserver;
+
 import runtime.ExecutionException;
 import runtime.HasState;
 import runtime.UndoStack;
-import callback.CanFireValueRead;
-import callback.ValueChangeCallbacks;
 
 public class ObjectValue extends Value implements HasState {
 	private final SortedMap<String, Value> values = new TreeMap<>();
 	private final UndoStack undoStack;
-	private final ValueChangeCallbacks<Void> valueChangeCallbacks = new ValueChangeCallbacks<>();
+	private final ValueObserverList<String> valueObserverList = new ValueObserverList<>();
 	
 	public ObjectValue(UndoStack undoStack) {
 		this.undoStack = undoStack;
 	}
 	
-	public Value get(String name, CanFireValueRead callbacks) {
-		valueChangeCallbacks.fireReadCallbacks(callbacks, null);
+	public Value get(String name, ValueReadObserver valueReadObserver) {
+		valueObserverList.onReadValue(valueReadObserver, null);
 		
 		if(values.containsKey(name)) {
 			return values.get(name);
 		} else if(values.get("prototype") instanceof ObjectValue) {
-			return ((ObjectValue)values.get("prototype")).get(name, callbacks);
+			return ((ObjectValue)values.get("prototype")).get(name, valueReadObserver);
 		} else {
 			return new NullValue();
 		}
@@ -53,7 +54,7 @@ public class ObjectValue extends Value implements HasState {
 		values.put(name, value);
 		checkCyclicPrototype(new HashSet<>());
 		
-		valueChangeCallbacks.fireWriteCallbacks(null);
+		valueObserverList.onChangeValue(null);
 	}
 
 	private void checkCyclicPrototype(HashSet<Object> used) throws ExecutionException {
@@ -65,8 +66,8 @@ public class ObjectValue extends Value implements HasState {
 		}
 	}
 
-	public List<String> keys(CanFireValueRead callbacks) {
-		valueChangeCallbacks.fireReadCallbacks(callbacks, null);
+	public List<String> keys(ValueReadObserver valueReadObserver) {
+		valueObserverList.onReadValue(valueReadObserver, null);
 		return new ArrayList<>(values.keySet());
 	}
 	

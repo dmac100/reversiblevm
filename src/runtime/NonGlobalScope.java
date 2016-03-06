@@ -4,28 +4,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import observer.ValueObserverList;
+import observer.ValueReadObserver;
+
 import value.NullValue;
 import value.Value;
-import callback.CanFireValueRead;
-import callback.ValueChangeCallbacks;
 
 public class NonGlobalScope implements Scope, HasState {
 	private final Scope parentScope;
 	private final UndoStack undoStack;
 	private final Map<String, Value> values = new HashMap<>();
-	private final ValueChangeCallbacks<String> valueChangeCallbacks = new ValueChangeCallbacks<>();
+	private final ValueObserverList<String> valueObserverList = new ValueObserverList<>();
 
 	public NonGlobalScope(Scope parentScope, UndoStack undoStack) {
 		this.parentScope = parentScope;
 		this.undoStack = undoStack;
 	}
 
-	public Value get(final String name, CanFireValueRead callbacks) {
+	public Value get(final String name, ValueReadObserver valueReadObserver) {
 		if(values.containsKey(name)) {
-			valueChangeCallbacks.fireReadCallbacks(callbacks, name);
+			valueObserverList.onReadValue(valueReadObserver, name);
 			return values.get(name);
 		} else {
-			return parentScope.get(name, callbacks);
+			return parentScope.get(name, valueReadObserver);
 		}
 	}
 
@@ -39,7 +40,7 @@ public class NonGlobalScope implements Scope, HasState {
 			});
 			values.put(name, value);
 			
-			valueChangeCallbacks.fireWriteCallbacks(name);
+			valueObserverList.onChangeValue(name);
 		} else {
 			parentScope.set(name, value);
 		}

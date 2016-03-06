@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import observer.ValueObserverList;
+import observer.ValueReadObserver;
+
 import runtime.ExecutionException;
 import runtime.HasState;
 import runtime.UndoStack;
-import callback.CanFireValueRead;
-import callback.ValueChangeCallbacks;
 
 public class ArrayValue extends Value implements HasState {
 	private final UndoStack undoStack;
 	private List<Value> values = new ArrayList<>();
-	private final ValueChangeCallbacks<Void> valueChangeCallbacks = new ValueChangeCallbacks<>();
+	private final ValueObserverList<String> valueObserverList = new ValueObserverList<>();
 	
 	public ArrayValue(UndoStack undoStack) {
 		this.undoStack = undoStack;
@@ -24,8 +25,8 @@ public class ArrayValue extends Value implements HasState {
 		this.undoStack = undoStack;
 	}
 	
-	public Value get(DoubleValue indexValue, CanFireValueRead callbacks) throws ExecutionException {
-		valueChangeCallbacks.fireReadCallbacks(callbacks, null);
+	public Value get(DoubleValue indexValue, ValueReadObserver valueReadObserver) throws ExecutionException {
+		valueObserverList.onReadValue(valueReadObserver, null);
 		
 		int index = (int)indexValue.getValue();
 		if(index < 0) throw new ExecutionException("Invalid index: " + index);
@@ -60,7 +61,7 @@ public class ArrayValue extends Value implements HasState {
 			values.add(new NullValue());
 		}
 		values.set(index, value);
-		valueChangeCallbacks.fireWriteCallbacks(null);
+		valueObserverList.onChangeValue(null);
 	}
 	
 	public void push(Value value) {
@@ -70,11 +71,11 @@ public class ArrayValue extends Value implements HasState {
 			}
 		});
 		values.add(value);
-		valueChangeCallbacks.fireWriteCallbacks(null);
+		valueObserverList.onChangeValue(null);
 	}
 	
-	public DoubleValue length(CanFireValueRead callbacks) {
-		valueChangeCallbacks.fireReadCallbacks(callbacks, null);
+	public DoubleValue length(ValueReadObserver valueReadObserver) {
+		valueObserverList.onReadValue(valueReadObserver, null);
 		return new DoubleValue(values.size());
 	}
 	
@@ -86,11 +87,11 @@ public class ArrayValue extends Value implements HasState {
 			}
 		});
 		this.values = values;
-		valueChangeCallbacks.fireWriteCallbacks(null);
+		valueObserverList.onChangeValue(null);
 	}
 	
-	public List<Value> values(CanFireValueRead callbacks) {
-		valueChangeCallbacks.fireReadCallbacks(callbacks, null);
+	public List<Value> values(ValueReadObserver valueReadObserver) {
+		valueObserverList.onReadValue(valueReadObserver, null);
 		return new ArrayList<>(values);
 	}
 

@@ -8,18 +8,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import callback.HasCallbacks;
-import callback.ValueChangeCallback;
-import callback.ValueReadCallback;
+import observer.ValueChangeObservable;
+import observer.ValueChangeObserver;
+import observer.ValueReadObserver;
 
 import value.FunctionValue;
 import value.Value;
 
-public class VizObjectInstructions implements ValueChangeCallback {
+public class VizObjectInstructions implements ValueChangeObserver {
 	private final Runtime runtime;
 	private final List<Instruction> instructions;
 	private final List<VizObject> vizObjects = new ArrayList<>();
-	private final List<HasCallbacks<ValueChangeCallback>> activeCallbacks = new ArrayList<>();
+	private final List<ValueChangeObservable> activeObservers = new ArrayList<>();
 	
 	public VizObjectInstructions(Runtime runtime, List<Instruction> instructions) {
 		this.runtime = runtime;
@@ -47,17 +47,17 @@ public class VizObjectInstructions implements ValueChangeCallback {
 		
 		clear();
 		
-		final List<HasCallbacks<ValueChangeCallback>> valueChangeCallbacks = new ArrayList<>();
+		final List<ValueChangeObservable> valueChangeObservables = new ArrayList<>();
 		
-		runtime.addValueReadCallback(new ValueReadCallback() {
-			public void onValueRead(HasCallbacks<ValueChangeCallback> hasValueChangeCallbacks) {
-				valueChangeCallbacks.add(hasValueChangeCallbacks);
+		runtime.addValueReadObserver(new ValueReadObserver() {
+			public void onValueRead(ValueChangeObservable valueChangeObservable) {
+				valueChangeObservables.add(valueChangeObservable);
 			}
 		});
 		
 		executeInstructions(runtime, instructions, executedInstructions);
 		
-		runtime.clearValueReadCallbacks();
+		runtime.clearValueReadObservers();
 		
 		Collections.reverse(executedInstructions);
 		for(Instruction instruction:executedInstructions) {
@@ -65,23 +65,19 @@ public class VizObjectInstructions implements ValueChangeCallback {
 			runtime.getUndoStack().undoCommands();
 		}
 		
-		for(HasCallbacks<ValueChangeCallback> hasValueChangeCallbacks:valueChangeCallbacks) {
-			updateObjectsOnValueChange(hasValueChangeCallbacks);
+		for(ValueChangeObservable valueChangeObservable:valueChangeObservables) {
+			valueChangeObservable.addObserver(this);
+			activeObservers.add(valueChangeObservable);
 		}
 	}
 	
 	public void clear() {
-		for(HasCallbacks<ValueChangeCallback> callback:activeCallbacks) {
-			callback.removeCallback(this);
+		for(ValueChangeObservable valueChangeObservable:activeObservers) {
+			valueChangeObservable.removeObserver(this);
 		}
 		
-		activeCallbacks.clear();
+		activeObservers.clear();
 		vizObjects.clear();
-	}
-
-	private void updateObjectsOnValueChange(final HasCallbacks<ValueChangeCallback> hasValueChangeCallbacks) {
-		hasValueChangeCallbacks.addCallback(this);
-		activeCallbacks.add(hasValueChangeCallbacks);
 	}
 
 	private void executeInstructions(Runtime runtime, List<Instruction> instructions, List<Instruction> executedInstructions) {
