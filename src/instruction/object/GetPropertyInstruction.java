@@ -29,11 +29,11 @@ public class GetPropertyInstruction implements Instruction {
 		
 		Value value = stack.popValue(false, true);
 		if(value instanceof ObjectValue) {
-			runtime.getStack().push(((ObjectValue)value).get(name), false);
+			runtime.getStack().push(((ObjectValue)value).get(name, runtime), false);
 		} else if(value instanceof ArrayValue) {
-			runtime.getStack().push(runtime.checkObjectValue(runtime.getScope().get("ArrayProto")).get(name), false);
+			runtime.getStack().push(runtime.checkObjectValue(runtime.getScope().get("ArrayProto", runtime)).get(name, runtime), false);
 		} else if(value instanceof StringValue) {
-			runtime.getStack().push(runtime.checkObjectValue(runtime.getScope().get("StringProto")).get(name), false);
+			runtime.getStack().push(runtime.checkObjectValue(runtime.getScope().get("StringProto", runtime)).get(name, runtime), false);
 		} else {
 			throw new ExecutionException("TypeError: Not an object: " + value);
 		}

@@ -10,20 +10,25 @@ import java.util.TreeMap;
 import runtime.ExecutionException;
 import runtime.HasState;
 import runtime.UndoStack;
+import callback.CanFireValueRead;
+import callback.ValueChangeCallbacks;
 
 public class ObjectValue extends Value implements HasState {
 	private final SortedMap<String, Value> values = new TreeMap<>();
 	private final UndoStack undoStack;
+	private final ValueChangeCallbacks<Void> valueChangeCallbacks = new ValueChangeCallbacks<>();
 	
 	public ObjectValue(UndoStack undoStack) {
 		this.undoStack = undoStack;
 	}
 	
-	public Value get(String name) {
+	public Value get(String name, CanFireValueRead callbacks) {
+		valueChangeCallbacks.fireReadCallbacks(callbacks, null);
+		
 		if(values.containsKey(name)) {
 			return values.get(name);
 		} else if(values.get("prototype") instanceof ObjectValue) {
-			return ((ObjectValue)values.get("prototype")).get(name);
+			return ((ObjectValue)values.get("prototype")).get(name, callbacks);
 		} else {
 			return new NullValue();
 		}
@@ -47,6 +52,8 @@ public class ObjectValue extends Value implements HasState {
 		
 		values.put(name, value);
 		checkCyclicPrototype(new HashSet<>());
+		
+		valueChangeCallbacks.fireWriteCallbacks(null);
 	}
 
 	private void checkCyclicPrototype(HashSet<Object> used) throws ExecutionException {
@@ -58,7 +65,8 @@ public class ObjectValue extends Value implements HasState {
 		}
 	}
 
-	public List<String> keys() {
+	public List<String> keys(CanFireValueRead callbacks) {
+		valueChangeCallbacks.fireReadCallbacks(callbacks, null);
 		return new ArrayList<>(values.keySet());
 	}
 	

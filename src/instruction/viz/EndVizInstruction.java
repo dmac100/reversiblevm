@@ -17,9 +17,9 @@ public class EndVizInstruction implements Instruction {
 		runtime.setInVizInstruction(false);
 		
 		FunctionValue function = runtime.getCurrentStackFrame().getFunction();
-		VizObjectInstructions vizObjectInstructions = new VizObjectInstructions(runtime.getCurrentVizInstructions());
+		VizObjectInstructions vizObjectInstructions = new VizObjectInstructions(runtime, runtime.getCurrentVizInstructions());
 		function.addVizObjectInstructions(vizObjectInstructions);
-		vizObjectInstructions.updateObjects(runtime);
+		vizObjectInstructions.updateObjects();
 	}
 	
 	public void undo(Runtime runtime) {

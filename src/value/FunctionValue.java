@@ -49,6 +49,13 @@ public class FunctionValue extends Value implements HasState {
 		vizObjectInstructionsList.add(vizObjectInstructions);
 	}
 	
+	public void clearVizObjectInstructions() {
+		for(VizObjectInstructions vizObjectInstructions:vizObjectInstructionsList) {
+			vizObjectInstructions.clear();
+		}
+		vizObjectInstructionsList.clear();
+	}
+	
 	public List<VizObject> getVizObjects() {
 		List<VizObject> objects = new ArrayList<>();
 		for(VizObjectInstructions vizObjectInstructions:vizObjectInstructionsList) {

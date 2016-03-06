@@ -3,6 +3,7 @@ package runtime;
 import instruction.operator.EqualInstruction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,10 +19,15 @@ import value.NullValue;
 import value.ObjectValue;
 import value.StringValue;
 import value.Value;
+import callback.CanFireValueRead;
+import callback.HasCallbacks;
+import callback.ValueChangeCallback;
+import callback.ValueChangeCallbacks;
 
 public class GlobalScope implements Scope, HasState {
 	private final UndoStack undoStack;
 	private final Map<String, Value> values = new HashMap<>();
+	private final ValueChangeCallbacks<String> valueChangeCallbacks = new ValueChangeCallbacks<>();
 	
 	public GlobalScope(UndoStack undoStack) {
 		this.undoStack = undoStack;
@@ -166,7 +172,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		objectProto.set("keys", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
-				List<String> keys = runtime.checkObjectValue(params.get(0)).keys();
+				List<String> keys = runtime.checkObjectValue(params.get(0)).keys(runtime);
 				List<Value> list = new ArrayList<>();
 				for(String key:keys) {
 					if(!key.equals("prototype")) {
@@ -180,7 +186,7 @@ public class GlobalScope implements Scope, HasState {
 		arrayProto.set("length", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
-				return array.length();
+				return array.length(runtime);
 			}
 		});
 		
@@ -189,10 +195,10 @@ public class GlobalScope implements Scope, HasState {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				ArrayValue other = runtime.checkArrayValue(params.get(1));
 				List<Value> list = new ArrayList<>();
-				for(Value value:array.values()) {
+				for(Value value:array.values(runtime)) {
 					list.add(value);
 				}
-				for(Value value:other.values()) {
+				for(Value value:other.values(runtime)) {
 					list.add(value);
 				}
 				return new ArrayValue(list, runtime.getUndoStack());
@@ -203,7 +209,7 @@ public class GlobalScope implements Scope, HasState {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				Value value = params.get(1);
-				List<Value> values = array.values();
+				List<Value> values = array.values(runtime);
 				for(int i = 0; i < values.size(); i++) {
 					if(EqualInstruction.equals(values.get(i), value)) {
 						return new DoubleValue(i);
@@ -215,7 +221,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("join", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
-				List<Value> array = runtime.checkArrayValue(params.get(0)).values();
+				List<Value> array = runtime.checkArrayValue(params.get(0)).values(runtime);
 				String separator = runtime.checkStringValue(params.get(1)).getValue();
 				StringBuilder s = new StringBuilder();
 				for(int i = 0; i < array.size(); i++) {
@@ -232,7 +238,7 @@ public class GlobalScope implements Scope, HasState {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				Value value = params.get(1);
-				List<Value> values = array.values();
+				List<Value> values = array.values(runtime);
 				for(int i = values.size() - 1; i >= 0; i--) {
 					if(EqualInstruction.equals(values.get(i), value)) {
 						return new DoubleValue(i);
@@ -244,7 +250,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("slice", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
-				List<Value> array = runtime.checkArrayValue(params.get(0)).values();
+				List<Value> array = runtime.checkArrayValue(params.get(0)).values(runtime);
 				int start = (int)runtime.checkDoubleValue(params.get(1)).getValue();
 				int end = (int)runtime.checkDoubleValue(params.get(2)).getValue();
 				start = Math.max(start, 0);
@@ -262,13 +268,13 @@ public class GlobalScope implements Scope, HasState {
 		arrayProto.set("sort", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
-				for(int i = 0; i < array.length().getValue(); i++) {
-					for(int j = i + 1; j < array.length().getValue(); j++) {
-						String value1 = array.get(new DoubleValue(i)).toString();
-						String value2 = array.get(new DoubleValue(j)).toString();
+				for(int i = 0; i < array.length(runtime).getValue(); i++) {
+					for(int j = i + 1; j < array.length(runtime).getValue(); j++) {
+						String value1 = array.get(new DoubleValue(i), runtime).toString();
+						String value2 = array.get(new DoubleValue(j), runtime).toString();
 						if(value1.compareTo(value2) > 0) {
-							Value t = array.get(new DoubleValue(i));
-							array.set(new DoubleValue(i), array.get(new DoubleValue(j)));
+							Value t = array.get(new DoubleValue(i), runtime);
+							array.set(new DoubleValue(i), array.get(new DoubleValue(j), runtime));
 							array.set(new DoubleValue(j), t);
 						}
 					}
@@ -280,7 +286,7 @@ public class GlobalScope implements Scope, HasState {
 		arrayProto.set("pop", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
-				List<Value> values = array.values();
+				List<Value> values = array.values(runtime);
 				if(values.isEmpty()) {
 					return new NullValue();
 				} else {
@@ -295,7 +301,7 @@ public class GlobalScope implements Scope, HasState {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				Value value = params.get(1);
-				List<Value> values = array.values();
+				List<Value> values = array.values(runtime);
 				values.add(value);
 				array.setValues(values);
 				return value;
@@ -305,7 +311,7 @@ public class GlobalScope implements Scope, HasState {
 		arrayProto.set("reverse", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
-				List<Value> values = array.values();
+				List<Value> values = array.values(runtime);
 				Collections.reverse(values);
 				array.setValues(values);
 				return array;
@@ -315,7 +321,7 @@ public class GlobalScope implements Scope, HasState {
 		arrayProto.set("shift", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
-				List<Value> values = array.values();
+				List<Value> values = array.values(runtime);
 				if(values.isEmpty()) {
 					return new NullValue();
 				} else {
@@ -330,7 +336,7 @@ public class GlobalScope implements Scope, HasState {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				Value value = params.get(1);
-				List<Value> values = array.values();
+				List<Value> values = array.values(runtime);
 				values.add(0, value);
 				array.setValues(values);
 				return value;
@@ -343,7 +349,7 @@ public class GlobalScope implements Scope, HasState {
 				int index = (int)runtime.checkDoubleValue(params.get(1)).getValue();
 				int count = (int)runtime.checkDoubleValue(params.get(2)).getValue();
 				List<Value> removed = new ArrayList<>();
-				List<Value> values = array.values();
+				List<Value> values = array.values(runtime);
 				for(int i = 0; i < count; i++) {
 					if(index < values.size()) {
 						removed.add(values.remove(index));
@@ -355,14 +361,16 @@ public class GlobalScope implements Scope, HasState {
 		});
 	}
 	
-	public Value get(String name) {
+	public Value get(final String name, CanFireValueRead callbacks) {
+		valueChangeCallbacks.fireReadCallbacks(callbacks, name);
+		
 		if(values.containsKey(name)) {
 			return values.get(name);
 		} else {
 			return new NullValue();
 		}
 	}
-
+	
 	public void set(final String name, final Value value) {
 		if(values.containsKey(name)) {
 			final Value oldValue = values.get(name);
@@ -379,6 +387,8 @@ public class GlobalScope implements Scope, HasState {
 			});
 		}
 		values.put(name, value);
+		
+		valueChangeCallbacks.fireWriteCallbacks(name);
 	}
 	
 	public void create(final String name) {

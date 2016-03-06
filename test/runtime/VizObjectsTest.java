@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import value.FunctionValue;
@@ -45,7 +44,6 @@ public class VizObjectsTest {
 	}
 	
 	@Test
-	@Ignore("To be implemented")
 	public void observeVariable() {
 		assertVizObjects("var a = 2; @rect(x: a); a = 3;", Arrays.asList(
 			Arrays.asList("rect(x: 2)"),
@@ -82,7 +80,6 @@ public class VizObjectsTest {
 	}
 	
 	@Test
-	@Ignore("To be implemented")
 	public void observeArray() {
 		assertVizObjects("var a = [1, 2, 3]; @for(x <- a) rect(x: x); a.push(4);", Arrays.asList(
 			Arrays.asList("rect(x: 1)", "rect(x: 2)", "rect(x: 3)"),
@@ -91,11 +88,18 @@ public class VizObjectsTest {
 	}
 	
 	@Test
-	@Ignore("To be implemented")
 	public void observeArrayElement() {
 		assertVizObjects("var a = [1, 2, 3]; @for(x <- a) rect(x: x); a[0] = 4;", Arrays.asList(
 			Arrays.asList("rect(x: 1)", "rect(x: 2)", "rect(x: 3)"),
 			Arrays.asList("rect(x: 4)", "rect(x: 2)", "rect(x: 3)")
+		));
+	}
+	
+	@Test
+	public void observeObjectProperty() {
+		assertVizObjects("var a = { b: 2 }; @rect(x: a.b); a.b = 3;", Arrays.asList(
+			Arrays.asList("rect(x: 2)"),
+			Arrays.asList("rect(x: 3)")
 		));
 	}
 	
@@ -105,6 +109,14 @@ public class VizObjectsTest {
 			Arrays.asList("rect(x: 1)"),
 			Arrays.asList("rect(x: 1)", "rect(x: 2)"),
 			Arrays.asList("rect(x: 1)")
+		));
+	}
+	
+	@Test
+	public void multipleFunctionCalls() {
+		assertVizObjects("function f(x) { @rect(x: x); }; f(1); f(2);", Arrays.asList(
+			Arrays.asList("rect(x: 1)"),
+			Arrays.asList("rect(x: 2)")
 		));
 	}
 	
@@ -183,7 +195,7 @@ public class VizObjectsTest {
 		int initialUndoStackSize = runtime.getUndoStack().getSize();
 		
 		// Run viz object instructions.
-		new VizObjectInstructions(instructions).updateObjects(runtime);
+		new VizObjectInstructions(runtime, instructions).updateObjects();
 		
 		// Check that the state is the same.
 		assertEquals(initialState, runtime.getState());

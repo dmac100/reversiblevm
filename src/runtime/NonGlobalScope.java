@@ -1,28 +1,31 @@
 package runtime;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import value.NullValue;
 import value.Value;
+import callback.CanFireValueRead;
+import callback.ValueChangeCallbacks;
 
 public class NonGlobalScope implements Scope, HasState {
 	private final Scope parentScope;
 	private final UndoStack undoStack;
 	private final Map<String, Value> values = new HashMap<>();
-	
+	private final ValueChangeCallbacks<String> valueChangeCallbacks = new ValueChangeCallbacks<>();
+
 	public NonGlobalScope(Scope parentScope, UndoStack undoStack) {
 		this.parentScope = parentScope;
 		this.undoStack = undoStack;
 	}
-	
-	public Value get(String name) {
+
+	public Value get(final String name, CanFireValueRead callbacks) {
 		if(values.containsKey(name)) {
+			valueChangeCallbacks.fireReadCallbacks(callbacks, name);
 			return values.get(name);
 		} else {
-			return parentScope.get(name);
+			return parentScope.get(name, callbacks);
 		}
 	}
 
@@ -35,6 +38,8 @@ public class NonGlobalScope implements Scope, HasState {
 				}
 			});
 			values.put(name, value);
+			
+			valueChangeCallbacks.fireWriteCallbacks(name);
 		} else {
 			parentScope.set(name, value);
 		}
@@ -50,11 +55,11 @@ public class NonGlobalScope implements Scope, HasState {
 			values.put(name, new NullValue());
 		}
 	}
-	
+
 	public Scope getParentScope() {
 		return parentScope;
 	}
-	
+
 	public String toString() {
 		return values + " -> " + parentScope;
 	}
@@ -63,7 +68,7 @@ public class NonGlobalScope implements Scope, HasState {
 	public String getState(String prefix, Set<Object> used) {
 		if(used.contains(this)) return prefix + "[CYCLIC]";
 		used.add(this);
-		
+
 		StringBuilder s = new StringBuilder();
 		for(String name:values.keySet()) {
 			s.append(prefix + "Name: " + name).append("\n");
@@ -71,9 +76,9 @@ public class NonGlobalScope implements Scope, HasState {
 		}
 		s.append(prefix + "ParentScope:").append("\n");
 		s.append(parentScope.getState(prefix + "  ", used));
-		
+
 		used.remove(this);
-		
+
 		return s.toString().replaceAll("\\s+$", "");
 	}
 }

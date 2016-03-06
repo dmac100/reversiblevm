@@ -23,7 +23,7 @@ public class LoadInstruction implements Instruction {
 	public void execute(Runtime runtime) {
 		Stack stack = runtime.getStack();
 		Scope scope = runtime.getScope();
-		stack.push(scope.get(name), false);
+		stack.push(scope.get(name, runtime), false);
 	}
 	
 	public void undo(Runtime runtime) {

@@ -7,10 +7,13 @@ import java.util.Set;
 import runtime.ExecutionException;
 import runtime.HasState;
 import runtime.UndoStack;
+import callback.CanFireValueRead;
+import callback.ValueChangeCallbacks;
 
 public class ArrayValue extends Value implements HasState {
 	private final UndoStack undoStack;
 	private List<Value> values = new ArrayList<>();
+	private final ValueChangeCallbacks<Void> valueChangeCallbacks = new ValueChangeCallbacks<>();
 	
 	public ArrayValue(UndoStack undoStack) {
 		this.undoStack = undoStack;
@@ -20,8 +23,10 @@ public class ArrayValue extends Value implements HasState {
 		this.values = values;
 		this.undoStack = undoStack;
 	}
-
-	public Value get(DoubleValue indexValue) throws ExecutionException {
+	
+	public Value get(DoubleValue indexValue, CanFireValueRead callbacks) throws ExecutionException {
+		valueChangeCallbacks.fireReadCallbacks(callbacks, null);
+		
 		int index = (int)indexValue.getValue();
 		if(index < 0) throw new ExecutionException("Invalid index: " + index);
 		if(index >= values.size()) {
@@ -55,6 +60,7 @@ public class ArrayValue extends Value implements HasState {
 			values.add(new NullValue());
 		}
 		values.set(index, value);
+		valueChangeCallbacks.fireWriteCallbacks(null);
 	}
 	
 	public void push(Value value) {
@@ -64,9 +70,11 @@ public class ArrayValue extends Value implements HasState {
 			}
 		});
 		values.add(value);
+		valueChangeCallbacks.fireWriteCallbacks(null);
 	}
 	
-	public DoubleValue length() {
+	public DoubleValue length(CanFireValueRead callbacks) {
+		valueChangeCallbacks.fireReadCallbacks(callbacks, null);
 		return new DoubleValue(values.size());
 	}
 	
@@ -78,9 +86,11 @@ public class ArrayValue extends Value implements HasState {
 			}
 		});
 		this.values = values;
+		valueChangeCallbacks.fireWriteCallbacks(null);
 	}
 	
-	public List<Value> values() {
+	public List<Value> values(CanFireValueRead callbacks) {
+		valueChangeCallbacks.fireReadCallbacks(callbacks, null);
 		return new ArrayList<>(values);
 	}
 

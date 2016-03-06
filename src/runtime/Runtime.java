@@ -14,8 +14,12 @@ import value.FunctionValue;
 import value.ObjectValue;
 import value.StringValue;
 import value.Value;
+import callback.CanFireValueRead;
+import callback.HasCallbacks;
+import callback.ValueChangeCallback;
+import callback.ValueReadCallback;
 
-public class Runtime implements HasState {
+public class Runtime implements HasState, CanFireValueRead {
 	private UndoStack undoStack = new UndoStack();
 	
 	private Stack stack = new Stack(undoStack);
@@ -25,6 +29,7 @@ public class Runtime implements HasState {
 	private List<VizObject> currentVizObjects = new ArrayList<>();
 	private boolean inVizInstruction = false;
 	private List<Instruction> vizInstructions = new ArrayList<>();
+	private Set<ValueReadCallback> valueReadCallbacks = new HashSet<>();
 	
 	private List<String> errors = new ArrayList<>();
 	private List<String> output = new ArrayList<>();
@@ -53,6 +58,7 @@ public class Runtime implements HasState {
 	public StackFrame popStackFrame() {
 		if(stackFrames.isEmpty()) return null;
 		undoStack.addInstructionCounterUndo(UndoStack.POPSTACKFRAME);
+		stackFrames.get(stackFrames.size() - 1).getFunction().clearVizObjectInstructions();
 		undoStack.addPopStackFrameUndo(stackFrames.get(stackFrames.size() - 1));
 		return stackFrames.remove(stackFrames.size() - 1);
 	}
@@ -139,6 +145,20 @@ public class Runtime implements HasState {
 	
 	public List<Instruction> getCurrentVizInstructions() {
 		return vizInstructions;
+	}
+	
+	public void addValueReadCallback(ValueReadCallback callback) {
+		valueReadCallbacks.add(callback);
+	}
+	
+	public void clearValueReadCallbacks() {
+		valueReadCallbacks.clear();
+	}
+	
+	public void fireCallbacks(HasCallbacks<ValueChangeCallback> hasValueChangeCallback) {
+		for(ValueReadCallback valueReadCallback:valueReadCallbacks) {
+			valueReadCallback.onValueRead(hasValueChangeCallback);
+		}
 	}
 
 	public DoubleValue checkDoubleValue(Value value) throws ExecutionException {

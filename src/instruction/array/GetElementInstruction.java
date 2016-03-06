@@ -19,7 +19,7 @@ public class GetElementInstruction implements Instruction {
 		Stack stack = runtime.getStack();
 		DoubleValue index = runtime.checkDoubleValue(stack.popValue(false, true));
 		ArrayValue array = runtime.checkArrayValue(stack.popValue(false, true));
-		runtime.getStack().push(array.get(index), false);
+		runtime.getStack().push(array.get(index, runtime), false);
 	}
 	
 	public void undo(Runtime runtime) {
