@@ -25,8 +25,6 @@ public class VizObjectInstructions implements ValueChangeObserver {
 	}
 
 	public void updateObjects() {
-		System.out.println("*** UPDATE OBJECTS ***");
-		
 		boolean undoStackEnabled = runtime.getUndoStack().isUndoEnabled();
 		runtime.getUndoStack().setUndoEnabled(true);
 		

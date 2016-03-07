@@ -40,7 +40,7 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 
 import frontend.compiler.BracketMatcher;
-import frontend.compiler.Language;
+import frontend.compiler.BrushJs;
 import frontend.event.EnabledChangedEvent;
 
 public class EditorText {
@@ -50,7 +50,6 @@ public class EditorText {
 	private final Completion completion;
 	private final EditFunctions editFunctions;
 	
-	private Language language;
 	private Callback<Void> compileCallback;
 	
 	private final Theme theme = new ThemeSublime();
@@ -64,6 +63,9 @@ public class EditorText {
 		styledText = new StyledText(parent, SWT.V_SCROLL);
 		styledText.setMargins(2, 1, 2, 1);
 		styledText.setTabs(4);
+		
+		refreshLineStyles();
+		refreshStyle();
 		
 		editFunctions = new EditFunctions(styledText);
 		completion = new Completion(styledText);
@@ -444,7 +446,7 @@ public class EditorText {
 	 */
 	private void updateSyntaxHighlightingRanges() {
 		// Set syntax highlighting.
-		Brush brush = language.getBrush();
+		Brush brush = new BrushJs();
 		SyntaxHighlighterParser parser = new SyntaxHighlighterParser(brush);
 		List<ParseResult> results = filterResults(parser.parse(null, styledText.getText()));
 		
@@ -476,8 +478,6 @@ public class EditorText {
 	 * Refresh character style including foreground, background, syntax highlighting, and bracket highlighting.
 	 */
 	private void refreshStyle() {
-		if(language == null) return;
-		
 		// Set background color.
 		java.awt.Color background = theme.getBackground();
 		styledText.setBackground(colorCache.getColor(background));
@@ -578,12 +578,6 @@ public class EditorText {
 
 	public Control getControl() {
 		return styledText;
-	}
-
-	public void setLanguage(Language language) {
-		this.language = language;
-		updateSyntaxHighlightingRanges();
-		refreshStyle();
 	}
 
 	public void find() {

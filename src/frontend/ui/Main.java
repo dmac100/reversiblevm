@@ -34,7 +34,6 @@ import com.google.common.eventbus.Subscribe;
 
 import frontend.controller.MainController;
 import frontend.event.EnabledChangedEvent;
-import frontend.event.LanguageChangedEvent;
 import frontend.event.ModifiedEvent;
 
 public class Main {
@@ -42,7 +41,6 @@ public class Main {
 	private final Shell shell;
 	private final MainController mainController;
 	
-	private LanguageCombo languageCombo;
 	private EditorText editorText;
 	private SashForm horizontalSash;
 	
@@ -82,11 +80,6 @@ public class Main {
 			@Subscribe @SuppressWarnings("unused")
 			public void onModified(ModifiedEvent event) {
 				refreshTitle();
-			}
-			
-			@Subscribe @SuppressWarnings("unused")
-			public void onLanguageChanged(LanguageChangedEvent event) {
-				languageCombo.setLanguage(event.getLanguage());
 			}
 		});
 	}
@@ -206,14 +199,6 @@ public class Main {
 			})
 			.setAccelerator(SWT.CONTROL | 'f')
 			.addSeparator()
-			.addItem("Add &Import...\tCtrl+Shift+I").addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent event) {
-					mainController.addImport();
-				}
-			})
-			.setEnabled(mainController.importEnabled())
-			.setAccelerator(SWT.CONTROL | SWT.SHIFT | 'i')
-			.addSeparator()
 			.addItem("Convert Spaces to Tabs").addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					try {
@@ -256,7 +241,7 @@ public class Main {
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 		dialog.setText("Open");
 		
-		dialog.setFilterExtensions(mainController.getOpenFilterExtensions());
+		dialog.setFilterExtensions(new String[] { "*.js", "*.*" });
 
 		String selected = dialog.open();
 		
@@ -306,6 +291,7 @@ public class Main {
 		
 		final Button stopButton = new Button(parent, SWT.NONE);
 		stopButton.setText("Stop");
+		stopButton.setEnabled(false);
 		stopButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				try {
@@ -321,20 +307,6 @@ public class Main {
 				stopButton.setEnabled(running);
 			}
 		});
-		
-		final Button insertTemplateButton = new Button(parent, SWT.NONE);
-		insertTemplateButton.setText("Insert Sample");
-		insertTemplateButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				try {
-					mainController.insertTemplate();
-				} catch(Exception e) {
-					displayException(e);
-				}
-			}
-		});
-		
-		this.languageCombo = new LanguageCombo(parent, mainController);
 	}
 	
 	private void displayMessage(String message) {
@@ -446,21 +418,8 @@ public class Main {
 				System.exit(0);
 			}
 			
-			// Set language before opening any file in case the file changes the language.
-			if(command.hasOption("l")) {
-				mainController.setLanguageFromName(command.getOptionValue("l"));
-			}
-			
 			if(command.hasOption("i")) {
 				setInputPaneVisible(true);
-			}
-			
-			if(command.hasOption("j")) {
-				mainController.setJarDir(command.getOptionValue("j"));
-			}
-			
-			if(command.hasOption("cp")) {
-				mainController.setClasspath(command.getOptionValue("cp"));
 			}
 			
 			if(command.hasOption("f")) {

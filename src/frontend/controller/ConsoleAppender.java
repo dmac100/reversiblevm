@@ -9,15 +9,9 @@ import frontend.compiler.Appender;
 import frontend.ui.ConsoleText;
 
 /**
- * Buffers and writes text to a ConsoleText surrounded by some ansi color codes.
+ * Buffers and writes text to a ConsoleText.
  */
 public class ConsoleAppender implements Appender {
-	public static final String COLOR_BLUE = "\u001B[34m";
-	public static final String COLOR_RED = "\u001B[31m";
-	public static final String COLOR_OFF = "\u001B[0m";
-	
-	private String color;
-	
 	private ConsoleText consoleText;
 	
 	private StringBuilder buffer = new StringBuilder();
@@ -25,21 +19,12 @@ public class ConsoleAppender implements Appender {
 	private boolean timerRunning = false;
 	private boolean closed = false;
 
-	/**
-	 * Creates a ConsoleAppender that appends to consoleText with a color. If color
-	 * is null then the text is output with no color transformations.
-	 */
-	public ConsoleAppender(ConsoleText consoleText, String color) {
+	public ConsoleAppender(ConsoleText consoleText) {
 		this.consoleText = consoleText;
-		this.color = color;
 	}
 	
 	public synchronized void append(final String s) {
-		if(color == null) {
-			buffer.append(s);
-		} else {
-			buffer.append(color + s + COLOR_OFF);
-		}
+		buffer.append(s);
 		
 		if(!timerRunning) {
 			timerRunning = true;
