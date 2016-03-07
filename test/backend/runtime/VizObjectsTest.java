@@ -128,7 +128,7 @@ public class VizObjectsTest {
 		assertStateNotChanged("@for(x <- [1]) rect(x: 1);");
 		assertStateNotChanged("@for(x <- [1]) rect();");
 		assertStateNotChanged("@for(x <- [1], y <- [2]) rect();");
-		assertStateNotChanged("var y = 0; @for(x <- [y++]) rect();");
+		assertStateNotChanged("@for(x <- [y = 1]) rect();");
 		assertStateNotChanged("@for(x <- [print()]) rect();");
 	}
 
@@ -188,8 +188,9 @@ public class VizObjectsTest {
 	private void assertStateNotChanged(String vizObjectInstructions) {
 		Runtime runtime = new Runtime();
 		List<Instruction> instructions = Engine.compile(vizObjectInstructions);
+		instructions = instructions.subList(1, instructions.size() - 2);
 		runtime.addStackFrame(new FunctionValue(new GlobalScope(runtime.getUndoStack()), 0, new ArrayList<Instruction>()));
-
+		
 		// Save initial state.
 		String initialState = runtime.getState();
 		int initialUndoStackSize = runtime.getUndoStack().getSize();

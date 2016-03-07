@@ -72,21 +72,9 @@ public class Engine {
 			return;
 		}
 
-		do {
-			Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
-			
-			if(runtime.isInVizInstruction()) {
-				if(instruction instanceof StartVizInstruction || instruction instanceof EndVizInstruction) {
-					execute(instruction);
-				} else {
-					runtime.getCurrentVizInstructions().add(instruction);
-				}
-			} else {
-				execute(instruction);
-			}
-			
-			frame.setInstructionCounter(frame.getInstructionCounter() + 1);
-		} while(runtime.isInVizInstruction());
+		Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
+		instruction.execute(runtime);
+		frame.setInstructionCounter(frame.getInstructionCounter() + 1);
 	}
 	
 	public void stepBackward() {

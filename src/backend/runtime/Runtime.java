@@ -23,8 +23,6 @@ public class Runtime implements HasState, ValueReadObserver {
 	private List<StackFrame> stackFrames = new ArrayList<>();
 	private int nestedFunctionDefinitionCount = 0;
 	private List<VizObject> currentVizObjects = new ArrayList<>();
-	private boolean inVizInstruction = false;
-	private List<Instruction> vizInstructions = new ArrayList<>();
 	private Set<ValueReadObserver> valueReadObservers = new HashSet<>();
 	
 	private List<String> errors = new ArrayList<>();
@@ -46,7 +44,12 @@ public class Runtime implements HasState, ValueReadObserver {
 			});
 		}
 	}
-	
+
+	/**
+	 * Returns all the instructions from startInstruction to endInstruction assuming the current
+	 * instruction counter is at startInstruction. Handles any nested start and end instructions
+	 * and advances the instruction pointer to after the end instruction.
+	 */
 	public List<Instruction> getInstructionsUpTo(Class<? extends Instruction> startInstruction, Class<? extends Instruction> endInstruction) {
 		StackFrame frame = getCurrentStackFrame();
 		List<Instruction> instructions = new ArrayList<>();
@@ -129,20 +132,8 @@ public class Runtime implements HasState, ValueReadObserver {
 		return undoStack;
 	}
 	
-	public boolean isInVizInstruction() {
-		return inVizInstruction;
-	}
-	
 	public List<VizObject> getCurrentVizObjects() {
 		return currentVizObjects;
-	}
-	
-	public void setInVizInstruction(boolean inVizInstruction) {
-		this.inVizInstruction = inVizInstruction;
-	}
-	
-	public List<Instruction> getCurrentVizInstructions() {
-		return vizInstructions;
 	}
 	
 	public void addValueReadObserver(ValueReadObserver observer) {
@@ -223,7 +214,6 @@ public class Runtime implements HasState, ValueReadObserver {
 			s.append(stackFrame.getState("      ", used)).append("\n");
 		}
 		s.append("  NestedFunctionDefinitionCount: " + nestedFunctionDefinitionCount).append("\n");
-		s.append("  InVizInstruction: " + inVizInstruction).append("\n");
 		s.append("  Errors: " + errors).append("\n");
 		s.append("  Output: " + output);
 		

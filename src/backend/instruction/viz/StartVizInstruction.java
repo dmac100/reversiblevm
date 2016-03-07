@@ -1,7 +1,11 @@
 package backend.instruction.viz;
 
+import java.util.List;
+
 import backend.instruction.Instruction;
 import backend.runtime.Runtime;
+import backend.runtime.VizObjectInstructions;
+import backend.value.FunctionValue;
 
 public class StartVizInstruction extends Instruction {
 	public StartVizInstruction() {
@@ -12,12 +16,15 @@ public class StartVizInstruction extends Instruction {
 	}
 	
 	public void execute(Runtime runtime) {
-		runtime.setInVizInstruction(true);
-		runtime.getCurrentVizInstructions().clear();
+		List<Instruction> instructions = runtime.getInstructionsUpTo(StartVizInstruction.class, EndVizInstruction.class);
+		FunctionValue function = runtime.getCurrentStackFrame().getFunction();
+		
+		VizObjectInstructions vizObjectInstructions = new VizObjectInstructions(runtime, instructions);
+		function.addVizObjectInstructions(vizObjectInstructions);
+		vizObjectInstructions.updateObjects();
 	}
 	
 	public void undo(Runtime runtime) {
-		runtime.setInVizInstruction(false);
 	}
 	
 	public String toString() {
