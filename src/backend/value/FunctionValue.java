@@ -11,7 +11,7 @@ import backend.runtime.VizObject;
 import backend.runtime.VizObjectInstructions;
 
 public class FunctionValue extends Value implements HasState {
-	private final List<Instruction> instructions = new ArrayList<>();
+	private final List<Instruction> instructions;
 	private final int paramCount;
 	private final List<VizObjectInstructions> vizObjectInstructionsList = new ArrayList<>();
 	
@@ -20,20 +20,11 @@ public class FunctionValue extends Value implements HasState {
 	public FunctionValue(Scope parentScope, int paramCount, List<Instruction> instructions) {
 		this.parentScope = parentScope;
 		this.paramCount = paramCount;
-		this.instructions.addAll(instructions);
-	}
-	
-	public FunctionValue(Scope parentScope, int paramCount) {
-		this.parentScope = parentScope;
-		this.paramCount = paramCount;
+		this.instructions = instructions;
 	}
 	
 	public Scope getParentScope() {
 		return parentScope;
-	}
-	
-	public void addInstruction(Instruction instruction) {
-		instructions.add(instruction);
 	}
 	
 	public List<Instruction> getInstructions() {

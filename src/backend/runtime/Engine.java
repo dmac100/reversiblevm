@@ -4,6 +4,7 @@ import static org.parboiled.errors.ErrorUtils.printParseErrors;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -74,13 +75,7 @@ public class Engine {
 		do {
 			Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
 			
-			if(runtime.getNestedFunctionDefinitionCount() > 0) {
-				if(instruction instanceof StartFunctionInstruction || instruction instanceof EndFunctionInstruction) {
-					execute(instruction);
-				} else {
-					runtime.getCurrentFunctionDefinition().addInstruction(instruction);
-				}
-			} else if(runtime.isInVizInstruction()) {
+			if(runtime.isInVizInstruction()) {
 				if(instruction instanceof StartVizInstruction || instruction instanceof EndVizInstruction) {
 					execute(instruction);
 				} else {
@@ -91,7 +86,7 @@ public class Engine {
 			}
 			
 			frame.setInstructionCounter(frame.getInstructionCounter() + 1);
-		} while(runtime.getNestedFunctionDefinitionCount() > 0 || runtime.isInVizInstruction());
+		} while(runtime.isInVizInstruction());
 	}
 	
 	public void stepBackward() {

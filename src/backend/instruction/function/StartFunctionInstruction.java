@@ -1,6 +1,9 @@
 package backend.instruction.function;
 
+import java.util.List;
+
 import backend.instruction.Instruction;
+import backend.runtime.ExecutionException;
 import backend.runtime.Runtime;
 import backend.value.FunctionValue;
 
@@ -15,13 +18,14 @@ public class StartFunctionInstruction extends Instruction {
 		return new StartFunctionInstruction(paramCount);
 	}
 	
-	public void execute(Runtime runtime) {
-		if(runtime.getNestedFunctionDefinitionCount() == 0) {
-			runtime.setCurrentFunctionDefinition(new FunctionValue(runtime.getScope(), paramCount));
-		} else {
-			runtime.getCurrentFunctionDefinition().addInstruction(this);
-		}
-		runtime.setNestedFunctionDefinitionCount(runtime.getNestedFunctionDefinitionCount() + 1);
+	public int getParamCount() {
+		return paramCount;
+	}
+	
+	public void execute(Runtime runtime) throws ExecutionException {
+		List<Instruction> instructions = runtime.getInstructionsUpTo(StartFunctionInstruction.class, EndFunctionInstruction.class);
+		FunctionValue newFunction = new FunctionValue(runtime.getScope(), paramCount, instructions);
+		runtime.getStack().push(newFunction, true);
 	}
 	
 	public void undo(Runtime runtime) {

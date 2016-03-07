@@ -21,7 +21,6 @@ public class Runtime implements HasState, ValueReadObserver {
 	
 	private Stack stack = new Stack(undoStack);
 	private List<StackFrame> stackFrames = new ArrayList<>();
-	private FunctionValue currentFunctionDefinition = null;
 	private int nestedFunctionDefinitionCount = 0;
 	private List<VizObject> currentVizObjects = new ArrayList<>();
 	private boolean inVizInstruction = false;
@@ -46,6 +45,24 @@ public class Runtime implements HasState, ValueReadObserver {
 				}
 			});
 		}
+	}
+	
+	public List<Instruction> getInstructionsUpTo(Class<? extends Instruction> startInstruction, Class<? extends Instruction> endInstruction) {
+		StackFrame frame = getCurrentStackFrame();
+		List<Instruction> instructions = new ArrayList<>();
+		int nestedCount = 1;
+		do {
+			frame.setInstructionCounter(frame.getInstructionCounter() + 1);
+			Instruction instruction = frame.getFunction().getInstructions().get(frame.getInstructionCounter());
+			if(startInstruction.isInstance(instruction)) {
+				nestedCount++;
+			} else if(endInstruction.isInstance(instruction)) {
+				nestedCount--;
+			}
+			instructions.add(instruction);
+		} while(nestedCount > 0);
+		instructions.remove(instructions.size() - 1);
+		return instructions;
 	}
 	
 	public StackFrame getCurrentStackFrame() {
@@ -110,22 +127,6 @@ public class Runtime implements HasState, ValueReadObserver {
 	
 	public UndoStack getUndoStack() {
 		return undoStack;
-	}
-	
-	public FunctionValue getCurrentFunctionDefinition() {
-		return currentFunctionDefinition;
-	}
-
-	public void setCurrentFunctionDefinition(FunctionValue currentFunctionDefinition) {
-		this.currentFunctionDefinition = currentFunctionDefinition;
-	}
-
-	public int getNestedFunctionDefinitionCount() {
-		return nestedFunctionDefinitionCount;
-	}
-
-	public void setNestedFunctionDefinitionCount(int nestedFunctionDefinitionCount) {
-		this.nestedFunctionDefinitionCount = nestedFunctionDefinitionCount;
 	}
 	
 	public boolean isInVizInstruction() {
@@ -220,10 +221,6 @@ public class Runtime implements HasState, ValueReadObserver {
 		for(StackFrame stackFrame:stackFrames) {
 			s.append("    StackFrame:").append("\n");
 			s.append(stackFrame.getState("      ", used)).append("\n");
-		}
-		if(currentFunctionDefinition != null) {
-			s.append("  CurrentFunction: ").append("\n");
-			s.append("  " + currentFunctionDefinition.getState("  ", new HashSet<>())).append("\n");
 		}
 		s.append("  NestedFunctionDefinitionCount: " + nestedFunctionDefinitionCount).append("\n");
 		s.append("  InVizInstruction: " + inVizInstruction).append("\n");

@@ -188,7 +188,7 @@ public class VizObjectsTest {
 	private void assertStateNotChanged(String vizObjectInstructions) {
 		Runtime runtime = new Runtime();
 		List<Instruction> instructions = Engine.compile(vizObjectInstructions);
-		runtime.addStackFrame(new FunctionValue(new GlobalScope(runtime.getUndoStack()), 0));
+		runtime.addStackFrame(new FunctionValue(new GlobalScope(runtime.getUndoStack()), 0, new ArrayList<Instruction>()));
 
 		// Save initial state.
 		String initialState = runtime.getState();

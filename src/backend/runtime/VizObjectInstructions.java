@@ -86,7 +86,7 @@ public class VizObjectInstructions implements ValueChangeObserver {
 				String name = ((VizIterateInstruction)instruction).getName();
 				Value array = runtime.getStack().popValue(false, true);
 				
-				runtime.addStackFrame(new FunctionValue(runtime.getScope(), 0));
+				runtime.addStackFrame(new FunctionValue(runtime.getScope(), 0, new ArrayList<Instruction>()));
 				runtime.getScope().create(name);
 				
 				for(Value value:runtime.checkArrayValue(array).values(runtime)) {
