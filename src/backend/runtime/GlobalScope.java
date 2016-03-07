@@ -50,6 +50,18 @@ public class GlobalScope implements Scope, HasState {
 			}
 		});
 		
+		values.put("range", new NativeFunctionValue() {
+			protected Value execute(Runtime runtime, Stack stack, List<Value> params) {
+				while(params.size() <= 1) params.add(new NullValue());
+				int max = (int) runtime.checkDoubleValue(params.get(1)).getValue();
+				List<Value> list = new ArrayList<>();
+				for(int i = 0; i < max; i++) {
+					list.add(new DoubleValue(i));
+				}
+				return new ArrayValue(list, runtime.getUndoStack());
+			}
+		});
+		
 		stringProto.set("length", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				String string = runtime.checkStringValue(params.get(0)).getValue();

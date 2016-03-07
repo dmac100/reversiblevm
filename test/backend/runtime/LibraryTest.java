@@ -1,10 +1,17 @@
 package backend.runtime;
 
+import static backend.runtime.EngineAsserts.assertError;
 import static backend.runtime.EngineAsserts.assertOutput;
 
 import org.junit.Test;
 
 public class LibraryTest {
+	@Test
+	public void range() {
+		assertError("TypeError: Not a double: null", "print(range());");
+		assertOutput("[0, 1, 2]", "print(range(3));");
+	}
+	
 	@Test
 	public void stringLength() {
 		assertOutput("0", "print(''.length());");
