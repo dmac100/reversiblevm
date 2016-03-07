@@ -58,6 +58,9 @@ import backend.instruction.viz.VizFilterInstruction;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.annotations.DontLabel;
+import org.parboiled.annotations.SuppressNode;
 import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.support.Var;
 
@@ -642,11 +645,11 @@ public class Parser extends BaseParser<Instructions> {
 			Sequence(
 				Terminal("for"),
 				Terminal("("),
-				OptionalOr(Expression(), Push(NullValue())),
+				OptionalOr(Expression(), Push(NullValue())).label("Expression"),
 				Terminal(";"),
-				OptionalOr(Expression(), Push(Value(true))),
+				OptionalOr(Expression(), Push(Value(true))).label("Expression"),
 				Terminal(";"),
-				OptionalOr(Expression(), Push(NullValue())),
+				OptionalOr(Expression(), Push(NullValue())).label("Expression"),
 				Terminal(")"),
 				Statement(),
 				push(Instructions(
@@ -666,9 +669,9 @@ public class Parser extends BaseParser<Instructions> {
 				Terminal("var"),
 				VariableDeclarationList(),
 				Terminal(";"),
-				OptionalOr(Expression(), Push(Value(true))),
+				OptionalOr(Expression(), Push(Value(true))).label("Expression"),
 				Terminal(";"),
-				OptionalOr(Expression(), Push(NullValue())),
+				OptionalOr(Expression(), Push(NullValue())).label("Expression"),
 				Terminal(")"),
 				Statement(),
 				push(Instructions(
@@ -834,7 +837,7 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule Program() {
-		return Sequence(Spacing(), OptionalOr(SourceElements(), Nop()), EOI);
+		return Sequence(Spacing(), OptionalOr(SourceElements(), Nop()).label("SourceElements"), EOI);
 	}
 	
 	public Rule SourceElements() {
@@ -868,7 +871,8 @@ public class Parser extends BaseParser<Instructions> {
 		return ZeroOrMore(FirstOf(Comment(), AnyOf(" \r\n\t")));
 	}
 	
-	@SuppressSubnodes
+	@SuppressNode
+	@DontLabel
 	public Rule Terminal(Object value) {
 		return Sequence(value, Spacing());
 	}

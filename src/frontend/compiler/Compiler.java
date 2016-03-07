@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import backend.runtime.CompileException;
 import backend.runtime.Engine;
 import backend.runtime.Runtime;
 
@@ -57,6 +58,8 @@ public class Compiler {
 			for(String line:runtime.getErrors()) {
 				err.append(line + "\n");
 			}
+		} catch(CompileException e) {
+			err.append(e.getMessage() + "\n");
 		} catch(Exception e) {
 			err.append("Exception running program: " + e.toString() + "\n");
 			e.printStackTrace();

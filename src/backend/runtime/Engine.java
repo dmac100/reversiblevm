@@ -1,5 +1,7 @@
 package backend.runtime;
 
+import static org.parboiled.errors.ErrorUtils.printParseErrors;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -117,7 +119,9 @@ public class Engine {
 	public static List<Instruction> compile(String program) {
 		ReportingParseRunner<Instructions> parseRunner = new ReportingParseRunner<Instructions>(parser.Sequence(parser.Program(), BaseParser.EOI));
 		ParsingResult<Instructions> result = parseRunner.run(program);
-		if(result.valueStack.size() != 1) throw new CompileException("Invalid value stack size: " + result.valueStack.size());
+		if(result.valueStack.size() != 1) {
+			throw new CompileException("Invalid value stack size: " + printParseErrors(parseRunner.getParseErrors()));
+		}
 		List<Instruction> instructions = result.valueStack.pop().getInstructions();
 		instructions = new Optimizer().optimize(instructions);
 		return instructions;
