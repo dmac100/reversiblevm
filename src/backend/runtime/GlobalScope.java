@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import backend.instruction.operator.EqualInstruction;
-import backend.observer.ValueChangeObservable;
 import backend.observer.ValueObserverList;
 import backend.observer.ValueReadObserver;
 import backend.value.ArrayValue;
@@ -38,6 +37,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		values.put("print", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) {
+				while(params.size() <= 0) params.add(new NullValue());
 				StringBuilder value = new StringBuilder();
 				for(int i = 1; i < params.size(); i++) {
 					if(i != 1) {
@@ -64,6 +64,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("length", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				return new DoubleValue(string.length());
 			}
@@ -71,6 +72,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("charAt", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 1) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				int index = (int)runtime.checkDoubleValue(params.get(1)).getValue();
 				return new StringValue(String.valueOf(string.charAt(index)));
@@ -79,6 +81,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("concat", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 1) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				String other = runtime.checkStringValue(params.get(1)).getValue();
 				return new StringValue(string + other);
@@ -87,6 +90,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("endsWith", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 1) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				String other = runtime.checkStringValue(params.get(1)).getValue();
 				return new BooleanValue(string.endsWith(other));
@@ -95,6 +99,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("indexOf", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 1) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				String other = runtime.checkStringValue(params.get(1)).getValue();
 				return new DoubleValue(string.indexOf(other));
@@ -103,6 +108,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("lastIndexOf", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 1) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				String other = runtime.checkStringValue(params.get(1)).getValue();
 				return new DoubleValue(string.lastIndexOf(other));
@@ -111,6 +117,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("repeat", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 1) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				int count = (int)runtime.checkDoubleValue(params.get(1)).getValue();
 				StringBuilder s = new StringBuilder();
@@ -123,6 +130,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("substring", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 2) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				int start = (int)runtime.checkDoubleValue(params.get(1)).getValue();
 				int end = (int)runtime.checkDoubleValue(params.get(2)).getValue();
@@ -136,6 +144,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("split", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 1) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				String separator = runtime.checkStringValue(params.get(1)).getValue();
 				List<Value> list = new ArrayList<>();
@@ -151,6 +160,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("startsWith", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 1) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				String other = runtime.checkStringValue(params.get(1)).getValue();
 				return new BooleanValue(string.startsWith(other));
@@ -159,6 +169,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("toLowerCase", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				return new StringValue(string.toLowerCase());
 			}
@@ -166,6 +177,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("toUpperCase", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				return new StringValue(string.toUpperCase());
 			}
@@ -173,6 +185,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		stringProto.set("trim", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				String string = runtime.checkStringValue(params.get(0)).getValue();
 				return new StringValue(string.trim());
 			}
@@ -180,6 +193,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		objectProto.set("keys", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				List<String> keys = runtime.checkObjectValue(params.get(0)).keys(runtime);
 				List<Value> list = new ArrayList<>();
 				for(String key:keys) {
@@ -193,6 +207,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		objectProto.set("values", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				ObjectValue object = runtime.checkObjectValue(params.get(0));
 				List<String> keys = object.keys(runtime);
 				List<Value> list = new ArrayList<>();
@@ -207,6 +222,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("length", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				return array.length(runtime);
 			}
@@ -214,6 +230,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("concat", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 1) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				ArrayValue other = runtime.checkArrayValue(params.get(1));
 				List<Value> list = new ArrayList<>();
@@ -229,6 +246,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("indexOf", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				Value value = params.get(1);
 				List<Value> values = array.values(runtime);
@@ -243,6 +261,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("join", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 1) params.add(new NullValue());
 				List<Value> array = runtime.checkArrayValue(params.get(0)).values(runtime);
 				String separator = runtime.checkStringValue(params.get(1)).getValue();
 				StringBuilder s = new StringBuilder();
@@ -258,6 +277,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("lastIndexOf", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				Value value = params.get(1);
 				List<Value> values = array.values(runtime);
@@ -272,6 +292,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("slice", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 2) params.add(new NullValue());
 				List<Value> array = runtime.checkArrayValue(params.get(0)).values(runtime);
 				int start = (int)runtime.checkDoubleValue(params.get(1)).getValue();
 				int end = (int)runtime.checkDoubleValue(params.get(2)).getValue();
@@ -289,6 +310,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("sort", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				for(int i = 0; i < array.length(runtime).getValue(); i++) {
 					for(int j = i + 1; j < array.length(runtime).getValue(); j++) {
@@ -307,6 +329,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("pop", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				List<Value> values = array.values(runtime);
 				if(values.isEmpty()) {
@@ -321,6 +344,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("push", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				Value value = params.get(1);
 				List<Value> values = array.values(runtime);
@@ -332,6 +356,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("reverse", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				List<Value> values = array.values(runtime);
 				Collections.reverse(values);
@@ -342,6 +367,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("shift", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				List<Value> values = array.values(runtime);
 				if(values.isEmpty()) {
@@ -356,6 +382,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("unshift", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				Value value = params.get(1);
 				List<Value> values = array.values(runtime);
@@ -367,6 +394,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("splice", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 2) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				int index = (int)runtime.checkDoubleValue(params.get(1)).getValue();
 				int count = (int)runtime.checkDoubleValue(params.get(2)).getValue();
@@ -384,6 +412,7 @@ public class GlobalScope implements Scope, HasState {
 
 		arrayProto.set("keys", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				List<Value> list = new ArrayList<>();
 				for(int i = 0; i < array.length(runtime).getValue(); i++) {
@@ -395,6 +424,7 @@ public class GlobalScope implements Scope, HasState {
 		
 		arrayProto.set("values", new NativeFunctionValue() {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				while(params.size() <= 0) params.add(new NullValue());
 				ArrayValue array = runtime.checkArrayValue(params.get(0));
 				List<Value> list = new ArrayList<>();
 				for(int i = 0; i < array.length(runtime).getValue(); i++) {
