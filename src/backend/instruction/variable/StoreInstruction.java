@@ -5,7 +5,7 @@ import backend.runtime.Runtime;
 import backend.runtime.Scope;
 import backend.runtime.Stack;
 
-public class StoreInstruction implements Instruction {
+public class StoreInstruction extends Instruction {
 	private final String name;
 
 	public StoreInstruction(String name) {

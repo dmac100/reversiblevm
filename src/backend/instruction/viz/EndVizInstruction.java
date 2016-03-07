@@ -5,7 +5,7 @@ import backend.runtime.Runtime;
 import backend.runtime.VizObjectInstructions;
 import backend.value.FunctionValue;
 
-public class EndVizInstruction implements Instruction {
+public class EndVizInstruction extends Instruction {
 	public EndVizInstruction() {
 	}
 	

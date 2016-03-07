@@ -9,7 +9,7 @@ import backend.value.NativeFunctionValue;
 import backend.value.NullValue;
 import backend.value.Value;
 
-public class CallInstruction implements Instruction {
+public class CallInstruction extends Instruction {
 	public CallInstruction() {
 	}
 	

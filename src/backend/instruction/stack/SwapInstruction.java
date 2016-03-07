@@ -5,7 +5,7 @@ import backend.runtime.Runtime;
 import backend.runtime.Stack;
 import backend.value.Value;
 
-public class SwapInstruction implements Instruction {
+public class SwapInstruction extends Instruction {
 	public SwapInstruction() {
 	}
 	

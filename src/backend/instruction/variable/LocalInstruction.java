@@ -4,7 +4,7 @@ import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 import backend.runtime.Scope;
 
-public class LocalInstruction implements Instruction {
+public class LocalInstruction extends Instruction {
 	private final String name;
 
 	public LocalInstruction(String name) {

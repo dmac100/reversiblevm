@@ -4,7 +4,7 @@ import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 import backend.value.ObjectValue;
 
-public class NewObjectInstruction implements Instruction {
+public class NewObjectInstruction extends Instruction {
 	public NewObjectInstruction() {
 	}
 	

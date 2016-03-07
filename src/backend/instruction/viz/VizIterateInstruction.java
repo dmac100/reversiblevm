@@ -3,7 +3,7 @@ package backend.instruction.viz;
 import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 
-public class VizIterateInstruction implements Instruction {
+public class VizIterateInstruction extends Instruction {
 	private final String name;
 	
 	public VizIterateInstruction(String name) {

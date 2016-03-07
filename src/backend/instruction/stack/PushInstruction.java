@@ -4,7 +4,7 @@ import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 import backend.value.Value;
 
-public class PushInstruction implements Instruction {
+public class PushInstruction extends Instruction {
 	private final Value value;
 
 	public PushInstruction(Value value) {

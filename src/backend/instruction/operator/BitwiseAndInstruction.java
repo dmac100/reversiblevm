@@ -6,7 +6,7 @@ import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
 import backend.value.DoubleValue;
 
-public class BitwiseAndInstruction implements Instruction {
+public class BitwiseAndInstruction extends Instruction {
 	public BitwiseAndInstruction() {
 	}
 	

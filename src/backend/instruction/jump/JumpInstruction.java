@@ -5,7 +5,7 @@ import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.StackFrame;
 
-public class JumpInstruction implements Instruction {
+public class JumpInstruction extends Instruction {
 	private final int offset;
 
 	public JumpInstruction(int offset) {

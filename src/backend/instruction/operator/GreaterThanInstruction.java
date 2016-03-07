@@ -7,7 +7,7 @@ import backend.runtime.Stack;
 import backend.value.BooleanValue;
 import backend.value.DoubleValue;
 
-public class GreaterThanInstruction implements Instruction {
+public class GreaterThanInstruction extends Instruction {
 	public GreaterThanInstruction() {
 	}
 	

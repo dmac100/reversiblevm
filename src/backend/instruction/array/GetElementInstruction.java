@@ -7,7 +7,7 @@ import backend.runtime.Stack;
 import backend.value.ArrayValue;
 import backend.value.DoubleValue;
 
-public class GetElementInstruction implements Instruction {
+public class GetElementInstruction extends Instruction {
 	public GetElementInstruction() {
 	}
 	

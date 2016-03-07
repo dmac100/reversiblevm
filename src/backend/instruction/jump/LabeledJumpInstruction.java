@@ -4,7 +4,7 @@ import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 
-public class LabeledJumpInstruction implements Instruction {
+public class LabeledJumpInstruction extends Instruction {
 	private final String label;
 
 	public LabeledJumpInstruction(String label) {

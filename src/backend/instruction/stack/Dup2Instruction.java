@@ -6,7 +6,7 @@ import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
 import backend.value.Value;
 
-public class Dup2Instruction implements Instruction {
+public class Dup2Instruction extends Instruction {
 	public Dup2Instruction() {
 	}
 	

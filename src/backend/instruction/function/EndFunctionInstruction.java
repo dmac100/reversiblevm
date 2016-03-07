@@ -3,7 +3,7 @@ package backend.instruction.function;
 import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 
-public class EndFunctionInstruction implements Instruction {
+public class EndFunctionInstruction extends Instruction {
 	public EndFunctionInstruction() {
 	}
 	

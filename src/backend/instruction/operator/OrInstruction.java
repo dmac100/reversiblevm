@@ -6,7 +6,7 @@ import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
 import backend.value.BooleanValue;
 
-public class OrInstruction implements Instruction {
+public class OrInstruction extends Instruction {
 	public OrInstruction() {
 	}
 	

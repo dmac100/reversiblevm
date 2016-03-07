@@ -4,7 +4,7 @@ import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 
-public class LabeledJumpIfFalseInstruction implements Instruction {
+public class LabeledJumpIfFalseInstruction extends Instruction {
 	private final String label;
 
 	public LabeledJumpIfFalseInstruction(String label) {

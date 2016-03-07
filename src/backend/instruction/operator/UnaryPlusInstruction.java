@@ -3,7 +3,7 @@ package backend.instruction.operator;
 import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 
-public class UnaryPlusInstruction implements Instruction {
+public class UnaryPlusInstruction extends Instruction {
 	public UnaryPlusInstruction() {
 	}
 	

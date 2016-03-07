@@ -8,7 +8,7 @@ import backend.value.ArrayValue;
 import backend.value.DoubleValue;
 import backend.value.Value;
 
-public class SetElementInstruction implements Instruction {
+public class SetElementInstruction extends Instruction {
 	public SetElementInstruction() {
 	}
 	

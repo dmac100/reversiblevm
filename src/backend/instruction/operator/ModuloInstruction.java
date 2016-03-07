@@ -6,7 +6,7 @@ import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
 import backend.value.DoubleValue;
 
-public class ModuloInstruction implements Instruction {
+public class ModuloInstruction extends Instruction {
 	public ModuloInstruction() {
 	}
 	

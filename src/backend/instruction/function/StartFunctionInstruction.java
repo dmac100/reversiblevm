@@ -4,7 +4,7 @@ import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 import backend.value.FunctionValue;
 
-public class StartFunctionInstruction implements Instruction {
+public class StartFunctionInstruction extends Instruction {
 	private int paramCount;
 
 	public StartFunctionInstruction(int paramCount) {

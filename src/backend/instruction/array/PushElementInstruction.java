@@ -7,7 +7,7 @@ import backend.runtime.Stack;
 import backend.value.ArrayValue;
 import backend.value.Value;
 
-public class PushElementInstruction implements Instruction {
+public class PushElementInstruction extends Instruction {
 	public PushElementInstruction() {
 	}
 	

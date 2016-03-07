@@ -3,7 +3,7 @@ package backend.instruction.viz;
 import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 
-public class VizFilterInstruction implements Instruction {
+public class VizFilterInstruction extends Instruction {
 	public VizFilterInstruction() {
 	}
 	

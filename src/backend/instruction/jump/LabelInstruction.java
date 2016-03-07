@@ -4,7 +4,7 @@ import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 
-public class LabelInstruction implements Instruction {
+public class LabelInstruction extends Instruction {
 	private final String label;
 	
 	public LabelInstruction(String label) {

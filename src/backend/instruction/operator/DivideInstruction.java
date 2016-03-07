@@ -6,7 +6,7 @@ import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
 import backend.value.DoubleValue;
 
-public class DivideInstruction implements Instruction {
+public class DivideInstruction extends Instruction {
 	public DivideInstruction() {
 	}
 	

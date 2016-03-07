@@ -12,7 +12,7 @@ import backend.value.NullValue;
 import backend.value.StringValue;
 import backend.value.Value;
 
-public class EqualInstruction implements Instruction {
+public class EqualInstruction extends Instruction {
 	public EqualInstruction() {
 	}
 	

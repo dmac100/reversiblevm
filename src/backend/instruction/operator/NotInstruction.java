@@ -6,7 +6,7 @@ import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
 import backend.value.BooleanValue;
 
-public class NotInstruction implements Instruction {
+public class NotInstruction extends Instruction {
 	public NotInstruction() {
 	}
 	

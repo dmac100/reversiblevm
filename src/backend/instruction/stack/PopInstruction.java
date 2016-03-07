@@ -3,7 +3,7 @@ package backend.instruction.stack;
 import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 
-public class PopInstruction implements Instruction {
+public class PopInstruction extends Instruction {
 	public PopInstruction() {
 	}
 	

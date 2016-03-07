@@ -7,7 +7,7 @@ import backend.runtime.Runtime;
 import backend.runtime.StackFrame;
 import backend.value.BooleanValue;
 
-public class JumpIfFalseInstruction implements Instruction {
+public class JumpIfFalseInstruction extends Instruction {
 	private final int offset;
 
 	public JumpIfFalseInstruction(int offset) {

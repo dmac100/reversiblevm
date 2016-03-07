@@ -6,7 +6,7 @@ import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
 import backend.value.DoubleValue;
 
-public class UnsignedShiftRightInstruction implements Instruction {
+public class UnsignedShiftRightInstruction extends Instruction {
 	public UnsignedShiftRightInstruction() {
 	}
 	

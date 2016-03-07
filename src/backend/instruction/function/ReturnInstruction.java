@@ -4,7 +4,7 @@ import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 
-public class ReturnInstruction implements Instruction {
+public class ReturnInstruction extends Instruction {
 	public ReturnInstruction() {
 	}
 	

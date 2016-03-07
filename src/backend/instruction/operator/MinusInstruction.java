@@ -6,7 +6,7 @@ import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
 import backend.value.DoubleValue;
 
-public class MinusInstruction implements Instruction {
+public class MinusInstruction extends Instruction {
 	public MinusInstruction() {
 	}
 	

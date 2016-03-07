@@ -9,7 +9,7 @@ import backend.value.ObjectValue;
 import backend.value.StringValue;
 import backend.value.Value;
 
-public class GetPropertyInstruction implements Instruction {
+public class GetPropertyInstruction extends Instruction {
 	private final String name;
 	
 	public GetPropertyInstruction(String name) {

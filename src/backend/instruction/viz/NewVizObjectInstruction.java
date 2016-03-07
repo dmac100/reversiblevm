@@ -4,7 +4,7 @@ import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 import backend.runtime.VizObject;
 
-public class NewVizObjectInstruction implements Instruction {
+public class NewVizObjectInstruction extends Instruction {
 	private final String name;
 	
 	public NewVizObjectInstruction(String name) {

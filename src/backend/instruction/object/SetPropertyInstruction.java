@@ -7,7 +7,7 @@ import backend.runtime.Stack;
 import backend.value.ObjectValue;
 import backend.value.Value;
 
-public class SetPropertyInstruction implements Instruction {
+public class SetPropertyInstruction extends Instruction {
 	private final String name;
 	
 	public SetPropertyInstruction(String name) {

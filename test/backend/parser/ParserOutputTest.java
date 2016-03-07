@@ -1,16 +1,20 @@
 package backend.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
+
+import backend.instruction.Instruction;
 
 public class ParserOutputTest {
 	private Parser parser = Parboiled.createParser(Parser.class);
@@ -418,17 +422,23 @@ public class ParserOutputTest {
 	}
 	
 	private void assertParseOutput(String input, List<String> instructions) {
-		ParsingResult<Object> result = new ReportingParseRunner<>(parser.Sequence(parser.Program(), BaseParser.EOI)).run(input);
+		ParsingResult<Instructions> result = new ReportingParseRunner<Instructions>(parser.Sequence(parser.Program(), BaseParser.EOI)).run(input);
 		System.out.println(ParseTreeUtils.printNodeTree(result));
 		
+		Instructions actualInstructions = result.valueStack.pop();
+		
 		String expected = instructions.toString();
-		String actual = result.valueStack.pop().toString();
+		String actual = actualInstructions.toString();
 		
 		System.out.println("EXPECTED: " + expected);
 		System.out.println("  ACTUAL: " + actual);
 		
 		for(Object value:result.valueStack) {
 			System.out.println("VALUE STACK ITEM: " + value);
+		}
+		
+		for(Instruction instruction:actualInstructions.getInstructions()) {
+			assertTrue(instruction.getLineNumber() > 0 && instruction.getColumnNumber() > 0);
 		}
 		
 		assertEquals(expected, actual);

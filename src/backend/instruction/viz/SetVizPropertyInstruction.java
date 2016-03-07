@@ -6,7 +6,7 @@ import backend.runtime.Runtime;
 import backend.instruction.Instruction;
 import backend.runtime.VizObject;
 
-public class SetVizPropertyInstruction implements Instruction {
+public class SetVizPropertyInstruction extends Instruction {
 	private final String name;
 	
 	public SetVizPropertyInstruction(String name) {

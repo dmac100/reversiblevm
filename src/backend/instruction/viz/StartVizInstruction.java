@@ -3,7 +3,7 @@ package backend.instruction.viz;
 import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 
-public class StartVizInstruction implements Instruction {
+public class StartVizInstruction extends Instruction {
 	public StartVizInstruction() {
 	}
 	

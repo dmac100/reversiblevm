@@ -8,7 +8,7 @@ import backend.value.DoubleValue;
 import backend.value.StringValue;
 import backend.value.Value;
 
-public class AddInstruction implements Instruction {
+public class AddInstruction extends Instruction {
 	public AddInstruction() {
 	}
 	

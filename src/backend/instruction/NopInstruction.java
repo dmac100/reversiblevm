@@ -3,7 +3,7 @@ package backend.instruction;
 import backend.runtime.ExecutionException;
 import backend.runtime.Runtime;
 
-public class NopInstruction implements Instruction {
+public class NopInstruction extends Instruction {
 	public NopInstruction() {
 	}
 	

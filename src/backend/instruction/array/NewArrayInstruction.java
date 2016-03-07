@@ -4,7 +4,7 @@ import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 import backend.value.ArrayValue;
 
-public class NewArrayInstruction implements Instruction {
+public class NewArrayInstruction extends Instruction {
 	public NewArrayInstruction() {
 	}
 	

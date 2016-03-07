@@ -7,7 +7,7 @@ import backend.runtime.Stack;
 import backend.value.BooleanValue;
 import backend.value.DoubleValue;
 
-public class LessThanInstruction implements Instruction {
+public class LessThanInstruction extends Instruction {
 	public LessThanInstruction() {
 	}
 	

@@ -5,7 +5,7 @@ import backend.runtime.Runtime;
 import backend.runtime.Scope;
 import backend.runtime.Stack;
 
-public class LoadInstruction implements Instruction {
+public class LoadInstruction extends Instruction {
 	private final String name;
 
 	public LoadInstruction(String name) {

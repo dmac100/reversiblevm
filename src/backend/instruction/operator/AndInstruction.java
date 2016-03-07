@@ -6,7 +6,7 @@ import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
 import backend.value.BooleanValue;
 
-public class AndInstruction implements Instruction {
+public class AndInstruction extends Instruction {
 	public AndInstruction() {
 	}
 	
