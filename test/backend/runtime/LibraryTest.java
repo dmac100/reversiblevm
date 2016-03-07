@@ -96,6 +96,13 @@ public class LibraryTest {
 		assertOutput("[a]", "print(({a:1}).keys());");
 		assertOutput("[a, b]", "print(({a:1, b:2}).keys());");
 	}
+	
+	@Test
+	public void objectValues() {
+		assertOutput("[]", "print(({}).values());");
+		assertOutput("[1]", "print(({a:1}).values());");
+		assertOutput("[1, 2]", "print(({a:1, b:2}).values());");
+	}
 
 	@Test
 	public void arrayLength() {
@@ -213,7 +220,12 @@ public class LibraryTest {
 	}
 
 	@Test
-	public void arraySplice() {
-		assertOutput("[1, 4]", "var a = [1, 2, 3, 4]; a.splice(1, 2); print(a);");
+	public void arrayKeys() {
+		assertOutput("[0, 1, 2, 3]", "var a = [1, 2, 3, 4]; print(a.keys());");
+	}
+	
+	@Test
+	public void arrayValues() {
+		assertOutput("[1, 2, 3, 4]", "var a = [1, 2, 3, 4]; print(a.values());");
 	}
 }

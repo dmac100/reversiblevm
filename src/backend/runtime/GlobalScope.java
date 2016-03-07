@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import backend.instruction.operator.EqualInstruction;
+import backend.observer.ValueChangeObservable;
 import backend.observer.ValueObserverList;
 import backend.observer.ValueReadObserver;
 import backend.value.ArrayValue;
@@ -172,6 +173,20 @@ public class GlobalScope implements Scope, HasState {
 				for(String key:keys) {
 					if(!key.equals("prototype")) {
 						list.add(new StringValue(key));
+					}
+				}
+				return new ArrayValue(list, runtime.getUndoStack());
+			}
+		});
+		
+		objectProto.set("values", new NativeFunctionValue() {
+			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				ObjectValue object = runtime.checkObjectValue(params.get(0));
+				List<String> keys = object.keys(runtime);
+				List<Value> list = new ArrayList<>();
+				for(String key:keys) {
+					if(!key.equals("prototype")) {
+						list.add(object.get(key, runtime));
 					}
 				}
 				return new ArrayValue(list, runtime.getUndoStack());
@@ -352,6 +367,28 @@ public class GlobalScope implements Scope, HasState {
 				}
 				array.setValues(values);
 				return new ArrayValue(removed, runtime.getUndoStack());
+			}
+		});
+
+		arrayProto.set("keys", new NativeFunctionValue() {
+			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				ArrayValue array = runtime.checkArrayValue(params.get(0));
+				List<Value> list = new ArrayList<>();
+				for(int i = 0; i < array.length(runtime).getValue(); i++) {
+					list.add(new DoubleValue(i));
+				}
+				return new ArrayValue(list, runtime.getUndoStack());
+			}
+		});
+		
+		arrayProto.set("values", new NativeFunctionValue() {
+			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+				ArrayValue array = runtime.checkArrayValue(params.get(0));
+				List<Value> list = new ArrayList<>();
+				for(int i = 0; i < array.length(runtime).getValue(); i++) {
+					list.add(array.get(new DoubleValue(i), runtime));
+				}
+				return new ArrayValue(list, runtime.getUndoStack());
 			}
 		});
 	}
