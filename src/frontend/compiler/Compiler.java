@@ -1,69 +1,143 @@
 package frontend.compiler;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
-import backend.runtime.CompileException;
+import backend.instruction.Instruction;
 import backend.runtime.Engine;
 import backend.runtime.Runtime;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
-import frontend.ui.Callback;
-
+/**
+ * Handles the interaction between the frontend and the backend compiler and runtime.
+ * Runs the actions in a queue so that all compiler interactions are on the same thread.
+ */
 public class Compiler {
-	private static ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).build());
+	private final ArrayBlockingQueue<Runnable> runnableQueue = new ArrayBlockingQueue<>(50);
+	
+	private Runtime runtime;
+	private Engine engine;
+	
+	private boolean runningForward;
+	private boolean runningBackward;
 	
 	public Compiler() {
-	}
-
-	/**
-	 * Compiles and runs a source file. Displays output to out,
-	 * and compilation and program errors to err.
-	 * 
-	 * @param contents The source code as a String.
-	 * @param name The name of the Java class.
-	 * @param out Appender to send output to.
-	 * @param err Appender to send errors to.
-	 * @param callback The callback to call when the run is finished.
-	 */
-	public Future<?> runFile(final String contents, final Appender out, final Appender err, final Callback<Void> finishedCallback) {
-		return executor.submit(new Callable<Void>() {
-			public Void call() throws Exception {
-				runFileSync(contents, out, err, finishedCallback);
-				return null;
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				compile("");
 			}
 		});
 	}
 	
-	private void runFileSync(String contents, Appender out, Appender err, Callback<Void> finishedCallback) throws InterruptedException {
-		try {
-			Runtime runtime = new Runtime();
-			Engine engine = new Engine(runtime, Engine.compile(contents));
+	/**
+	 * Starts a thread to handle the items posted to the runnable queue.
+	 */
+	public void startQueueThread() {
+		Thread thread = new Thread(new Runnable() {
+			public void run() {
+				runQueue();
+			}
+		});
+		thread.setDaemon(true);
+		thread.start();
+	}
+	
+	/**
+	 * Handles the items in the runnable queue and keeps the vm running.
+	 */
+	private void runQueue() {
+		while(true) {
+			// Handle all items currently in the queue.
+			while(!runnableQueue.isEmpty()) {
+				runnableQueue.remove().run();
+			}
 			
-			while(runtime.getCurrentStackFrame() != null) {
-				engine.stepForward();
-				if(Thread.currentThread().isInterrupted()) {
+			if(runningForward) {
+				stepForward();
+			} else if(runningBackward) {
+				stepBackward();
+			} else {
+				try {
+					// Wait for the next item in the queue.
+					Runnable runnable = runnableQueue.poll(1, TimeUnit.MINUTES);
+					if(runnable != null) {
+						runnable.run();
+					}
+				} catch(InterruptedException e) {
 					return;
 				}
 			}
 			
-			for(String line:runtime.getOutput()) {
-				out.append(line + "\n");
-			}
-			
-			for(String line:runtime.getErrors()) {
-				err.append(line + "\n");
-			}
-		} catch(CompileException e) {
-			err.append(e.getMessage() + "\n");
-		} catch(Exception e) {
-			err.append("Exception running program: " + e.toString() + "\n");
-			e.printStackTrace();
-		} finally {
-			finishedCallback.onCallback(null);
+			// Send data to the ui.
+			System.out.println(runtime.getOutput());
 		}
+	}
+
+	/**
+	 * Compiles the given program and runs it.
+	 */
+	public void compile(final String program) {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				List<Instruction> instructions = Engine.compile(program);
+				runtime = new Runtime();
+				engine = new Engine(runtime, instructions);
+				runForward();
+			}
+		});
+	}
+
+	/**
+	 * Runs the current program.
+	 */
+	public void runForward() {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				runningForward = true;
+				runningBackward = false;
+			}
+		});
+	}
+	
+	/**
+	 * Stops the current program.
+	 */
+	public void stop() {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				runningForward = false;
+				runningBackward = false;
+			}
+		});
+	}
+	
+	/**
+	 * Steps forward through the current program.
+	 */
+	public void stepForward() {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				if(runtime.getCurrentStackFrame() != null) {
+					engine.stepForward();
+				} else {
+					runningForward = false;
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Steps backward through the current program.
+	 */
+	public void stepBackward() {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				if(runtime.getCurrentStackFrame() != null) {
+					engine.stepBackward();
+				} else {
+					runningBackward = false;
+				}
+			}
+		});
 	}
 }

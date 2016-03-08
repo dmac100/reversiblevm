@@ -29,9 +29,7 @@ public class MainController {
 	private File file = null;
 	private boolean modified = false;
 	
-	private Future<?> runningProgram;
-	private ConsoleAppender out;
-	private ConsoleAppender err;
+	private final Compiler compiler = new Compiler();
 	
 	public MainController(Shell shell, final EventBus eventBus, EditorText editorText, GraphicsCanvas graphicsCanvas, ConsoleText consoleText) {
 		this.shell = shell;
@@ -40,6 +38,8 @@ public class MainController {
 		this.editorText = editorText;
 		this.graphicsCanvas = graphicsCanvas;
 		this.consoleText = consoleText;
+		
+		compiler.startQueueThread();
 		
 		editorText.setCompileCallback(new Callback<Void>() {
 			public void onCallback(Void param) {
@@ -90,35 +90,11 @@ public class MainController {
 	}
 	
 	public void compile() {
-		final String source = editorText.getText();
-
-		stop();
-		consoleText.clear();
-		
-		out = new ConsoleAppender(consoleText);
-		err = new ConsoleAppender(consoleText);
-		
-		try {
-			Compiler compiler = new Compiler();
-			runningProgram = compiler.runFile(source, out, err, new Callback<Void>() {
-				public void onCallback(Void param) {
-					fireRunningChanged(false);
-				}
-			});
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-		fireRunningChanged(true);
+		compiler.compile(editorText.getText());
 	}
 	
 	public void stop() {
-		if(runningProgram != null) {
-			runningProgram.cancel(true);
-		}
-		
-		if(out != null) out.close();
-		if(err != null) err.close();
+		compiler.stop();
 	}
 
 	public void setRunningChangedCallback(Callback<Boolean> callback) {
