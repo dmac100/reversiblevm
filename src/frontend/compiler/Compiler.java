@@ -24,22 +24,21 @@ public class Compiler {
 	 * and compilation and program errors to err.
 	 * 
 	 * @param contents The source code as a String.
-	 * @param input The input to use as the standard input stream. 
 	 * @param name The name of the Java class.
 	 * @param out Appender to send output to.
 	 * @param err Appender to send errors to.
 	 * @param callback The callback to call when the run is finished.
 	 */
-	public Future<?> runFile(final String contents, final String input, final Appender out, final Appender err, final Appender info, final Callback<Void> finishedCallback) {
+	public Future<?> runFile(final String contents, final Appender out, final Appender err, final Callback<Void> finishedCallback) {
 		return executor.submit(new Callable<Void>() {
 			public Void call() throws Exception {
-				runFileSync(contents, input, out, err, info, finishedCallback);
+				runFileSync(contents, out, err, finishedCallback);
 				return null;
 			}
 		});
 	}
 	
-	private void runFileSync(String contents, String input, Appender out, Appender err, Appender info, Callback<Void> finishedCallback) throws InterruptedException {
+	private void runFileSync(String contents, Appender out, Appender err, Callback<Void> finishedCallback) throws InterruptedException {
 		try {
 			Runtime runtime = new Runtime();
 			Engine engine = new Engine(runtime, Engine.compile(contents));

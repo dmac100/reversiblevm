@@ -2,8 +2,6 @@ package frontend.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Future;
 
 import org.apache.commons.io.FileUtils;
@@ -13,19 +11,16 @@ import org.eclipse.swt.widgets.Shell;
 import com.google.common.eventbus.EventBus;
 
 import frontend.compiler.Compiler;
-import frontend.event.EnabledChangedEvent;
 import frontend.event.ModifiedEvent;
 import frontend.ui.Callback;
 import frontend.ui.ConsoleText;
-import frontend.ui.EditFunctions;
 import frontend.ui.EditorText;
-import frontend.ui.InputText;
-import frontend.util.StringUtil;
+import frontend.ui.GraphicsCanvas;
 
 public class MainController {
 	private final Shell shell;
 	private final EditorText editorText;
-	private final InputText inputText;
+	private final GraphicsCanvas graphicsCanvas;
 	private final ConsoleText consoleText;
 	
 	private EventBus eventBus;
@@ -33,20 +28,17 @@ public class MainController {
 	
 	private File file = null;
 	private boolean modified = false;
-	private String jarDir = null;
-	private String classpath = null;
 	
 	private Future<?> runningProgram;
 	private ConsoleAppender out;
 	private ConsoleAppender err;
-	private ConsoleAppender info;
 	
-	public MainController(Shell shell, final EventBus eventBus, EditorText editorText, InputText inputText, ConsoleText consoleText) {
+	public MainController(Shell shell, final EventBus eventBus, EditorText editorText, GraphicsCanvas graphicsCanvas, ConsoleText consoleText) {
 		this.shell = shell;
 		this.eventBus = eventBus;
 		
 		this.editorText = editorText;
-		this.inputText = inputText;
+		this.graphicsCanvas = graphicsCanvas;
 		this.consoleText = consoleText;
 		
 		editorText.setCompileCallback(new Callback<Void>() {
@@ -99,18 +91,16 @@ public class MainController {
 	
 	public void compile() {
 		final String source = editorText.getText();
-		final String input = inputText.getText();
 
 		stop();
 		consoleText.clear();
 		
 		out = new ConsoleAppender(consoleText);
 		err = new ConsoleAppender(consoleText);
-		info = new ConsoleAppender(consoleText);
 		
 		try {
 			Compiler compiler = new Compiler();
-			runningProgram = compiler.runFile(source, input, out, err, info, new Callback<Void>() {
+			runningProgram = compiler.runFile(source, out, err, new Callback<Void>() {
 				public void onCallback(Void param) {
 					fireRunningChanged(false);
 				}
@@ -129,7 +119,6 @@ public class MainController {
 		
 		if(out != null) out.close();
 		if(err != null) err.close();
-		if(info != null) info.close();
 	}
 
 	public void setRunningChangedCallback(Callback<Boolean> callback) {
@@ -146,51 +135,24 @@ public class MainController {
 		}
 	}
 	
-	private EditFunctions getFocusedEditFunctions() {
-		if(editorText.hasFocus()) {
-			return editorText.getEditFunctions();
-		}
-		
-		if(inputText.hasFocus()) {
-			return inputText.getEditFunctions();
-		}
-		
-		return null;
-	}
-	
 	public void undo() {
-		EditFunctions control = getFocusedEditFunctions();
-		if(control != null) {
-			control.undo();
-		}
+		editorText.getEditFunctions().undo();
 	}
 
 	public void redo() {
-		EditFunctions control = getFocusedEditFunctions();
-		if(control != null) {
-			control.redo();
-		}
+		editorText.getEditFunctions().redo();
 	}
 	
 	public void cut() {
-		EditFunctions control = getFocusedEditFunctions();
-		if(control != null) {
-			control.cut();
-		}
+		editorText.getEditFunctions().cut();
 	}
 	
 	public void copy() {
-		EditFunctions control = getFocusedEditFunctions();
-		if(control != null) {
-			control.copy();
-		}
+		editorText.getEditFunctions().copy();
 	}
 	
 	public void paste() {
-		EditFunctions control = getFocusedEditFunctions();
-		if(control != null) {
-			control.paste();
-		}
+		editorText.getEditFunctions().paste();
 	}
 
 	public void find() {
@@ -198,48 +160,23 @@ public class MainController {
 	}
 
 	public boolean undoEnabled() {
-		EditFunctions control = getFocusedEditFunctions();
-		if(control != null) {
-			return control.isUndoEnabled();
-		} else {
-			return false;
-		}
+		return editorText.getEditFunctions().isUndoEnabled();
 	}
 
 	public boolean redoEnabled() {
-		EditFunctions control = getFocusedEditFunctions();
-		if(control != null) {
-			return control.isRedoEnabled();
-		} else {
-			return false;
-		}
+		return editorText.getEditFunctions().isRedoEnabled();
 	}
 	
 	public boolean cutEnabled() {
-		EditFunctions control = getFocusedEditFunctions();
-		if(control != null) {
-			return control.isCutEnabled();
-		} else {
-			return false;
-		}
+		return editorText.getEditFunctions().isCutEnabled();
 	}
 	
 	public boolean copyEnabled() {
-		EditFunctions control = getFocusedEditFunctions();
-		if(control != null) {
-			return control.isCopyEnabled();
-		} else {
-			return false;
-		}
+		return editorText.getEditFunctions().isCopyEnabled();
 	}
 	
 	public boolean pasteEnabled() {
-		EditFunctions control = getFocusedEditFunctions();
-		if(control != null) {
-			return control.isPasteEnabled();
-		} else {
-			return false;
-		}
+		return editorText.getEditFunctions().isPasteEnabled();
 	}
 
 	public void convertSpacesToTabs() {

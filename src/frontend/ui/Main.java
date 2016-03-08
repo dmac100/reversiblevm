@@ -44,7 +44,7 @@ public class Main {
 	private EditorText editorText;
 	private SashForm horizontalSash;
 	
-	private boolean inputVisible = false;
+	private boolean graphicsPane = false;
 	
 	public Main(final Shell shell) {
 		this.shell = shell;
@@ -58,18 +58,18 @@ public class Main {
 		SashForm verticalSash = new SashForm(bottom, SWT.VERTICAL);
 		horizontalSash = new SashForm(verticalSash, SWT.HORIZONTAL);
 		editorText = new EditorText(eventBus, shell, horizontalSash);
-		InputText inputText = new InputText(eventBus, horizontalSash);
+		GraphicsCanvas graphicsCanvas = new GraphicsCanvas(eventBus, horizontalSash);
 		ConsoleText consoleText = new ConsoleText(verticalSash);
 		
 		horizontalSash.setWeights(new int[] { 70, 30 });
 		verticalSash.setWeights(new int[] { 75, 25 });
 		
-		mainController = new MainController(shell, eventBus, editorText, inputText, consoleText);
+		mainController = new MainController(shell, eventBus, editorText, graphicsCanvas, consoleText);
 		
 		createMenuBar(shell);
 		createToolBar(top);
 		refreshTitle();
-		setInputPaneVisible(inputVisible);
+		setGraphicsPaneVisible(graphicsPane);
 		
 		eventBus.register(new Object() {
 			@Subscribe @SuppressWarnings("unused")
@@ -219,20 +219,20 @@ public class Main {
 			});
 		
 		menuBuilder.addMenu("&View")
-			.addItem("&Show Input Pane\tCtrl+I").addSelectionListener(new SelectionAdapter() {
+			.addItem("&Show Graphics Pane\tCtrl+G").addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
-					setInputPaneVisible(true);
+					setGraphicsPaneVisible(true);
 				}
 			})
-			.setAccelerator(SWT.CTRL | 'i')
-			.setEnabled(!inputVisible)
-			.addItem("&Hide Input Pane\tCtrl+I").addSelectionListener(new SelectionAdapter() {
+			.setAccelerator(SWT.CTRL | 'g')
+			.setEnabled(!graphicsPane)
+			.addItem("&Hide Graphics Pane\tCtrl+G").addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
-					setInputPaneVisible(false);
+					setGraphicsPaneVisible(false);
 				}
 			})
-			.setAccelerator(SWT.CTRL | 'i')
-			.setEnabled(inputVisible);
+			.setAccelerator(SWT.CTRL | 'g')
+			.setEnabled(graphicsPane);
 		
 		menuBuilder.build();
 	}
@@ -261,8 +261,8 @@ public class Main {
 		}
 	}
 
-	private void setInputPaneVisible(boolean visible) {
-		inputVisible = visible;
+	private void setGraphicsPaneVisible(boolean visible) {
+		graphicsPane = visible;
 		
 		if(visible) {
 			horizontalSash.setMaximizedControl(null);
@@ -403,23 +403,20 @@ public class Main {
 		CommandLineParser parser = new GnuParser();
 		
 		Options options = new Options();
-		options.addOption(new Option("l", "language", true, "set the language by name"));
 		options.addOption(new Option("f", "file", true, "load a file"));
-		options.addOption(new Option("i", "input", false, "show input pane"));
-		options.addOption(new Option("j", "jardir", true, "adds the jars in a directory to the classpath"));
-		options.addOption(new Option("cp", "classpath", true, "sets the classpath to use when compiling/running java programs"));
+		options.addOption(new Option("g", "graphics", false, "show graphics pane"));
 		options.addOption(new Option("h", "help", false, "show help"));
 		
 		try {
 			CommandLine command = parser.parse(options, args);
 		
 			if(command.hasOption("h") || command.getArgs().length > 1) {
-				new HelpFormatter().printHelp("java -jar scratchpad.jar [options] [filename]", options);
+				new HelpFormatter().printHelp("java -jar vm.jar [options] [filename]", options);
 				System.exit(0);
 			}
 			
-			if(command.hasOption("i")) {
-				setInputPaneVisible(true);
+			if(command.hasOption("g")) {
+				setGraphicsPaneVisible(true);
 			}
 			
 			if(command.hasOption("f")) {
@@ -432,7 +429,7 @@ public class Main {
 		} catch(Throwable e) {
 			// Print usage and exit on any error.
 			System.err.println(e.getMessage());
-			new HelpFormatter().printHelp("java -jar scratchpad.jar", options);
+			new HelpFormatter().printHelp("java -jar vm.jar", options);
 			System.exit(0);
 		}
 	}
