@@ -6,6 +6,7 @@ import static backend.instruction.array.NewArrayInstruction.NewArray;
 import static backend.instruction.array.PushElementInstruction.PushElement;
 import static backend.instruction.function.CallInstruction.Call;
 import static backend.instruction.function.EndFunctionInstruction.EndFunction;
+import static backend.instruction.function.ReturnInstruction.Return;
 import static backend.instruction.function.StartFunctionInstruction.StartFunction;
 import static backend.instruction.jump.JumpIfFalseInstruction.JumpIfFalse;
 import static backend.instruction.jump.JumpIfTrueInstruction.JumpIfTrue;
@@ -494,10 +495,60 @@ public class Parser extends BaseParser<Instructions> {
 					)
 				)
 			),
+			ArrowFunction(),
 			ConditionalExpression()
 		);
 	}
 	
+	public Rule ArrowFunction() {
+		return Sequence(
+			ArrowParameters(),
+			Terminal("=>"),
+			ConciseBody(),
+			push(Instructions(
+				Instructions(StartFunction(peek(1).getInstructions().size() / 2 + 1)),
+				Instructions(Pop()),
+				pop(1),
+				pop(),
+				Instructions(EndFunction())
+			))
+		);
+	}
+	
+	public Rule ArrowParameters() {
+		return FirstOf(
+			Sequence(
+				push(Instructions(Pop())),
+				FormalParameter(),
+				push(Instructions(pop(), pop()))
+			),
+			Sequence(
+				push(Instructions(Pop())),
+				Terminal("("),
+				Optional(
+					FormalParameter(), push(Instructions(pop(), pop())),
+					ZeroOrMore(
+						Terminal(","), FormalParameter(), push(Instructions(pop(), pop()))
+					)
+				),
+				Terminal(")")
+			)
+		);
+	}
+	
+	public Rule ConciseBody() {
+		return FirstOf(
+			Sequence(
+				Terminal("{"),
+				FunctionBody(),
+				push(Instructions(Push(NullValue()))),
+				push(Instructions(pop(), pop())),
+				Terminal("}")
+			),
+			AssignmentExpression()
+		);
+	}
+
 	public Rule CompoundAssignmentOperator() {
 		return FirstOf(
 			Sequence(Terminal("*="), push(Instructions(Multiply()))),

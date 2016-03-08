@@ -230,6 +230,14 @@ public class ParserOutputTest {
 	}
 	
 	@Test
+	public void ArrowFunction() {
+		assertParseOutput("x => x + 1;", Arrays.asList("STARTFUNCTION: 2", "POP", "LOCAL: x", "STORE: x", "POP", "LOAD: x" , "PUSH: 1", "ADD", "ENDFUNCTION", "POP"));
+		assertParseOutput("(x, y) => x + y;", Arrays.asList("STARTFUNCTION: 3", "POP", "LOCAL: y", "STORE: y", "LOCAL: x", "STORE: x", "POP", "LOAD: x" , "LOAD: y", "ADD", "ENDFUNCTION", "POP"));
+		assertParseOutput("x => { return x + 1; };", Arrays.asList("STARTFUNCTION: 2", "POP", "LOCAL: x", "STORE: x", "POP", "PUSH: null", "POP", "LOAD: x", "PUSH: 1", "ADD", "RETURN", "ENDFUNCTION", "POP"));
+		assertParseOutput("x => { x = x + 1; return x; };", Arrays.asList("STARTFUNCTION: 2", "POP", "LOCAL: x", "STORE: x", "POP", "PUSH: null", "LOAD: x", "PUSH: 1", "ADD", "STORE: x", "LOAD: x", "POP", "POP", "LOAD: x", "RETURN", "ENDFUNCTION", "POP"));
+	}
+	
+	@Test
 	public void CompoundAssignmentOperator() {
 	}
 	
@@ -320,6 +328,9 @@ public class ParserOutputTest {
 		assertParseOutput("@for(x <- a) rect(x: 1);", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "NEWVIZOBJECT: rect", "PUSH: 1", "SETVIZPROPERTY: x", "ENDVIZ"));
 		assertParseOutput("@for(x <- a, y <- b) rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "LOAD: b", "VIZITERATE: y", "NEWVIZOBJECT: rect", "ENDVIZ"));
 		assertParseOutput("@for(x <- a, x < 2) rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "LOAD: x", "PUSH: 2", "LESSTHAN", "VIZFILTER", "NEWVIZOBJECT: rect", "ENDVIZ"));
+		
+		assertParseOutput("@for(var x <- a) rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "NEWVIZOBJECT: rect", "ENDVIZ"));
+		assertParseOutput("@for(var x <- a, y <- b) rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "LOAD: b", "VIZITERATE: y", "NEWVIZOBJECT: rect", "ENDVIZ"));
 	}
 	
 	@Test

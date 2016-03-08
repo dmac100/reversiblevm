@@ -3,6 +3,8 @@ package backend.runtime;
 import static backend.runtime.EngineAsserts.assertError;
 import static backend.runtime.EngineAsserts.assertOutput;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 public class ParseAndRunTest {
@@ -265,6 +267,16 @@ public class ParseAndRunTest {
 		assertOutput("3", "x = { y: { z: 2 } }; x.y.z = 3; print(x.y.z);");
 		
 		assertOutput("3", "x = [2]; x[0] = 3; print(x[0]);");
+	}
+	
+	@Test
+	public void ArrowFunction() {
+		assertOutput("1", "print((() => 1)(1));");
+		assertOutput("2", "print((x => x + 1)(1));");
+		assertOutput("3", "print(((x, y) => x + y)(1, 2));");
+		assertOutput("2", "print((x => { return x + 1; })(1));");
+		assertOutput("1", "print((x => { return x; })(1));");
+		assertOutput("null", "print((x => { })(1));");
 	}
 	
 	@Test

@@ -212,6 +212,13 @@ public class ParserTypeTest {
 		assertParseType("a += 2", parser.AssignmentExpression());
 		assertParseType("a ? 1 : 2", parser.AssignmentExpression());
 	}
+	
+	@Test
+	public void ArrowFunction() {
+		assertParseType("x => x + 1", parser.ArrowFunction());
+		assertParseType("x => { return x + 1; }", parser.ArrowFunction());
+		assertParseType("x => { x = x + 1; return x; }", parser.ArrowFunction());
+	}
 
 	@Test
 	public void CompoundAssignmentOperator() {
