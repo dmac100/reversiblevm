@@ -19,7 +19,7 @@ import backend.value.FunctionValue;
 
 public class Engine {
 	private static final Parser parser = Parboiled.createParser(Parser.class);
-	private static final List<Instruction> includeInstructions = parseFile("/backend/runtime/include.js");
+	private static final List<Instruction> includeInstructions = parseFile("/backend/runtime/library/include.js");
 	
 	private final Runtime runtime;
 	private final List<Instruction> instructions;
