@@ -4,7 +4,6 @@ import static org.parboiled.errors.ErrorUtils.printParseErrors;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -14,10 +13,6 @@ import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 
 import backend.instruction.Instruction;
-import backend.instruction.function.EndFunctionInstruction;
-import backend.instruction.function.StartFunctionInstruction;
-import backend.instruction.viz.EndVizInstruction;
-import backend.instruction.viz.StartVizInstruction;
 import backend.parser.Instructions;
 import backend.parser.Parser;
 import backend.value.FunctionValue;
@@ -81,16 +76,6 @@ public class Engine {
 		runtime.getUndoStack().undo(runtime);
 	}
 
-	private void execute(Instruction instruction) throws ExecutionException {
-		try {
-			instruction.execute(runtime);
-			//System.out.println(runtime.getNestedFunctionDefinitionCount() + ":" + runtime.getCurrentStackFrame().getInstructionCounter() + " - EXECUTING: " + instruction + " - " + runtime.getStack() + " - " + runtime.getScope());
-		} catch (Exception e) {
-			//System.out.println(runtime.getNestedFunctionDefinitionCount() + ":" + runtime.getCurrentStackFrame().getInstructionCounter() + " - EXECUTING: " + instruction + " - " + runtime.getStack() + " - " + runtime.getScope());
-			throw e;
-		}
-	}
-	
 	public static List<Instruction> parseFile(String name) {
 		try(InputStream inputStream = Engine.class.getResourceAsStream(name)) {
 			return compile(IOUtils.toString(inputStream));
