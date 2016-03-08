@@ -733,6 +733,7 @@ public class Parser extends BaseParser<Instructions> {
 	public Rule VizForExpression() {
 		return FirstOf(
 			Sequence(
+				Optional(Terminal("var")),
 				Identifier(),
 				push(Instructions(VizIterateInstruction(match().trim()))),
 				Terminal("<-"),
