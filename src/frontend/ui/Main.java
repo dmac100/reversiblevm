@@ -41,10 +41,11 @@ public class Main {
 	private final Shell shell;
 	private final MainController mainController;
 	
-	private EditorText editorText;
 	private SashForm horizontalSash;
+	private SashForm verticalSash;
 	
 	private boolean graphicsPane = false;
+	private boolean consolePane = true;
 	
 	public Main(final Shell shell) {
 		this.shell = shell;
@@ -55,9 +56,9 @@ public class Main {
 		bottom.setLayout(new FillLayout());
 		bottom.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 		
-		SashForm verticalSash = new SashForm(bottom, SWT.VERTICAL);
+		verticalSash = new SashForm(bottom, SWT.VERTICAL);
 		horizontalSash = new SashForm(verticalSash, SWT.HORIZONTAL);
-		editorText = new EditorText(eventBus, shell, horizontalSash);
+		EditorText editorText = new EditorText(eventBus, shell, horizontalSash);
 		GraphicsCanvas graphicsCanvas = new GraphicsCanvas(eventBus, horizontalSash);
 		ConsoleText consoleText = new ConsoleText(verticalSash);
 		
@@ -219,20 +220,34 @@ public class Main {
 			});
 		
 		menuBuilder.addMenu("&View")
-			.addItem("&Show Graphics Pane\tCtrl+G").addSelectionListener(new SelectionAdapter() {
+			.addItem("Show &Graphics Pane\tCtrl+G").addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					setGraphicsPaneVisible(true);
 				}
 			})
 			.setAccelerator(SWT.CTRL | 'g')
 			.setEnabled(!graphicsPane)
-			.addItem("&Hide Graphics Pane\tCtrl+G").addSelectionListener(new SelectionAdapter() {
+			.addItem("Hide &Graphics Pane\tCtrl+G").addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					setGraphicsPaneVisible(false);
 				}
 			})
 			.setAccelerator(SWT.CTRL | 'g')
-			.setEnabled(graphicsPane);
+			.setEnabled(graphicsPane)
+			.addItem("Show &Console\tCtrl+L").addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent event) {
+					setConsolePaneVisible(true);
+				}
+			})
+			.setAccelerator(SWT.CTRL | 'l')
+			.setEnabled(!consolePane)
+			.addItem("Hide &Console\tCtrl+L").addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent event) {
+					setConsolePaneVisible(false);
+				}
+			})
+			.setAccelerator(SWT.CTRL | 'l')
+			.setEnabled(consolePane);
 		
 		menuBuilder.build();
 	}
@@ -267,7 +282,19 @@ public class Main {
 		if(visible) {
 			horizontalSash.setMaximizedControl(null);
 		} else {
-			horizontalSash.setMaximizedControl(editorText.getControl());
+			horizontalSash.setMaximizedControl(horizontalSash.getChildren()[0]);
+		}
+		
+		eventBus.post(new EnabledChangedEvent());
+	}
+	
+	private void setConsolePaneVisible(boolean visible) {
+		consolePane = visible;
+		
+		if(visible) {
+			verticalSash.setMaximizedControl(null);
+		} else {
+			verticalSash.setMaximizedControl(verticalSash.getChildren()[0]);
 		}
 		
 		eventBus.post(new EnabledChangedEvent());
