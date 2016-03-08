@@ -153,7 +153,7 @@ public class Parser extends BaseParser<Instructions> {
 		return Sequence(
 			push(Instructions(NewObject())),
 			Terminal("{"),
-			Optional(PropertyNameAndValueList(), push(Instructions(pop(1), pop()))),
+			Optional(PropertyNameAndValueList(), mergeAfter()),
 			Terminal("}")
 		);
 	}
@@ -164,7 +164,7 @@ public class Parser extends BaseParser<Instructions> {
 			Terminal(":"),
 			AssignmentExpression(),
 			push(Instructions(Instructions(Dup()), pop(), pop())),
-			Optional(Terminal(","), PropertyNameAndValueList(), push(Instructions(pop(1), pop())))
+			Optional(Terminal(","), PropertyNameAndValueList(), mergeAfter())
 		);
 	}
 	
@@ -520,15 +520,15 @@ public class Parser extends BaseParser<Instructions> {
 			Sequence(
 				push(Instructions(Pop())),
 				FormalParameter(),
-				push(Instructions(pop(), pop()))
+				mergeBefore()
 			),
 			Sequence(
 				push(Instructions(Pop())),
 				Terminal("("),
 				Optional(
-					FormalParameter(), push(Instructions(pop(), pop())),
+					FormalParameter(), mergeBefore(),
 					ZeroOrMore(
-						Terminal(","), FormalParameter(), push(Instructions(pop(), pop()))
+						Terminal(","), FormalParameter(), mergeBefore()
 					)
 				),
 				Terminal(")")
@@ -542,7 +542,7 @@ public class Parser extends BaseParser<Instructions> {
 				Terminal("{"),
 				FunctionBody(),
 				push(Instructions(Push(NullValue()))),
-				push(Instructions(pop(), pop())),
+				mergeBefore(),
 				Terminal("}")
 			),
 			AssignmentExpression()
@@ -572,7 +572,7 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(pop(), Instructions(Pop()))),
 				Terminal(","),
 				AssignmentExpression(),
-				push(Instructions(pop(1), pop()))
+				mergeAfter()
 			)
 		);
 	}
@@ -599,7 +599,7 @@ public class Parser extends BaseParser<Instructions> {
 			push(Instructions()),
 			ZeroOrMore(
 				Statement(),
-				push(Instructions(pop(1), pop()))
+				mergeAfter()
 			)
 		);
 	}
@@ -614,7 +614,7 @@ public class Parser extends BaseParser<Instructions> {
 			ZeroOrMore(
 				Terminal(","),
 				VariableDeclaration(),
-				push(Instructions(pop(1), pop()))
+				mergeAfter()
 			)
 		);
 	}
@@ -758,9 +758,9 @@ public class Parser extends BaseParser<Instructions> {
 				ZeroOrMore(
 					Terminal(","),
 					VizForExpression(),
-					push(Instructions(pop(1), pop()))
+					mergeAfter()
 				),
-				push(Instructions(pop(), pop())),
+				mergeBefore(),
 				Terminal(")")
 			),
 			Sequence(TestNot(Terminal("for"), Terminal("(")), Identifier()),
@@ -771,9 +771,9 @@ public class Parser extends BaseParser<Instructions> {
 				ZeroOrMore(
 					Terminal(","),
 					VizProperty(),
-					push(Instructions(pop(1), pop()))
+					mergeAfter()
 				),
-				push(Instructions(pop(1), pop()))
+				mergeAfter()
 			),
 			push(Instructions(Instructions(StartVizInstruction()), pop(1), pop(), Instructions(EndVizInstruction()))),
 			Terminal(")"),
@@ -789,7 +789,7 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(VizIterateInstruction(match().trim()))),
 				Terminal("<-"),
 				AssignmentExpression(),
-				push(Instructions(pop(), pop()))
+				mergeBefore()
 			),
 			Sequence(
 				AssignmentExpression(),
@@ -804,7 +804,7 @@ public class Parser extends BaseParser<Instructions> {
 			push(Instructions(SetVizPropertyInstruction(match().trim()))),
 			Terminal(":"),
 			AssignmentExpression(),
-			push(Instructions(pop(), pop()))
+			mergeBefore()
 		);
 	}
 	
@@ -863,9 +863,9 @@ public class Parser extends BaseParser<Instructions> {
 				Instructions(Store("this"))
 			)),
 			Optional(
-				FormalParameter(), push(Instructions(pop(), pop())),
+				FormalParameter(), mergeBefore(),
 				ZeroOrMore(
-					Terminal(","), FormalParameter(), push(Instructions(pop(), pop()))
+					Terminal(","), FormalParameter(), mergeBefore()
 				)
 			)
 		);
@@ -886,7 +886,7 @@ public class Parser extends BaseParser<Instructions> {
 	public Rule FunctionBody() {
 		return Sequence(
 			push(Instructions()),
-			Optional(SourceElements(), push(Instructions(pop(), pop())))
+			Optional(SourceElements(), mergeBefore())
 		);
 	}
 	
@@ -895,7 +895,7 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule SourceElements() {
-		return Sequence(SourceElement(), ZeroOrMore(SourceElement(), push(Instructions(pop(1), pop()))));
+		return Sequence(SourceElement(), ZeroOrMore(SourceElement(), mergeAfter()));
 	}
 
 	public Rule SourceElement() {
@@ -949,6 +949,14 @@ public class Parser extends BaseParser<Instructions> {
 			instruction.setColumnNumber((short) position().column);	
 		}
 		return new Instructions(instructions);
+	}
+	
+	public boolean mergeBefore() {
+		return push(Instructions(pop(), pop()));
+	}
+	
+	public boolean mergeAfter() {
+		return push(Instructions(pop(1), pop()));
 	}
 	
 	/**
