@@ -54,7 +54,7 @@ public class GlobalScope implements Scope, HasState {
 	 * Adds all methods in clz to map as native function values.
 	 */
 	private static void addNativeFunctionsToMap(Map<String, Value> map, Class<?> clz) {
-		for(final Method method:clz.getMethods()) {
+		for(final Method method:clz.getDeclaredMethods()) {
 			map.put(method.getName(), createNativeFunctionValue(method));
 		}
 	}
