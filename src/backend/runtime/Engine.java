@@ -34,14 +34,22 @@ public class Engine {
 		
 		GlobalScope globalScope = new GlobalScope(runtime.getUndoStack());
 		
-		runtime.addStackFrame(new FunctionValue(globalScope, 0, includeInstructions));
-		run();
+		addIncludeFiles(globalScope);
 		
 		runtime.addStackFrame(new FunctionValue(globalScope, 0, instructions));
 		
 		runtime.getUndoStack().clear();
 	}
 	
+	private void addIncludeFiles(GlobalScope globalScope) {
+		for(Instruction instruction:includeInstructions) {
+			instruction.setLineNumber((short) 0);
+		}
+		
+		runtime.addStackFrame(new FunctionValue(globalScope, 0, includeInstructions));
+		run();
+	}
+
 	public void run() {
 		try {
 			while(runtime.getCurrentStackFrame() != null) {
