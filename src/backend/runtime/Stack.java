@@ -29,10 +29,10 @@ public class Stack implements HasState {
 		}
 	}
 	
-	public Value popValue(boolean addToUndoStack, boolean addToPopUndoStack) {
+	public Value popValue(boolean addUndoCommand, boolean addToPopUndoStack) {
 		final Value value = stack.remove(stack.size() - 1);
 		
-		if(addToUndoStack) {
+		if(addUndoCommand) {
 			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					stack.add(value);

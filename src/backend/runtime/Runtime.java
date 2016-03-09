@@ -73,10 +73,10 @@ public class Runtime implements HasState, ValueReadObserver {
 		addStackFrame(new StackFrame(function, scope, undoStack), true);
 	}
 	
-	public void addStackFrame(StackFrame frame, boolean addToUndoStack) {
+	public void addStackFrame(StackFrame frame, boolean addUndoCommand) {
 		stackFrames.add(frame);
 		
-		if(addToUndoStack) {
+		if(addUndoCommand) {
 			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					stackFrames.remove(stackFrames.size() - 1);
