@@ -1,6 +1,7 @@
 package backend.value;
 
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Set;
 
@@ -71,6 +72,21 @@ public class ArrayValue extends Value implements HasState {
 		});
 		values.add(value);
 		valueObserverList.onChangeValue(null);
+	}
+	
+	public Value pop() {
+		if(values.isEmpty()) {
+			return null;
+		} else {
+			final Value value = values.remove(values.size() - 1);
+			undoStack.addCommandUndo(new Runnable() {
+				public void run() {
+					values.add(value);
+				}
+			});
+			valueObserverList.onChangeValue(null);
+			return value;
+		}
 	}
 	
 	public DoubleValue length(ValueReadObserver valueReadObserver) {

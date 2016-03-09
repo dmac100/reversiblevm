@@ -107,7 +107,7 @@ public class UndoStack {
 		undoInstructionCounterChange(runtime);
 	}
 	
-	public void undoCommands() {
+	private void undoCommands() {
 		while(!commandUndos.isEmpty()) {
 			Runnable command = commandUndos.remove(commandUndos.size() - 1);
 			if(command == UNDOPOINT) {
@@ -157,6 +157,17 @@ public class UndoStack {
 		if(!undoEnabled) return;
 		
 		commandUndos.add(UNDOPOINT);
+	}
+	
+	public String getState() {
+		StringBuilder s = new StringBuilder();
+		s.append("Command Undos: " + commandUndos.size()).append("\n");
+		s.append("Instruction Counter Undos: " + instructionCounterUndos.size()).append("\n");
+		s.append("Pop Stack Frame Undos: " + popStackFrameUndos.size()).append("\n");
+		s.append("Pop Value Undos: " + popValueUndos.size()).append("\n");
+		s.append("Pop Double Value Undos: " + popDoubleValueUndos.size()).append("\n");
+		s.append("Pop Value Undo Types: " + popValueUndoTypes.size()).append("\n");
+		return s.toString();
 	}
 	
 	public int getSize() {

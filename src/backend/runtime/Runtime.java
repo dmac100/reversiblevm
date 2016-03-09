@@ -18,6 +18,7 @@ import backend.value.Value;
 
 public class Runtime implements HasState, ValueReadObserver {
 	private UndoStack undoStack = new UndoStack();
+	private int executedInstructions = 0;
 	
 	private Stack stack = new Stack(undoStack);
 	private List<StackFrame> stackFrames = new ArrayList<>();
@@ -27,6 +28,47 @@ public class Runtime implements HasState, ValueReadObserver {
 	
 	private List<String> errors = new ArrayList<>();
 	private List<String> output = new ArrayList<>();
+	
+	/**
+	 * Runs all the given instructions within a new stack frame.
+	 */
+	public void runInstructions(List<Instruction> instructions) {
+		undoStack.saveUndoPoint();
+		undoStack.addInstructionCounterUndo(getCurrentStackFrame().getInstructionCounter());
+		addStackFrame(new FunctionValue(getScope(), 0, instructions));
+		
+		int stackFrameCount = stackFrames.size();
+		
+		while(stackFrames.size() >= stackFrameCount) {
+			runNextInstruction();
+		}
+	}
+	
+	public void runNextInstruction() {
+		if(getCurrentStackFrame() == null) return;
+		
+		undoStack.saveUndoPoint();
+		undoStack.addInstructionCounterUndo(getCurrentStackFrame().getInstructionCounter());
+		
+		StackFrame frame = getCurrentStackFrame();
+		FunctionValue function = frame.getFunction();
+		
+		if(frame.getInstructionCounter() >= function.getInstructions().size()) {
+			popStackFrame();
+			return;
+		}
+		
+		Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
+		
+		try {
+			instruction.execute(this);
+			executedInstructions++;
+		} catch(ExecutionException e) {
+			undoStack.undo(this, false);
+			throw e;
+		}
+		frame.setInstructionCounter(frame.getInstructionCounter() + 1);
+	}
 	
 	public void addStackFrame(FunctionValue function) {
 		NonGlobalScope scope = new NonGlobalScope(function.getParentScope(), undoStack);
@@ -44,7 +86,7 @@ public class Runtime implements HasState, ValueReadObserver {
 			});
 		}
 	}
-
+	
 	/**
 	 * Returns all the instructions from startInstruction to endInstruction assuming the current
 	 * instruction counter is at startInstruction. Handles any nested start and end instructions
@@ -132,6 +174,17 @@ public class Runtime implements HasState, ValueReadObserver {
 		return undoStack;
 	}
 	
+	public int getNumberExecutedInstructions() {
+		return executedInstructions;
+	}
+	
+	public void clearNumberExecutedInstructions() {
+		executedInstructions = 0;
+	}
+	
+	/**
+	 * Returns the viz objects that are currently being added within a STARTVIZ/ENDVIZ block.
+	 */
 	public List<VizObject> getCurrentVizObjects() {
 		return currentVizObjects;
 	}
@@ -149,7 +202,7 @@ public class Runtime implements HasState, ValueReadObserver {
 			valueReadObserver.onValueRead(valueChangeObservable);
 		}
 	}
-
+	
 	public DoubleValue checkDoubleValue(Value value) throws ExecutionException {
 		if(value instanceof DoubleValue) {
 			return (DoubleValue) value;

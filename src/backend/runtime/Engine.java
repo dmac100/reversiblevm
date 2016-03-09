@@ -54,27 +54,7 @@ public class Engine {
 	}
 	
 	public void stepForward() {
-		if(runtime.getCurrentStackFrame() == null) return;
-		
-		runtime.getUndoStack().saveUndoPoint();
-		runtime.getUndoStack().addInstructionCounterUndo(runtime.getCurrentStackFrame().getInstructionCounter());
-		
-		StackFrame frame = runtime.getCurrentStackFrame();
-		FunctionValue function = frame.getFunction();
-		
-		if(frame.getInstructionCounter() >= function.getInstructions().size()) {
-			runtime.popStackFrame();
-			return;
-		}
-
-		Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
-		try {
-			instruction.execute(runtime);
-		} catch(ExecutionException e) {
-			runtime.getUndoStack().undo(runtime, false);
-			throw e;
-		}
-		frame.setInstructionCounter(frame.getInstructionCounter() + 1);
+		runtime.runNextInstruction();
 	}
 	
 	public void stepBackward() {

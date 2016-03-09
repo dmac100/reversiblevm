@@ -38,8 +38,8 @@ public class VizObjectsTest {
 	
 	@Test
 	public void readFunction() {
-		assertVizObjects("function f() { return 1; }; @rect(x: f());", Arrays.asList(
-			Arrays.asList("rect(x: 1)")
+		assertVizObjects("function f() { return 5; }; @rect(x: f());", Arrays.asList(
+			Arrays.asList("rect(x: 5)")
 		));
 	}
 	
@@ -121,6 +121,13 @@ public class VizObjectsTest {
 	}
 	
 	@Test
+	public void vizObjectWithConditional() {
+		assertVizObjects("@rect(x: true ? 1 : 2);", Arrays.asList(
+			Arrays.asList("rect(x: 1)")
+		));
+	}
+	
+	@Test
 	public void vizObjectsDoNotChangeState() {
 		assertStateNotChanged("@rect();");
 		assertStateNotChanged("@rect(x: 1);");
@@ -131,7 +138,7 @@ public class VizObjectsTest {
 		assertStateNotChanged("@for(x <- [y = 1]) rect();");
 		assertStateNotChanged("@for(x <- [print()]) rect();");
 	}
-
+	
 	private static void assertVizObjects(String program, List<List<String>> expectedObjects) {
 		Runtime runtime = new Runtime();
 		List<Instruction> instructions = Engine.compile(program);
@@ -191,15 +198,21 @@ public class VizObjectsTest {
 		instructions = instructions.subList(1, instructions.size() - 2);
 		runtime.addStackFrame(new FunctionValue(new GlobalScope(runtime.getUndoStack()), 0, new ArrayList<Instruction>()));
 		
+		// Add some dummy values to the undo stack so that it's not empty.
+		runtime.getUndoStack().addCommandUndo(null);
+		runtime.getUndoStack().addInstructionCounterUndo(5);
+		runtime.getUndoStack().addPopStackFrameUndo(null);
+		runtime.getUndoStack().addPopValueUndo(null);
+		
 		// Save initial state.
 		String initialState = runtime.getState();
-		int initialUndoStackSize = runtime.getUndoStack().getSize();
+		String initialUndoStack = runtime.getUndoStack().getState();
 		
 		// Run viz object instructions.
 		new VizObjectInstructions(runtime, instructions).updateObjects();
 		
 		// Check that the state is the same.
+		assertEquals(initialUndoStack, runtime.getUndoStack().getState());
 		assertEquals(initialState, runtime.getState());
-		assertEquals(initialUndoStackSize, runtime.getUndoStack().getSize());
 	}
 }

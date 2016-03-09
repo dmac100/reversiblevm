@@ -1,19 +1,12 @@
 package backend.runtime;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import backend.instruction.Instruction;
-import backend.instruction.viz.VizFilterInstruction;
-import backend.instruction.viz.VizIterateInstruction;
 import backend.observer.ValueChangeObservable;
 import backend.observer.ValueChangeObserver;
 import backend.observer.ValueReadObserver;
-import backend.value.ArrayValue;
-import backend.value.BooleanValue;
-import backend.value.FunctionValue;
-import backend.value.Value;
 
 public class VizObjectInstructions implements ValueChangeObserver {
 	private final Runtime runtime;
@@ -41,7 +34,7 @@ public class VizObjectInstructions implements ValueChangeObserver {
 	}
 
 	private void executeInstructions(final Runtime runtime) {
-		List<Instruction> executedInstructions = new ArrayList<>();
+		runtime.clearNumberExecutedInstructions();
 		
 		clear();
 		
@@ -54,18 +47,19 @@ public class VizObjectInstructions implements ValueChangeObserver {
 		});
 		
 		try {
-			executeInstructions(runtime, instructions, executedInstructions);
+			runtime.runInstructions(instructions);
+			
+			runtime.getUndoStack().undo(runtime, false);
 		} catch(ExecutionException e) {
-			runtime.getUndoStack().undoCommands();
 			throw e;
 		} finally {
 			runtime.clearValueReadObservers();
-		
-			Collections.reverse(executedInstructions);
-			for(Instruction instruction:executedInstructions) {
-				instruction.undo(runtime);
-				runtime.getUndoStack().undoCommands();
+			
+			for(int i = 0; i < runtime.getNumberExecutedInstructions(); i++) {
+				runtime.getUndoStack().undo(runtime, true);
 			}
+			
+			runtime.getUndoStack().undo(runtime, false);
 		}
 		
 		for(ValueChangeObservable valueChangeObservable:valueChangeObservables) {
@@ -81,45 +75,6 @@ public class VizObjectInstructions implements ValueChangeObserver {
 		
 		activeObservers.clear();
 		vizObjects.clear();
-	}
-
-	private void executeInstructions(Runtime runtime, List<Instruction> instructions, List<Instruction> executedInstructions) {
-		for(int i = 0; i < instructions.size(); i++) {
-			Instruction instruction = instructions.get(i);
-			runtime.getUndoStack().saveUndoPoint();
-
-			if(instruction instanceof VizIterateInstruction) {
-				String name = ((VizIterateInstruction)instruction).getName();
-				
-				runtime.checkArrayValue(runtime.getStack().peekValue(0));
-				ArrayValue array = runtime.checkArrayValue(runtime.getStack().popValue(false, true));
-				
-				runtime.addStackFrame(new FunctionValue(runtime.getScope(), 0, new ArrayList<Instruction>()));
-				runtime.getScope().create(name);
-				
-				executedInstructions.add(instruction);
-				
-				for(Value value:array.values(runtime)) {
-					runtime.getScope().set(name, value);
-					executeInstructions(runtime, instructions.subList(i + 1, instructions.size()), executedInstructions);
-				}
-				
-				return;
-			}
-			
-			if(instruction instanceof VizFilterInstruction) {
-				runtime.checkBooleanValue(runtime.getStack().peekValue(0));
-				BooleanValue condition = runtime.checkBooleanValue(runtime.getStack().popValue(false, true));
-				
-				if(!condition.getValue()) {
-					executedInstructions.add(instruction);
-					return;
-				}
-			}
-
-			instruction.execute(runtime);
-			executedInstructions.add(instruction);
-		}
 	}
 
 	public List<VizObject> getVizObjects() {
