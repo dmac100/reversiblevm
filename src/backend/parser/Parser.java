@@ -578,15 +578,23 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule Statement() {
-		return FirstOf(
-			Block(),
-			VariableStatement(),
-			EmptyStatement(),
-			ReturnStatement(),
-			IfStatement(),
-			IterationStatement(),
-			ExpressionStatement(),
-			VizStatement()
+		Var<Short> lineNumber = new Var<Short>();
+		Var<Short> columnNumber = new Var<Short>();
+		
+		return Sequence(
+			lineNumber.set((short) position().line),
+			columnNumber.set((short) position().line),
+			FirstOf(
+				Block(),
+				VariableStatement(),
+				EmptyStatement(),
+				ReturnStatement(),
+				IfStatement(),
+				IterationStatement(),
+				ExpressionStatement(),
+				VizStatement()
+			),
+			push(addLineNumbers(pop(), lineNumber.get(), columnNumber.get()))
 		);
 	}
 	
@@ -931,6 +939,17 @@ public class Parser extends BaseParser<Instructions> {
 		return Sequence(value, Spacing());
 	}
 	
+	public Instructions addLineNumbers(Instructions instructions, short lineNumber, short columnNumber) {
+		for(Instruction instruction:instructions.getInstructions()) {
+			if(instruction.getLineNumber() <= 0) {
+				instruction.setLineNumber(lineNumber);
+				instruction.setColumnNumber(columnNumber);
+			}
+		}
+		
+		return instructions;
+	}
+	
 	public Instructions Instructions() {
 		return new Instructions();
 	}
@@ -944,10 +963,6 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Instructions Instructions(List<Instruction> instructions) {
-		for(Instruction instruction:instructions) {
-			instruction.setLineNumber((short) position().line);
-			instruction.setColumnNumber((short) position().column);	
-		}
 		return new Instructions(instructions);
 	}
 	
