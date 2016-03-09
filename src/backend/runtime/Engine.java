@@ -37,9 +37,9 @@ public class Engine {
 		runtime.addStackFrame(new FunctionValue(globalScope, 0, includeInstructions));
 		run();
 		
-		runtime.getUndoStack().clear();
-		
 		runtime.addStackFrame(new FunctionValue(globalScope, 0, instructions));
+		
+		runtime.getUndoStack().clear();
 	}
 	
 	public void run() {

@@ -9,8 +9,9 @@ public class CompilerModel {
 	private int lineNumber = -1;
 	private boolean stepForwardEnabled = true;
 	private boolean stepBackwardEnabled = true;
-	private boolean runEnabled = true;
-	private boolean stopEnabled = true;
+	private boolean runForwardEnabled = true;
+	private boolean runBackwardEnabled = true;
+	private boolean pauseEnabled = true;
 	private boolean compileEnabled = true;
 	
 	public List<String> getOutput() {
@@ -53,20 +54,28 @@ public class CompilerModel {
 		this.stepBackwardEnabled = stepBackwardEnabled;
 	}
 	
-	public boolean isRunEnabled() {
-		return runEnabled;
+	public boolean isRunForwardEnabled() {
+		return runForwardEnabled;
 	}
 	
-	public void setRunEnabled(boolean runEnabled) {
-		this.runEnabled = runEnabled;
+	public void setRunForwardEnabled(boolean runForwardEnabled) {
+		this.runForwardEnabled = runForwardEnabled;
 	}
 	
-	public boolean isStopEnabled() {
-		return stopEnabled;
+	public boolean isRunBackwardEnabled() {
+		return runBackwardEnabled;
 	}
 	
-	public void setStopEnabled(boolean stopEnabled) {
-		this.stopEnabled = stopEnabled;
+	public void setRunBackwardEnabled(boolean runBackwardEnabled) {
+		this.runBackwardEnabled = runBackwardEnabled;
+	}
+	
+	public boolean isPauseEnabled() {
+		return pauseEnabled;
+	}
+	
+	public void setPauseEnabled(boolean pauseEnabled) {
+		this.pauseEnabled = pauseEnabled;
 	}
 	
 	public boolean isCompileEnabled() {

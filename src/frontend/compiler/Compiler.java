@@ -7,11 +7,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.swt.widgets.Display;
 
-import frontend.controller.MainController;
-
 import backend.instruction.Instruction;
 import backend.runtime.Engine;
 import backend.runtime.Runtime;
+import frontend.controller.MainController;
 
 /**
  * Handles the interaction between the frontend and the backend compiler and runtime.
@@ -103,11 +102,12 @@ public class Compiler {
 		final CompilerModel compilerModel = new CompilerModel();
 		compilerModel.setOutput(new ArrayList<>(output));
 		compilerModel.setErrors(new ArrayList<>(errors));
-		compilerModel.setLineNumber(-1);
+		compilerModel.setLineNumber(runtime.getLineNumber());
 		compilerModel.setStepBackwardEnabled(!running);
 		compilerModel.setStepForwardEnabled(!running);
-		compilerModel.setRunEnabled(!running);
-		compilerModel.setStopEnabled(running);
+		compilerModel.setRunForwardEnabled(!running);
+		compilerModel.setRunBackwardEnabled(!running);
+		compilerModel.setPauseEnabled(running);
 		compilerModel.setCompileEnabled(true);
 		
 		Display.getDefault().asyncExec(new Runnable() {
@@ -118,7 +118,7 @@ public class Compiler {
 	}
 
 	/**
-	 * Compiles the given program and runs it.
+	 * Compiles the given program.
 	 */
 	public void compile(final String program) {
 		runnableQueue.add(new Runnable() {
@@ -126,13 +126,18 @@ public class Compiler {
 				List<Instruction> instructions = Engine.compile(program);
 				runtime = new Runtime();
 				engine = new Engine(runtime, instructions);
-				runForward();
+				runningForward = false;
+				runningBackward = false;
+				
+				for(Instruction instruction:instructions) {
+					System.out.println(instruction + " - " + instruction.getLineNumber());
+				}
 			}
 		});
 	}
 
 	/**
-	 * Runs the current program.
+	 * Runs the current program forward.
 	 */
 	public void runForward() {
 		runnableQueue.add(new Runnable() {
@@ -144,9 +149,21 @@ public class Compiler {
 	}
 	
 	/**
+	 * Runs the current program backward
+	 */
+	public void runBackward() {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				runningForward = false;
+				runningBackward = true;
+			}
+		});
+	}
+	
+	/**
 	 * Stops the current program.
 	 */
-	public void stop() {
+	public void pause() {
 		runnableQueue.add(new Runnable() {
 			public void run() {
 				runningForward = false;
@@ -170,10 +187,13 @@ public class Compiler {
 	 * Steps forward through the current program without adding to the queue.
 	 */
 	private void stepForwardSync() {
-		if(runtime.getCurrentStackFrame() != null) {
+		int lineNumber = runtime.getLineNumber();
+		while(runtime.getLineNumber() == lineNumber || runtime.getLineNumber() <= 0) {
+			if(runtime.getCurrentStackFrame() == null) {
+				runningForward = false;
+				return;
+			}
 			engine.stepForward();
-		} else {
-			runningForward = false;
 		}
 	}
 	
@@ -192,10 +212,13 @@ public class Compiler {
 	 * Steps backward through the current program without adding to the queue.
 	 */
 	private void stepBackwardSync() {
-		if(runtime.getCurrentStackFrame() != null) {
+		int lineNumber = runtime.getLineNumber();
+		while(runtime.getLineNumber() == lineNumber || runtime.getLineNumber() <= 0) {
 			engine.stepBackward();
-		} else {
-			runningBackward = false;
+			if(runtime.getUndoStack().getSize() == 0) {
+				runningBackward = false;
+				return;
+			}
 		}
 	}
 }

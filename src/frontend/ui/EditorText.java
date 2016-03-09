@@ -55,6 +55,8 @@ public class EditorText {
 	private final Theme theme = new ThemeSublime();
 	private StyleRange[] syntaxHighlightingRanges = new StyleRange[0];
 	
+	private int debugLineNumber = -1;
+	
 	public EditorText(final EventBus eventBus, Shell shell, Composite parent) {
 		colorCache = new ColorCache(Display.getCurrent());
 
@@ -203,6 +205,11 @@ public class EditorText {
 		});
 		
 		styledText.setFocus();
+	}
+	
+	public void setDebugLineNumber(int lineNumber) {
+		this.debugLineNumber = lineNumber;
+		refreshLineStyles();
 	}
 	
 	private void newline() {
@@ -435,10 +442,13 @@ public class EditorText {
 		styledText.setLineBullet(0, maxLine, null);
 		styledText.setLineBullet(0, maxLine, bullet);
 		
-		// Update current line highlight.
+		// Update current and debug line highlight.
 		int lineCount = styledText.getContent().getLineCount();
 		styledText.setLineBackground(0, lineCount, colorCache.getColor(theme.getBackground()));
 		styledText.setLineBackground(line, 1, colorCache.getColor(47, 48, 42));
+		if(debugLineNumber > 0 && debugLineNumber <= lineCount) {
+			styledText.setLineBackground(debugLineNumber - 1, 1, colorCache.getColor(55, 55, 35));
+		}
 	}
 	
 	/**

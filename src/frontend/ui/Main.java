@@ -24,15 +24,19 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Widget;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import frontend.compiler.CompilerModel;
 import frontend.controller.MainController;
+import frontend.event.CompilerModelChangedEvent;
 import frontend.event.EnabledChangedEvent;
 import frontend.event.ModifiedEvent;
 
@@ -44,6 +48,13 @@ public class Main {
 	private SashForm horizontalSash;
 	private SashForm verticalSash;
 	
+	private Button compileButton;
+	private Button runForwardButton;
+	private Button runBackwardButton;
+	private Button pauseButton;
+	private Button stepBackwardButton;
+	private Button stepForwardButton;
+	
 	private boolean graphicsPane = false;
 	private boolean consolePane = true;
 	
@@ -51,8 +62,8 @@ public class Main {
 		this.shell = shell;
 
 		shell.setLayout(new GridLayout(1, false));
-		Composite top = new Composite(shell, SWT.NONE);
-		Composite bottom = new Composite(shell, SWT.BORDER);
+		final Composite top = new Composite(shell, SWT.NONE);
+		final Composite bottom = new Composite(shell, SWT.BORDER);
 		bottom.setLayout(new FillLayout());
 		bottom.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 		
@@ -72,10 +83,17 @@ public class Main {
 		refreshTitle();
 		setGraphicsPaneVisible(graphicsPane);
 		
+		refreshToolbarEnabled(new CompilerModel());
+		
 		eventBus.register(new Object() {
 			@Subscribe @SuppressWarnings("unused")
 			public void onEnabledChanged(EnabledChangedEvent event) {
 				createMenuBar(shell);
+			}
+			
+			@Subscribe @SuppressWarnings("unused")
+			public void onCompilerModelChanged(CompilerModelChangedEvent event) {
+				refreshToolbarEnabled(event.getCompilerModel());
 			}
 			
 			@Subscribe @SuppressWarnings("unused")
@@ -299,13 +317,13 @@ public class Main {
 		
 		eventBus.post(new EnabledChangedEvent());
 	}
-	
+
 	private void createToolBar(Composite parent) {
 		parent.setLayout(new FillLayout());
 		parent.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL));
 		
-		Button compileButton = new Button(parent, SWT.NONE);
-		compileButton.setText("Compile/Run");
+		compileButton = new Button(parent, SWT.NONE);
+		compileButton.setText("Compile");
 		compileButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				try {
@@ -316,10 +334,33 @@ public class Main {
 			}
 		});
 		
-		final Button stopButton = new Button(parent, SWT.NONE);
-		stopButton.setText("Stop");
-		stopButton.setEnabled(false);
-		stopButton.addSelectionListener(new SelectionAdapter() {
+		runBackwardButton = new Button(parent, SWT.NONE);
+		runBackwardButton.setText("Run Backward");
+		runBackwardButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				try {
+					mainController.runBackward();
+				} catch(Exception e) {
+					displayException(e);
+				}
+			}
+		});
+		
+		stepBackwardButton = new Button(parent, SWT.NONE);
+		stepBackwardButton.setText("Step Backward");
+		stepBackwardButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				try {
+					mainController.stepBackward();
+				} catch(Exception e) {
+					displayException(e);
+				}
+			}
+		});
+		
+		pauseButton = new Button(parent, SWT.NONE);
+		pauseButton.setText("Pause");
+		pauseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				try {
 					mainController.stop();
@@ -328,6 +369,39 @@ public class Main {
 				}
 			}
 		});
+		
+		stepForwardButton = new Button(parent, SWT.NONE);
+		stepForwardButton.setText("Step Forward");
+		stepForwardButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				try {
+					mainController.stepForward();
+				} catch(Exception e) {
+					displayException(e);
+				}
+			}
+		});
+		
+		runForwardButton = new Button(parent, SWT.NONE);
+		runForwardButton.setText("Run Forward");
+		runForwardButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				try {
+					mainController.runForward();
+				} catch(Exception e) {
+					displayException(e);
+				}
+			}
+		});
+	}
+
+	private void refreshToolbarEnabled(CompilerModel compilerModel) {
+		compileButton.setEnabled(compilerModel.isCompileEnabled());
+		runForwardButton.setEnabled(compilerModel.isRunForwardEnabled());
+		runBackwardButton.setEnabled(compilerModel.isRunBackwardEnabled());
+		pauseButton.setEnabled(compilerModel.isPauseEnabled());
+		stepBackwardButton.setEnabled(compilerModel.isStepBackwardEnabled());
+		stepForwardButton.setEnabled(compilerModel.isStepForwardEnabled());
 	}
 	
 	private void displayMessage(String message) {

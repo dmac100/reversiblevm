@@ -3,11 +3,9 @@ package frontend.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.Future;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import backend.runtime.Engine;
@@ -16,6 +14,7 @@ import com.google.common.eventbus.EventBus;
 
 import frontend.compiler.Compiler;
 import frontend.compiler.CompilerModel;
+import frontend.event.CompilerModelChangedEvent;
 import frontend.event.ModifiedEvent;
 import frontend.ui.Callback;
 import frontend.ui.ConsoleText;
@@ -44,13 +43,14 @@ public class MainController {
 		this.graphicsCanvas = graphicsCanvas;
 		this.consoleText = consoleText;
 
-		loadDefaultText();
-		
 		compiler.startQueueThread();
+		
+		loadDefaultText();
 		
 		editorText.setCompileCallback(new Callback<Void>() {
 			public void onCallback(Void param) {
 				compile();
+				runForward();
 			}
 		});
 		
@@ -65,6 +65,7 @@ public class MainController {
 	private void loadDefaultText() {
 		try(InputStream inputStream = Engine.class.getResourceAsStream("/backend/runtime/main.js")) {
 			editorText.setText(IOUtils.toString(inputStream));
+			compile();
 		} catch(IOException e) {
 			throw new RuntimeException("Error reading main.js file", e);
 		}
@@ -105,15 +106,33 @@ public class MainController {
 	}
 	
 	public void setCompilerModel(CompilerModel compilerModel) {
+		editorText.setDebugLineNumber(compilerModel.getLineNumber());
 		consoleText.setOutput(compilerModel.getOutput(), compilerModel.getErrors());
+		eventBus.post(new CompilerModelChangedEvent(compilerModel));
 	}
 	
 	public void compile() {
 		compiler.compile(editorText.getText());
 	}
 	
+	public void runForward() {
+		compiler.runForward();
+	}
+	
+	public void runBackward() {
+		compiler.runBackward();
+	}
+	
+	public void stepBackward() {
+		compiler.stepBackward();
+	}
+	
+	public void stepForward() {
+		compiler.stepForward();
+	}
+	
 	public void stop() {
-		compiler.stop();
+		compiler.pause();
 	}
 
 	public void undo() {

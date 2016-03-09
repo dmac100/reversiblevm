@@ -219,4 +219,16 @@ public class Runtime implements HasState, ValueReadObserver {
 		
 		return s.toString();
 	}
+
+	/**
+	 * Returns the current line number, or -1 if there is none.
+	 */
+	public int getLineNumber() {
+		StackFrame stackFrame = getCurrentStackFrame();
+		if(stackFrame == null) return -1;
+		List<Instruction> instructions = stackFrame.getFunction().getInstructions();
+		if(stackFrame.getInstructionCounter() >= instructions.size()) return -1;
+		Instruction instruction = instructions.get(stackFrame.getInstructionCounter());
+		return instruction.getLineNumber();
+	}
 }
