@@ -165,6 +165,14 @@ public class StepBackwardAfterErrorTest {
 	}
 	
 	@Test
+	public void MemberExpression() {
+		assertStepBackward("x = null; x[0];");
+		assertStepBackward("x[null] = 5;");
+		assertStepBackward("x = null; x.prop;");
+		assertStepBackward("x = null; x.prop = 5;");
+	}
+	
+	@Test
 	public void CallExpression() {
 		assertStepBackward("x = null; x();");
 	}

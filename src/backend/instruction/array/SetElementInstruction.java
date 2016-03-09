@@ -18,6 +18,8 @@ public class SetElementInstruction extends Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
+		runtime.checkDoubleValue(stack.peekValue(1));
+		runtime.checkArrayValue(stack.peekValue(2));
 		Value value = runtime.getStack().popValue(false, true);
 		DoubleValue index = runtime.checkDoubleValue(stack.popValue(false, true));
 		ArrayValue array = runtime.checkArrayValue(stack.popValue(false, true));

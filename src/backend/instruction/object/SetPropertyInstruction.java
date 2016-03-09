@@ -20,6 +20,7 @@ public class SetPropertyInstruction extends Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
+		runtime.checkObjectValue(stack.peekValue(1));
 		Value value = runtime.getStack().popValue(false, true);
 		ObjectValue object = runtime.checkObjectValue(stack.popValue(false, true));
 		object.set(name, value);
