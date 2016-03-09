@@ -62,9 +62,9 @@ public class Compiler {
 			}
 			
 			if(runningForward) {
-				stepForward();
+				stepForwardSync();
 			} else if(runningBackward) {
-				stepBackward();
+				stepBackwardSync();
 			} else {
 				try {
 					// Wait for the next item in the queue.
@@ -148,13 +148,20 @@ public class Compiler {
 	public void stepForward() {
 		runnableQueue.add(new Runnable() {
 			public void run() {
-				if(runtime.getCurrentStackFrame() != null) {
-					engine.stepForward();
-				} else {
-					runningForward = false;
-				}
+				stepForwardSync();
 			}
 		});
+	}
+
+	/**
+	 * Steps forward through the current program without adding to the queue.
+	 */
+	private void stepForwardSync() {
+		if(runtime.getCurrentStackFrame() != null) {
+			engine.stepForward();
+		} else {
+			runningForward = false;
+		}
 	}
 	
 	/**
@@ -163,12 +170,19 @@ public class Compiler {
 	public void stepBackward() {
 		runnableQueue.add(new Runnable() {
 			public void run() {
-				if(runtime.getCurrentStackFrame() != null) {
-					engine.stepBackward();
-				} else {
-					runningBackward = false;
-				}
+				stepBackwardSync();
 			}
 		});
+	}
+	
+	/**
+	 * Steps backward through the current program without adding to the queue.
+	 */
+	private void stepBackwardSync() {
+		if(runtime.getCurrentStackFrame() != null) {
+			engine.stepBackward();
+		} else {
+			runningBackward = false;
+		}
 	}
 }
