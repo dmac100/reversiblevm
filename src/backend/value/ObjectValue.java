@@ -40,12 +40,14 @@ public class ObjectValue extends Value implements HasState {
 			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.put(name, oldValue);
+					valueObserverList.onChangeValue(null);
 				}
 			});
 		} else {
 			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.remove(name);
+					valueObserverList.onChangeValue(null);
 				}
 			});
 		}

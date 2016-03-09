@@ -45,6 +45,7 @@ public class ArrayValue extends Value implements HasState {
 			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.set(index, oldValue);
+					valueObserverList.onChangeValue(null);
 				}
 			});
 		} else {
@@ -54,6 +55,7 @@ public class ArrayValue extends Value implements HasState {
 					while(values.size() > oldSize) {
 						values.remove(values.size() - 1);
 					}
+					valueObserverList.onChangeValue(null);
 				}
 			});
 		}
@@ -68,6 +70,7 @@ public class ArrayValue extends Value implements HasState {
 		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
 				values.remove(values.size() - 1);
+				valueObserverList.onChangeValue(null);
 			}
 		});
 		values.add(value);
@@ -82,6 +85,7 @@ public class ArrayValue extends Value implements HasState {
 			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.add(value);
+					valueObserverList.onChangeValue(null);
 				}
 			});
 			valueObserverList.onChangeValue(null);
@@ -99,6 +103,7 @@ public class ArrayValue extends Value implements HasState {
 		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
 				ArrayValue.this.values = oldValues;
+				valueObserverList.onChangeValue(null);
 			}
 		});
 		this.values = values;
