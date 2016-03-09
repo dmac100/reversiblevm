@@ -3,8 +3,6 @@ package backend.runtime;
 import static backend.runtime.EngineAsserts.assertError;
 import static backend.runtime.EngineAsserts.assertOutput;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 
 public class ParseAndRunTest {
@@ -126,6 +124,7 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void UnaryExpression() {
+		assertError("TypeError: Not a double: false", "print(+false);");
 		assertOutput("5", "print(+5);");
 		assertOutput("-5", "print(-5);");
 		assertOutput("-6", "print(~5);");
