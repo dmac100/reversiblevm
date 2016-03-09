@@ -231,4 +231,15 @@ public class Runtime implements HasState, ValueReadObserver {
 		Instruction instruction = instructions.get(stackFrame.getInstructionCounter());
 		return instruction.getLineNumber();
 	}
+	
+	/**
+	 * Returns the current instruction, or null if there is none.
+	 */
+	public Instruction getInstruction() {
+		StackFrame stackFrame = getCurrentStackFrame();
+		if(stackFrame == null) return null;
+		List<Instruction> instructions = stackFrame.getFunction().getInstructions();
+		if(stackFrame.getInstructionCounter() >= instructions.size()) return null;
+		return instructions.get(stackFrame.getInstructionCounter());
+	}
 }
