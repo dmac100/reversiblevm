@@ -99,6 +99,9 @@ public class UndoStack {
 	public void undo(Runtime runtime) {
 		if(!undoEnabled) return;
 		
+		// Undo commands.
+		undoCommands();
+		
 		if(!instructionCounterUndos.isEmpty()) {
 			// Undo any pop stack frame.
 			if(instructionCounterUndos.get(instructionCounterUndos.size() - 1) == POPSTACKFRAME) {
@@ -118,9 +121,6 @@ public class UndoStack {
 				}
 			}
 		}
-		
-		// Undo commands.
-		undoCommands();
 		
 		// Undo instruction counter changes.
 		if(!instructionCounterUndos.isEmpty()) {

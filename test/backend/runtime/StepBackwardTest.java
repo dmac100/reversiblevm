@@ -410,6 +410,8 @@ public class StepBackwardTest {
 		
 		assertStepBackward("function f(x, y) { print(x, y); }; f(1);");
 		assertStepBackward("function f(x, y) { print(x, y); }; f(1, 2, 3);");
+		
+		assertStepBackward("function f() { var x = 5; } function g() { return f(); } g();");
 	}
 	
 	@Test
