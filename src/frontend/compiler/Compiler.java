@@ -55,6 +55,8 @@ public class Compiler {
 	 * Handles the items in the runnable queue and keeps the vm running.
 	 */
 	private void runQueue() {
+		long lastUiUpdate = 0;
+		
 		while(true) {
 			// Handle all items currently in the queue.
 			while(!runnableQueue.isEmpty()) {
@@ -67,6 +69,8 @@ public class Compiler {
 				stepBackwardSync();
 			} else {
 				try {
+					updateUi();
+					
 					// Wait for the next item in the queue.
 					Runnable runnable = runnableQueue.poll(1, TimeUnit.MINUTES);
 					if(runnable != null) {
@@ -77,7 +81,10 @@ public class Compiler {
 				}
 			}
 			
-			updateUi();
+			if(System.currentTimeMillis() - lastUiUpdate > 100) {
+				lastUiUpdate = System.currentTimeMillis();
+				updateUi();
+			}
 		}
 	}
 
@@ -87,9 +94,15 @@ public class Compiler {
 	private void updateUi() {
 		boolean running = runningBackward || runningForward;
 		
+		int bufferSize = 1000;
+		List<String> output = runtime.getOutput();
+		List<String> errors = runtime.getErrors();
+		output = output.subList(Math.max(0, output.size() - bufferSize), output.size());
+		errors = errors.subList(Math.max(0, errors.size() - bufferSize), errors.size());
+		
 		final CompilerModel compilerModel = new CompilerModel();
-		compilerModel.setOutput(new ArrayList<>(runtime.getOutput()));
-		compilerModel.setErrors(new ArrayList<>(runtime.getErrors()));
+		compilerModel.setOutput(new ArrayList<>(output));
+		compilerModel.setErrors(new ArrayList<>(errors));
 		compilerModel.setLineNumber(-1);
 		compilerModel.setStepBackwardEnabled(!running);
 		compilerModel.setStepForwardEnabled(!running);
