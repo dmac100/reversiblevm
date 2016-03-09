@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.google.common.eventbus.EventBus;
 
 import frontend.compiler.Compiler;
+import frontend.compiler.CompilerModel;
 import frontend.event.ModifiedEvent;
 import frontend.ui.Callback;
 import frontend.ui.ConsoleText;
@@ -29,7 +30,7 @@ public class MainController {
 	private File file = null;
 	private boolean modified = false;
 	
-	private final Compiler compiler = new Compiler();
+	private final Compiler compiler = new Compiler(this);
 	
 	public MainController(Shell shell, final EventBus eventBus, EditorText editorText, GraphicsCanvas graphicsCanvas, ConsoleText consoleText) {
 		this.shell = shell;
@@ -89,6 +90,10 @@ public class MainController {
 		return file;
 	}
 	
+	public void setCompilerModel(CompilerModel compilerModel) {
+		consoleText.setOutput(compilerModel.getOutput(), compilerModel.getErrors());
+	}
+	
 	public void compile() {
 		compiler.compile(editorText.getText());
 	}
@@ -97,20 +102,6 @@ public class MainController {
 		compiler.stop();
 	}
 
-	public void setRunningChangedCallback(Callback<Boolean> callback) {
-		this.runningChangedCallback = callback;
-	}
-	
-	private void fireRunningChanged(final boolean running) {
-		if(runningChangedCallback != null) {
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					runningChangedCallback.onCallback(running);
-				}
-			});
-		}
-	}
-	
 	public void undo() {
 		editorText.getEditFunctions().undo();
 	}

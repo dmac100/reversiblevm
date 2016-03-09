@@ -1,5 +1,8 @@
 package frontend.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
@@ -13,6 +16,8 @@ import org.eclipse.swt.widgets.Display;
 public class ConsoleText {
 	private final StyledText text;
 	private final ColorCache colorCache;
+	
+	private List<String> currentText = new ArrayList<>();
 	
 	public ConsoleText(Composite parent) {
 		text = new StyledText(parent, SWT.WRAP | SWT.V_SCROLL);
@@ -34,8 +39,6 @@ public class ConsoleText {
 
 		colorCache = new ColorCache(Display.getCurrent());
 		text.addDisposeListener(colorCache);
-		
-		clear();
 	}
 	
 	public void selectAll() {
@@ -43,17 +46,22 @@ public class ConsoleText {
 	}
 
 	/**
-	 * Clears the console.
+	 * Sets the whole output of the console.
 	 */
-	public void clear() {
-		text.setText("");
-	}
-	
-	/**
-	 * Appends some text to the end of the console.
-	 */
-	public void append(String newText) {
-		text.append(newText);
-		text.setTopIndex(text.getLineCount() - 1);
+	public void setOutput(List<String> output, List<String> errors) {
+		List<String> newText = new ArrayList<>();
+		newText.addAll(output);
+		newText.addAll(errors);
+		
+		if(!newText.equals(currentText)) {
+			StringBuilder s = new StringBuilder();
+			for(String line:newText) {
+				s.append(line).append("\n");
+			}
+			text.setText(s.toString());
+			currentText = newText;
+			text.setTopIndex(text.getLineCount() - 1);
+		}
 	}
 }
+

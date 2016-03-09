@@ -1,8 +1,13 @@
 package frontend.compiler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
+
+import org.eclipse.swt.widgets.Display;
+
+import frontend.controller.MainController;
 
 import backend.instruction.Instruction;
 import backend.runtime.Engine;
@@ -20,8 +25,12 @@ public class Compiler {
 	
 	private boolean runningForward;
 	private boolean runningBackward;
+
+	private final MainController mainController;
 	
-	public Compiler() {
+	public Compiler(MainController mainController) {
+		this.mainController = mainController;
+		
 		runnableQueue.add(new Runnable() {
 			public void run() {
 				compile("");
@@ -68,9 +77,31 @@ public class Compiler {
 				}
 			}
 			
-			// Send data to the ui.
-			System.out.println(runtime.getOutput());
+			updateUi();
 		}
+	}
+
+	/**
+	 * Sends the state of the vm to the ui.
+	 */
+	private void updateUi() {
+		boolean running = runningBackward || runningForward;
+		
+		final CompilerModel compilerModel = new CompilerModel();
+		compilerModel.setOutput(new ArrayList<>(runtime.getOutput()));
+		compilerModel.setErrors(new ArrayList<>(runtime.getErrors()));
+		compilerModel.setLineNumber(-1);
+		compilerModel.setStepBackwardEnabled(!running);
+		compilerModel.setStepForwardEnabled(!running);
+		compilerModel.setRunEnabled(!running);
+		compilerModel.setStopEnabled(running);
+		compilerModel.setCompileEnabled(true);
+		
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				mainController.setCompilerModel(compilerModel);
+			}
+		});
 	}
 
 	/**

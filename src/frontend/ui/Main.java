@@ -328,12 +328,6 @@ public class Main {
 				}
 			}
 		});
-		
-		mainController.setRunningChangedCallback(new Callback<Boolean>() {
-			public void onCallback(Boolean running) {
-				stopButton.setEnabled(running);
-			}
-		});
 	}
 	
 	private void displayMessage(String message) {
