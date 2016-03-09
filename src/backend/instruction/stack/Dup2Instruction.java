@@ -14,6 +14,10 @@ public class Dup2Instruction extends Instruction {
 		return new Dup2Instruction();
 	}
 	
+	public Instruction copy() {
+		return new Dup2Instruction();
+	}
+	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		Value value1 = stack.popValue(false, false);

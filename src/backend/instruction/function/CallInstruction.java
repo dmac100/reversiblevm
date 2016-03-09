@@ -1,6 +1,7 @@
 package backend.instruction.function;
 
 import backend.instruction.Instruction;
+import backend.instruction.array.CloneReversedArrayInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.value.DoubleValue;
@@ -14,6 +15,10 @@ public class CallInstruction extends Instruction {
 	}
 	
 	public static Instruction Call() {
+		return new CallInstruction();
+	}
+	
+	public Instruction copy() {
 		return new CallInstruction();
 	}
 	

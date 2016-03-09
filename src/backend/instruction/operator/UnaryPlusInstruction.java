@@ -12,6 +12,10 @@ public class UnaryPlusInstruction extends Instruction {
 		return new UnaryPlusInstruction();
 	}
 	
+	public Instruction copy() {
+		return new UnaryPlusInstruction();
+	}
+	
 	public void execute(Runtime runtime) {
 		Stack stack = runtime.getStack();
 		runtime.checkDoubleValue(stack.peekValue(0));

@@ -1,6 +1,7 @@
 package backend.instruction.operator;
 
 import backend.instruction.Instruction;
+import backend.instruction.stack.PopInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -11,6 +12,10 @@ public class NotInstruction extends Instruction {
 	}
 	
 	public static Instruction Not() {
+		return new NotInstruction();
+	}
+	
+	public Instruction copy() {
 		return new NotInstruction();
 	}
 	

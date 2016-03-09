@@ -1,6 +1,7 @@
 package backend.instruction.stack;
 
 import backend.instruction.Instruction;
+import backend.instruction.variable.StoreInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.Stack;
 import backend.value.Value;
@@ -10,6 +11,10 @@ public class Swap2Instruction extends Instruction {
 	}
 	
 	public static Instruction Swap2() {
+		return new Swap2Instruction();
+	}
+	
+	public Instruction copy() {
 		return new Swap2Instruction();
 	}
 	

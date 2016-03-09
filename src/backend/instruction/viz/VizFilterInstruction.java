@@ -1,6 +1,7 @@
 package backend.instruction.viz;
 
 import backend.instruction.Instruction;
+import backend.instruction.operator.UnsignedShiftRightInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.StackFrame;
 import backend.value.BooleanValue;
@@ -14,6 +15,10 @@ public class VizFilterInstruction extends Instruction {
 	
 	public static Instruction VizFilterInstruction() {
 		return new VizFilterInstruction(0);
+	}
+	
+	public Instruction copy() {
+		return new VizFilterInstruction(offset);
 	}
 	
 	public void execute(Runtime runtime) {

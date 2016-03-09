@@ -1,5 +1,6 @@
 package backend.instruction;
 
+import backend.instruction.stack.PopInstruction;
 import backend.runtime.ExecutionException;
 import backend.runtime.Runtime;
 
@@ -8,6 +9,10 @@ public class NopInstruction extends Instruction {
 	}
 	
 	public static Instruction Nop() {
+		return new NopInstruction();
+	}
+	
+	public Instruction copy() {
 		return new NopInstruction();
 	}
 	

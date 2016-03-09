@@ -1,6 +1,7 @@
 package backend.instruction.stack;
 
 import backend.instruction.Instruction;
+import backend.instruction.operator.UnsignedShiftRightInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.Stack;
 import backend.value.Value;
@@ -10,6 +11,10 @@ public class SwapInstruction extends Instruction {
 	}
 	
 	public static Instruction Swap() {
+		return new SwapInstruction();
+	}
+	
+	public Instruction copy() {
 		return new SwapInstruction();
 	}
 	

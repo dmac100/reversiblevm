@@ -1,6 +1,7 @@
 package backend.instruction.jump;
 
 import backend.instruction.Instruction;
+import backend.instruction.operator.MultiplyInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 
@@ -12,6 +13,10 @@ public class LabeledJumpInstruction extends Instruction {
 	}
 	
 	public static Instruction LabeledJump(String label) {
+		return new LabeledJumpInstruction(label);
+	}
+	
+	public Instruction copy() {
 		return new LabeledJumpInstruction(label);
 	}
 	

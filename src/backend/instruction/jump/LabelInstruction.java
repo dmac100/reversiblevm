@@ -1,6 +1,7 @@
 package backend.instruction.jump;
 
 import backend.instruction.Instruction;
+import backend.instruction.operator.AddInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 
@@ -9,6 +10,10 @@ public class LabelInstruction extends Instruction {
 	
 	public LabelInstruction(String label) {
 		this.label = label;
+	}
+	
+	public Instruction copy() {
+		return new LabelInstruction(label);
 	}
 	
 	public static Instruction LabelInstruction(String label) {

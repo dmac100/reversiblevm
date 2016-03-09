@@ -1,6 +1,7 @@
 package backend.instruction.variable;
 
 import backend.instruction.Instruction;
+import backend.instruction.jump.LabeledJumpIfTrueInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.Scope;
 import backend.runtime.Stack;
@@ -10,6 +11,10 @@ public class StoreInstruction extends Instruction {
 
 	public StoreInstruction(String name) {
 		this.name = name;
+	}
+	
+	public Instruction copy() {
+		return new StoreInstruction(name);
 	}
 	
 	public String getName() {

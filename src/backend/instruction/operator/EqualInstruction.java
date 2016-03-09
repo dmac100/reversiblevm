@@ -1,6 +1,7 @@
 package backend.instruction.operator;
 
 import backend.instruction.Instruction;
+import backend.instruction.array.GetElementInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -17,6 +18,10 @@ public class EqualInstruction extends Instruction {
 	}
 	
 	public static Instruction Equal() {
+		return new EqualInstruction();
+	}
+	
+	public Instruction copy() {
 		return new EqualInstruction();
 	}
 	

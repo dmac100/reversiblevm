@@ -1,6 +1,7 @@
 package backend.instruction.operator;
 
 import backend.instruction.Instruction;
+import backend.instruction.object.NewObjectInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -11,6 +12,10 @@ public class MultiplyInstruction extends Instruction {
 	}
 	
 	public static Instruction Multiply() {
+		return new MultiplyInstruction();
+	}
+	
+	public Instruction copy() {
 		return new MultiplyInstruction();
 	}
 	

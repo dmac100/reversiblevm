@@ -1,6 +1,7 @@
 package backend.instruction.object;
 
 import backend.instruction.Instruction;
+import backend.instruction.operator.GreaterThanEqualInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -17,6 +18,10 @@ public class GetPropertyInstruction extends Instruction {
 	}
 	
 	public static Instruction GetProperty(String name) {
+		return new GetPropertyInstruction(name);
+	}
+	
+	public Instruction copy() {
 		return new GetPropertyInstruction(name);
 	}
 	

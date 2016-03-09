@@ -1,6 +1,7 @@
 package backend.instruction.object;
 
 import backend.instruction.Instruction;
+import backend.instruction.operator.ShiftLeftInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -15,6 +16,10 @@ public class SetPropertyInstruction extends Instruction {
 	}
 	
 	public static Instruction SetProperty(String name) {
+		return new SetPropertyInstruction(name);
+	}
+	
+	public Instruction copy() {
 		return new SetPropertyInstruction(name);
 	}
 	

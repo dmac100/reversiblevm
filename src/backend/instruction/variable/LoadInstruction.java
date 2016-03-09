@@ -12,6 +12,10 @@ public class LoadInstruction extends Instruction {
 		this.name = name;
 	}
 	
+	public Instruction copy() {
+		return new LoadInstruction(name);
+	}
+	
 	public String getName() {
 		return name;
 	}

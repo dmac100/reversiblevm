@@ -3,6 +3,7 @@ package backend.instruction.function;
 import java.util.List;
 
 import backend.instruction.Instruction;
+import backend.instruction.variable.StoreInstruction;
 import backend.runtime.ExecutionException;
 import backend.runtime.Runtime;
 import backend.value.FunctionValue;
@@ -17,6 +18,10 @@ public class StartFunctionInstruction extends Instruction {
 	}
 	
 	public static Instruction StartFunction(int paramCount) {
+		return new StartFunctionInstruction(paramCount);
+	}
+	
+	public Instruction copy() {
 		return new StartFunctionInstruction(paramCount);
 	}
 	

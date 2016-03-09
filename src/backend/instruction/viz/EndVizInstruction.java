@@ -13,6 +13,10 @@ public class EndVizInstruction extends Instruction {
 		return new EndVizInstruction();
 	}
 	
+	public Instruction copy() {
+		return new EndVizInstruction();
+	}
+	
 	public void execute(Runtime runtime) {
 	}
 	

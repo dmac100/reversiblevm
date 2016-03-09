@@ -15,6 +15,10 @@ public class GreaterThanEqualInstruction extends Instruction {
 		return new GreaterThanEqualInstruction();
 	}
 	
+	public Instruction copy() {
+		return new GreaterThanEqualInstruction();
+	}
+	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		runtime.checkDoubleValue(stack.peekValue(0));

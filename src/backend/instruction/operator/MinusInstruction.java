@@ -14,6 +14,10 @@ public class MinusInstruction extends Instruction {
 		return new MinusInstruction();
 	}
 	
+	public Instruction copy() {
+		return new MinusInstruction();
+	}
+	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		runtime.checkDoubleValue(stack.peekValue(0));

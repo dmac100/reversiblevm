@@ -16,6 +16,10 @@ public class AddInstruction extends Instruction {
 		return new AddInstruction();
 	}
 	
+	public Instruction copy() {
+		return new AddInstruction();
+	}
+	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		Value value2 = stack.peekValue(0);

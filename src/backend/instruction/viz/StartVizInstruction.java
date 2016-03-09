@@ -3,6 +3,7 @@ package backend.instruction.viz;
 import java.util.List;
 
 import backend.instruction.Instruction;
+import backend.instruction.operator.UnaryMinusInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.VizObjectInstructions;
 import backend.value.FunctionValue;
@@ -12,6 +13,10 @@ public class StartVizInstruction extends Instruction {
 	}
 	
 	public static Instruction StartVizInstruction() {
+		return new StartVizInstruction();
+	}
+	
+	public Instruction copy() {
 		return new StartVizInstruction();
 	}
 	

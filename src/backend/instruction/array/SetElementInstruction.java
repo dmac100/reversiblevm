@@ -1,6 +1,7 @@
 package backend.instruction.array;
 
 import backend.instruction.Instruction;
+import backend.instruction.variable.StoreInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -13,6 +14,10 @@ public class SetElementInstruction extends Instruction {
 	}
 	
 	public static Instruction GetElementInstruction() {
+		return new SetElementInstruction();
+	}
+	
+	public Instruction copy() {
 		return new SetElementInstruction();
 	}
 	

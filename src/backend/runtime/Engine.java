@@ -85,6 +85,7 @@ public class Engine {
 		}
 		List<Instruction> instructions = result.valueStack.pop().getInstructions();
 		instructions = new Optimizer().optimize(instructions);
+		instructions = Instruction.copyInstructions(instructions);
 		for(int i = 0; i < instructions.size(); i++) {
 			instructions.get(i).setInstructionNumber((short) i);
 		}

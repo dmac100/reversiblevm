@@ -14,6 +14,9 @@ public class LessThanEqualInstruction extends Instruction {
 	public static Instruction LessThanEqual() {
 		return new LessThanEqualInstruction();
 	}
+	public Instruction copy() {
+		return new LessThanEqualInstruction();
+	}
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();

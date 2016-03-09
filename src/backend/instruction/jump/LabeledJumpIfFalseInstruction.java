@@ -1,6 +1,7 @@
 package backend.instruction.jump;
 
 import backend.instruction.Instruction;
+import backend.instruction.operator.AddInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 
@@ -12,6 +13,10 @@ public class LabeledJumpIfFalseInstruction extends Instruction {
 	}
 	
 	public static Instruction LabeledJumpIfFalse(String label) {
+		return new LabeledJumpIfFalseInstruction(label);
+	}
+	
+	public Instruction copy() {
 		return new LabeledJumpIfFalseInstruction(label);
 	}
 	

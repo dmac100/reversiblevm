@@ -1,6 +1,7 @@
 package backend.instruction.operator;
 
 import backend.instruction.Instruction;
+import backend.instruction.array.CloneReversedArrayInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -11,6 +12,10 @@ public class BitwiseXorInstruction extends Instruction {
 	}
 	
 	public static Instruction BitwiseXor() {
+		return new BitwiseXorInstruction();
+	}
+	
+	public Instruction copy() {
 		return new BitwiseXorInstruction();
 	}
 	

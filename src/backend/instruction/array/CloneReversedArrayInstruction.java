@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import backend.instruction.Instruction;
+import backend.instruction.stack.DupInstruction;
 import backend.runtime.Runtime;
 import backend.value.ArrayValue;
 import backend.value.Value;
@@ -13,6 +14,10 @@ public class CloneReversedArrayInstruction extends Instruction {
 	}
 	
 	public static Instruction CloneReversedArrayInstruction() {
+		return new CloneReversedArrayInstruction();
+	}
+	
+	public Instruction copy() {
 		return new CloneReversedArrayInstruction();
 	}
 	

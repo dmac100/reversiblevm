@@ -11,6 +11,10 @@ public class LocalInstruction extends Instruction {
 		this.name = name;
 	}
 	
+	public Instruction copy() {
+		return new LocalInstruction(name);
+	}
+	
 	public static Instruction Local(String value) {
 		return new LocalInstruction(value);
 	}

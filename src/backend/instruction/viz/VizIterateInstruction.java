@@ -1,6 +1,7 @@
 package backend.instruction.viz;
 
 import backend.instruction.Instruction;
+import backend.instruction.operator.AndInstruction;
 import backend.runtime.NonGlobalScope;
 import backend.runtime.Runtime;
 import backend.runtime.StackFrame;
@@ -23,6 +24,10 @@ public class VizIterateInstruction extends Instruction {
 	
 	public static Instruction VizIterateInstruction(String name) {
 		return new VizIterateInstruction(name);
+	}
+	
+	public Instruction copy() {
+		return new VizIterateInstruction(name, offset);
 	}
 	
 	public String getName() {

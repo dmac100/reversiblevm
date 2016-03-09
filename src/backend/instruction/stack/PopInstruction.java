@@ -11,6 +11,10 @@ public class PopInstruction extends Instruction {
 		return new PopInstruction();
 	}
 	
+	public Instruction copy() {
+		return new PopInstruction();
+	}
+	
 	public void execute(Runtime runtime) {
 		runtime.getStack().popValue(false, true);
 	}

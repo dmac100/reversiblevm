@@ -1,6 +1,7 @@
 package backend.instruction.operator;
 
 import backend.instruction.Instruction;
+import backend.instruction.stack.PopInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -11,6 +12,10 @@ public class OrInstruction extends Instruction {
 	}
 	
 	public static Instruction Or() {
+		return new OrInstruction();
+	}
+	
+	public Instruction copy() {
 		return new OrInstruction();
 	}
 	

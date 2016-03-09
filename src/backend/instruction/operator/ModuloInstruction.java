@@ -14,6 +14,10 @@ public class ModuloInstruction extends Instruction {
 		return new ModuloInstruction();
 	}
 	
+	public Instruction copy() {
+		return new ModuloInstruction();
+	}
+	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		runtime.checkDoubleValue(stack.peekValue(0));

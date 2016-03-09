@@ -4,6 +4,7 @@ import java.util.List;
 
 import backend.runtime.Runtime;
 import backend.instruction.Instruction;
+import backend.instruction.variable.StoreInstruction;
 import backend.runtime.VizObject;
 
 public class SetVizPropertyInstruction extends Instruction {
@@ -14,6 +15,10 @@ public class SetVizPropertyInstruction extends Instruction {
 	}
 	
 	public static Instruction SetVizPropertyInstruction(String name) {
+		return new SetVizPropertyInstruction(name);
+	}
+	
+	public Instruction copy() {
 		return new SetVizPropertyInstruction(name);
 	}
 	

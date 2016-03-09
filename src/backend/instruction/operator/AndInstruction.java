@@ -14,6 +14,10 @@ public class AndInstruction extends Instruction {
 		return new AndInstruction();
 	}
 	
+	public Instruction copy() {
+		return new AndInstruction();
+	}
+	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		runtime.checkBooleanValue(stack.peekValue(0));

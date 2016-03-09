@@ -7,7 +7,6 @@ import static backend.instruction.array.NewArrayInstruction.NewArray;
 import static backend.instruction.array.PushElementInstruction.PushElement;
 import static backend.instruction.function.CallInstruction.Call;
 import static backend.instruction.function.EndFunctionInstruction.EndFunction;
-import static backend.instruction.function.ReturnInstruction.Return;
 import static backend.instruction.function.StartFunctionInstruction.StartFunction;
 import static backend.instruction.jump.JumpIfFalseInstruction.JumpIfFalse;
 import static backend.instruction.jump.JumpIfTrueInstruction.JumpIfTrue;
@@ -54,7 +53,9 @@ import static backend.value.DoubleValue.Value;
 import static backend.value.NullValue.NullValue;
 import static backend.value.StringValue.Value;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.parboiled.BaseParser;
@@ -963,14 +964,16 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Instructions addLineNumbers(Instructions instructions, short lineNumber, short columnNumber) {
-		for(Instruction instruction:instructions.getInstructions()) {
+		List<Instruction> newInstructions = Instruction.copyInstructions(instructions.getInstructions());
+		
+		for(Instruction instruction:newInstructions) {
 			if(instruction.getLineNumber() <= 0) {
 				instruction.setLineNumber(lineNumber);
 				instruction.setColumnNumber(columnNumber);
 			}
 		}
 		
-		return instructions;
+		return new Instructions(newInstructions);
 	}
 	
 	public Instructions Instructions() {

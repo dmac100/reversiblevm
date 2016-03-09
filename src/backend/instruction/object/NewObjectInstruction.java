@@ -1,6 +1,7 @@
 package backend.instruction.object;
 
 import backend.instruction.Instruction;
+import backend.instruction.array.NewArrayInstruction;
 import backend.runtime.Runtime;
 import backend.value.ObjectValue;
 
@@ -9,6 +10,10 @@ public class NewObjectInstruction extends Instruction {
 	}
 	
 	public static Instruction NewObject() {
+		return new NewObjectInstruction();
+	}
+	
+	public Instruction copy() {
 		return new NewObjectInstruction();
 	}
 	

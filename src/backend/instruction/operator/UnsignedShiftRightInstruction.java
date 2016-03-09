@@ -1,6 +1,7 @@
 package backend.instruction.operator;
 
 import backend.instruction.Instruction;
+import backend.instruction.viz.VizIterateInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -11,6 +12,10 @@ public class UnsignedShiftRightInstruction extends Instruction {
 	}
 	
 	public static Instruction UnsignedShiftRight() {
+		return new UnsignedShiftRightInstruction();
+	}
+	
+	public Instruction copy() {
 		return new UnsignedShiftRightInstruction();
 	}
 	

@@ -1,6 +1,7 @@
 package backend.instruction.array;
 
 import backend.instruction.Instruction;
+import backend.instruction.object.GetPropertyInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -12,6 +13,10 @@ public class GetElementInstruction extends Instruction {
 	}
 	
 	public static Instruction GetElementInstruction() {
+		return new GetElementInstruction();
+	}
+	
+	public Instruction copy() {
 		return new GetElementInstruction();
 	}
 	

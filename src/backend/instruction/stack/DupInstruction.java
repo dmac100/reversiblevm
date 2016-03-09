@@ -1,6 +1,7 @@
 package backend.instruction.stack;
 
 import backend.instruction.Instruction;
+import backend.instruction.function.EndFunctionInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -11,6 +12,10 @@ public class DupInstruction extends Instruction {
 	}
 	
 	public static Instruction Dup() {
+		return new DupInstruction();
+	}
+	
+	public Instruction copy() {
 		return new DupInstruction();
 	}
 	

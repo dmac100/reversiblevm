@@ -15,6 +15,10 @@ public class NewVizObjectInstruction extends Instruction {
 		return new NewVizObjectInstruction(name);
 	}
 	
+	public Instruction copy() {
+		return new NewVizObjectInstruction(name);
+	}
+	
 	public void execute(Runtime runtime) {
 		runtime.getCurrentVizObjects().add(new VizObject(name));
 	}

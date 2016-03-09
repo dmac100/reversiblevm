@@ -15,6 +15,10 @@ public class LabeledJumpIfTrueInstruction extends Instruction {
 		return new LabeledJumpIfTrueInstruction(label);
 	}
 	
+	public Instruction copy() {
+		return new LabeledJumpIfTrueInstruction(label);
+	}
+	
 	public void execute(Runtime runtime) throws ExecutionException {
 		throw new ExecutionException("Not implemented");
 	}

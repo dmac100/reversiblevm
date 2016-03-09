@@ -14,6 +14,10 @@ public class BitwiseNotInstruction extends Instruction {
 		return new BitwiseNotInstruction();
 	}
 	
+	public Instruction copy() {
+		return new BitwiseNotInstruction();
+	}
+	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		runtime.checkDoubleValue(stack.peekValue(0));

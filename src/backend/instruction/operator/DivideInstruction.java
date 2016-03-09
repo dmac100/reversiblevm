@@ -1,6 +1,7 @@
 package backend.instruction.operator;
 
 import backend.instruction.Instruction;
+import backend.instruction.stack.DupInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -11,6 +12,10 @@ public class DivideInstruction extends Instruction {
 	}
 	
 	public static Instruction Divide() {
+		return new DivideInstruction();
+	}
+	
+	public Instruction copy() {
 		return new DivideInstruction();
 	}
 	

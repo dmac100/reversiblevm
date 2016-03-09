@@ -1,6 +1,7 @@
 package backend.instruction.operator;
 
 import backend.instruction.Instruction;
+import backend.instruction.jump.JumpIfFalseInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.Stack;
@@ -12,6 +13,10 @@ public class GreaterThanInstruction extends Instruction {
 	}
 	
 	public static Instruction GreaterThan() {
+		return new GreaterThanInstruction();
+	}
+	
+	public Instruction copy() {
 		return new GreaterThanInstruction();
 	}
 	

@@ -1,6 +1,7 @@
 package backend.instruction.stack;
 
 import backend.instruction.Instruction;
+import backend.instruction.variable.StoreInstruction;
 import backend.runtime.Runtime;
 import backend.value.Value;
 
@@ -12,6 +13,10 @@ public class PushInstruction extends Instruction {
 	}
 	
 	public static Instruction Push(Value value) {
+		return new PushInstruction(value);
+	}
+	
+	public Instruction copy() {
 		return new PushInstruction(value);
 	}
 	

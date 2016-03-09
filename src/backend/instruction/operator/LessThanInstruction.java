@@ -15,6 +15,10 @@ public class LessThanInstruction extends Instruction {
 		return new LessThanInstruction();
 	}
 	
+	public Instruction copy() {
+		return new LessThanInstruction();
+	}
+	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		runtime.checkDoubleValue(stack.peekValue(0));

@@ -1,6 +1,7 @@
 package backend.instruction.jump;
 
 import backend.instruction.Instruction;
+import backend.instruction.operator.AddInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
 import backend.runtime.StackFrame;
@@ -13,6 +14,10 @@ public class JumpInstruction extends Instruction {
 	}
 	
 	public static Instruction Jump(int offset) {
+		return new JumpInstruction(offset);
+	}
+	
+	public Instruction copy() {
 		return new JumpInstruction(offset);
 	}
 	

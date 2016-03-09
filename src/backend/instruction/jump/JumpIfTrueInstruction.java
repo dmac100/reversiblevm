@@ -18,6 +18,10 @@ public class JumpIfTrueInstruction extends Instruction {
 		return new JumpIfTrueInstruction(offset);
 	}
 	
+	public Instruction copy() {
+		return new JumpIfTrueInstruction(offset);
+	}
+	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		runtime.checkBooleanValue(stack.peekValue(0));
