@@ -2,11 +2,15 @@ package frontend.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.Future;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+
+import backend.runtime.Engine;
 
 import com.google.common.eventbus.EventBus;
 
@@ -39,6 +43,8 @@ public class MainController {
 		this.editorText = editorText;
 		this.graphicsCanvas = graphicsCanvas;
 		this.consoleText = consoleText;
+
+		loadDefaultText();
 		
 		compiler.startQueueThread();
 		
@@ -54,6 +60,14 @@ public class MainController {
 				eventBus.post(new ModifiedEvent(modified));
 			}
 		});
+	}
+
+	private void loadDefaultText() {
+		try(InputStream inputStream = Engine.class.getResourceAsStream("/backend/runtime/main.js")) {
+			editorText.setText(IOUtils.toString(inputStream));
+		} catch(IOException e) {
+			throw new RuntimeException("Error reading main.js file", e);
+		}
 	}
 
 	public void open(String selected) throws IOException {
