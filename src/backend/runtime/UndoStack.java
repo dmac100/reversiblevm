@@ -47,15 +47,10 @@ public class UndoStack {
 		commandUndos.add(command);
 	}
 	
-	public void addInstructionCounterUndo(int instructionCounter) {
-		if(!undoEnabled) return;
-		
-		instructionCounterUndos.add(instructionCounter);
-	}
-	
 	public void addPopStackFrameUndo(StackFrame stackFrame) {
 		if(!undoEnabled) return;
 		
+		instructionCounterUndos.add(POPSTACKFRAME);
 		popStackFrameUndos.add(stackFrame);
 	}
 	
@@ -153,10 +148,11 @@ public class UndoStack {
 		}
 	}
 
-	public void saveUndoPoint() {
+	public void saveUndoPoint(int currentIstructionPointer) {
 		if(!undoEnabled) return;
 		
 		commandUndos.add(UNDOPOINT);
+		instructionCounterUndos.add(currentIstructionPointer);
 	}
 	
 	public String getState() {

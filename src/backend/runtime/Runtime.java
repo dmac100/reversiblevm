@@ -33,8 +33,7 @@ public class Runtime implements HasState, ValueReadObserver {
 	 * Runs all the given instructions within a new stack frame.
 	 */
 	public void runInstructions(List<Instruction> instructions) {
-		undoStack.saveUndoPoint();
-		undoStack.addInstructionCounterUndo(getCurrentStackFrame().getInstructionCounter());
+		undoStack.saveUndoPoint(getCurrentStackFrame().getInstructionCounter());
 		addStackFrame(new FunctionValue(getScope(), 0, instructions));
 		
 		int stackFrameCount = stackFrames.size();
@@ -47,8 +46,7 @@ public class Runtime implements HasState, ValueReadObserver {
 	public void runNextInstruction() {
 		if(getCurrentStackFrame() == null) return;
 		
-		undoStack.saveUndoPoint();
-		undoStack.addInstructionCounterUndo(getCurrentStackFrame().getInstructionCounter());
+		undoStack.saveUndoPoint(getCurrentStackFrame().getInstructionCounter());
 		
 		StackFrame frame = getCurrentStackFrame();
 		FunctionValue function = frame.getFunction();
@@ -116,7 +114,6 @@ public class Runtime implements HasState, ValueReadObserver {
 	
 	public StackFrame popStackFrame() {
 		if(stackFrames.isEmpty()) return null;
-		undoStack.addInstructionCounterUndo(UndoStack.POPSTACKFRAME);
 		stackFrames.get(stackFrames.size() - 1).getFunction().clearVizObjectInstructions();
 		undoStack.addPopStackFrameUndo(stackFrames.get(stackFrames.size() - 1));
 		return stackFrames.remove(stackFrames.size() - 1);

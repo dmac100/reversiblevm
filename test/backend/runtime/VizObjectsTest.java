@@ -200,7 +200,6 @@ public class VizObjectsTest {
 		
 		// Add some dummy values to the undo stack so that it's not empty.
 		runtime.getUndoStack().addCommandUndo(null);
-		runtime.getUndoStack().addInstructionCounterUndo(5);
 		runtime.getUndoStack().addPopStackFrameUndo(null);
 		runtime.getUndoStack().addPopValueUndo(null);
 		
