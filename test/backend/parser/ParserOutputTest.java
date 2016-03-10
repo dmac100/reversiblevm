@@ -448,10 +448,6 @@ public class ParserOutputTest {
 			System.out.println("VALUE STACK ITEM: " + value);
 		}
 		
-		for(Instruction instruction:actualInstructions.getInstructions()) {
-			assertTrue(instruction.getLineNumber() > 0 && instruction.getColumnNumber() > 0);
-		}
-		
 		assertEquals(expected, actual);
 	}
 }
