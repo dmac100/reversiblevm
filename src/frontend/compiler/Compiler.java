@@ -8,7 +8,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.swt.widgets.Display;
 
 import backend.instruction.Instruction;
+import backend.runtime.CompileException;
 import backend.runtime.Engine;
+import backend.runtime.ExecutionException;
 import backend.runtime.Runtime;
 import frontend.controller.MainController;
 
@@ -123,14 +125,16 @@ public class Compiler {
 	public void compile(final String program) {
 		runnableQueue.add(new Runnable() {
 			public void run() {
-				List<Instruction> instructions = Engine.compile(program);
 				runtime = new Runtime();
-				engine = new Engine(runtime, instructions);
+				engine = new Engine(runtime, new ArrayList<Instruction>());
 				runningForward = false;
 				runningBackward = false;
-				
-				for(Instruction instruction:instructions) {
-					System.out.println(instruction + " - " + instruction.getLineNumber());
+					
+				try {
+					List<Instruction> instructions = Engine.compile(program);
+					engine = new Engine(runtime, instructions);
+				} catch(CompileException e) {
+					runtime.throwError(e.getMessage());
 				}
 			}
 		});
@@ -187,13 +191,18 @@ public class Compiler {
 	 * Steps forward through the current program without adding to the queue.
 	 */
 	private void stepForwardSync() {
-		int lineNumber = runtime.getLineNumber();
-		while(runtime.getLineNumber() == lineNumber || runtime.getLineNumber() <= 0) {
-			if(runtime.getCurrentStackFrame() == null) {
-				runningForward = false;
-				return;
+		try {
+			int lineNumber = runtime.getLineNumber();
+			while(runtime.getLineNumber() == lineNumber || runtime.getLineNumber() <= 0) {
+				if(runtime.getCurrentStackFrame() == null) {
+					runningForward = false;
+					return;
+				}
+				engine.stepForward();
 			}
-			engine.stepForward();
+		} catch(ExecutionException e) {
+			runtime.throwError(e.getMessage());
+			runningForward = false;
 		}
 	}
 	
@@ -212,13 +221,18 @@ public class Compiler {
 	 * Steps backward through the current program without adding to the queue.
 	 */
 	private void stepBackwardSync() {
-		int lineNumber = runtime.getLineNumber();
-		while(runtime.getLineNumber() == lineNumber || runtime.getLineNumber() <= 0) {
-			engine.stepBackward();
-			if(runtime.getUndoStack().getSize() == 0) {
-				runningBackward = false;
-				return;
+		try {
+			int lineNumber = runtime.getLineNumber();
+			while(runtime.getLineNumber() == lineNumber || runtime.getLineNumber() <= 0) {
+				engine.stepBackward();
+				if(runtime.getUndoStack().getSize() == 0) {
+					runningBackward = false;
+					return;
+				}
 			}
+		} catch(ExecutionException e) {
+			runtime.throwError(e.getMessage());
+			runningBackward = false;
 		}
 	}
 }

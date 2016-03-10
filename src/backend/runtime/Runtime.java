@@ -100,7 +100,7 @@ public class Runtime implements HasState, ValueReadObserver {
 		System.err.println("Error: " + error);
 		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
-				errors.remove(output.size() - 1);
+				errors.remove(errors.size() - 1);
 			}
 		});
 		errors.add(error);
