@@ -473,6 +473,8 @@ public class Main {
 	}
 	
 	public static void main(String[] args) {
+		System.setProperty("line.separator", "\n");
+		
 		Display display = new Display();
 
 		Shell shell = new Shell(display);
