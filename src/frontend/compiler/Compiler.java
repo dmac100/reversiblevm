@@ -1,5 +1,6 @@
 package frontend.compiler;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -31,14 +32,9 @@ public class Compiler {
 	
 	public Compiler(MainController mainController) {
 		this.mainController = mainController;
-		
-		runnableQueue.add(new Runnable() {
-			public void run() {
-				compile("");
-			}
-		});
+		compileEmpty();
 	}
-	
+
 	/**
 	 * Starts a thread to handle the items posted to the runnable queue.
 	 */
@@ -50,6 +46,19 @@ public class Compiler {
 		});
 		thread.setDaemon(true);
 		thread.start();
+
+		// Restart thread on exception.
+		thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+			public void uncaughtException(Thread t, Throwable e) {
+				runnableQueue.clear();
+				compileEmpty();
+				
+				e.printStackTrace();
+				startQueueThread();
+				
+				addError("Error: " + e.getMessage());
+			}
+		});
 	}
 	
 	/**
@@ -119,6 +128,27 @@ public class Compiler {
 		});
 	}
 
+	private void addError(final String error) {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				runtime.throwError(error);
+			}
+		});
+	}
+	
+	/**
+	 * Compiles an empty program.
+	 */
+	private void compileEmpty() {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				compile("");
+				runningForward = false;
+				runningBackward = false;
+			}
+		});
+	}
+	
 	/**
 	 * Compiles the given program.
 	 */
