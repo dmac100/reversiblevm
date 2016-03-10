@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -61,7 +62,24 @@ public class ConsoleText {
 			text.setText(s.toString());
 			currentText = newText;
 			text.setTopIndex(text.getLineCount() - 1);
+			
+			highlightErrors(errors);
 		}
+	}
+
+	private void highlightErrors(List<String> errors) {
+		int errorLength = 0;
+		for(String line:errors) {
+			errorLength += line.length() + 1;
+		}
+		
+		StyleRange range = new StyleRange();
+		range.start = text.getText().length() - errorLength;
+		range.length = errorLength;
+		range.fontStyle = SWT.NONE;
+		range.foreground = text.getDisplay().getSystemColor(SWT.COLOR_RED);
+		
+		text.setStyleRange(range);
 	}
 }
 
