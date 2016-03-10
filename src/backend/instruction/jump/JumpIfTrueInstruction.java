@@ -20,6 +20,7 @@ public class JumpIfTrueInstruction extends Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
+		runtime.checkBooleanValue(stack.peekValue(0));
 		BooleanValue value = runtime.checkBooleanValue(stack.popValue(false, true));
 		if(value.getValue()) {
 			StackFrame stackFrame = runtime.getCurrentStackFrame();

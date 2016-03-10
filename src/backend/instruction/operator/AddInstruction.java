@@ -18,12 +18,18 @@ public class AddInstruction extends Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		Value value2 = stack.popValue(false, true);
-		Value value1 = stack.popValue(false, true);
+		Value value2 = stack.peekValue(0);
+		Value value1 = stack.peekValue(1);
 		if(value1 instanceof StringValue || value2 instanceof StringValue) {
 			String value = value1.toString() + value2.toString();
+			stack.popValue(false, true);
+			stack.popValue(false, true);
 			stack.push(StringValue.Value(value), false);
 		} else {
+			runtime.checkDoubleValue(value1);
+			runtime.checkDoubleValue(value2);
+			stack.popValue(false, true);
+			stack.popValue(false, true);
 			double sum = runtime.checkDoubleValue(value1).getValue() + runtime.checkDoubleValue(value2).getValue();
 			stack.push(DoubleValue.Value(sum), false);
 		}

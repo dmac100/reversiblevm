@@ -96,12 +96,28 @@ public class UndoStack {
 		runtime.getStack().push(value, false);
 	}
 
-	public void undo(Runtime runtime) {
+	public void undo(Runtime runtime, boolean undoInstruction) {
 		if(!undoEnabled) return;
 		
-		// Undo commands.
 		undoCommands();
-		
+		undoPopStackFrames(runtime);
+		if(undoInstruction) {
+			undoInstruction(runtime);
+		}
+		undoInstructionCounterChange(runtime);
+	}
+	
+	public void undoCommands() {
+		while(!commandUndos.isEmpty()) {
+			Runnable command = commandUndos.remove(commandUndos.size() - 1);
+			if(command == UNDOPOINT) {
+				break;
+			}
+			command.run();
+		}
+	}
+
+	private void undoPopStackFrames(Runtime runtime) {
 		if(!instructionCounterUndos.isEmpty()) {
 			// Undo any pop stack frame.
 			if(instructionCounterUndos.get(instructionCounterUndos.size() - 1) == POPSTACKFRAME) {
@@ -109,9 +125,13 @@ public class UndoStack {
 				StackFrame stackFrame = popStackFrameUndos.remove(popStackFrameUndos.size() - 1);
 				runtime.addStackFrame(stackFrame, false);
 			}
-			
+		}
+	}
+	
+	private void undoInstruction(Runtime runtime) {
+		if(!instructionCounterUndos.isEmpty()) {
 			int instructionCounter = instructionCounterUndos.get(instructionCounterUndos.size() - 1);
-			
+		
 			// Undo instruction.
 			StackFrame stackFrame = runtime.getCurrentStackFrame();
 			if(stackFrame != null) {
@@ -121,23 +141,15 @@ public class UndoStack {
 				}
 			}
 		}
-		
+	}
+	
+	private void undoInstructionCounterChange(Runtime runtime) {
 		// Undo instruction counter changes.
 		if(!instructionCounterUndos.isEmpty()) {
 			int instructionCounter = instructionCounterUndos.removeAt(instructionCounterUndos.size() - 1);
 			if(runtime.getCurrentStackFrame() != null) {
 				runtime.getCurrentStackFrame().setInstructionCounter(instructionCounter);
 			}
-		}
-	}
-
-	public void undoCommands() {
-		while(!commandUndos.isEmpty()) {
-			Runnable command = commandUndos.remove(commandUndos.size() - 1);
-			if(command == UNDOPOINT) {
-				break;
-			}
-			command.run();
 		}
 	}
 

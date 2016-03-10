@@ -47,6 +47,10 @@ public class Stack implements HasState {
 		return (Value) value;
 	}
 	
+	public Value peekValue(int n) {
+		return stack.get(stack.size() - 1 - n);
+	}
+	
 	public String toString() {
 		return stack.toString();
 	}

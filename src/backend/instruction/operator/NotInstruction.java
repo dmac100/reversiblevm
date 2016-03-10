@@ -16,6 +16,7 @@ public class NotInstruction extends Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
+		runtime.checkBooleanValue(stack.peekValue(0));
 		BooleanValue value = runtime.checkBooleanValue(stack.popValue(false, false));
 		stack.push(BooleanValue.Value(!value.getValue()), false);
 	}

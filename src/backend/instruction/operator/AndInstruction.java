@@ -16,6 +16,8 @@ public class AndInstruction extends Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
+		runtime.checkBooleanValue(stack.peekValue(0));
+		runtime.checkBooleanValue(stack.peekValue(1));
 		BooleanValue value2 = runtime.checkBooleanValue(stack.popValue(false, true));
 		BooleanValue value1 = runtime.checkBooleanValue(stack.popValue(false, true));
 		stack.push(BooleanValue.Value(value1.getValue() && value2.getValue()), false);

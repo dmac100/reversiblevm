@@ -16,6 +16,8 @@ public class MinusInstruction extends Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
+		runtime.checkDoubleValue(stack.peekValue(0));
+		runtime.checkDoubleValue(stack.peekValue(1));
 		DoubleValue value2 = runtime.checkDoubleValue(stack.popValue(false, true));
 		DoubleValue value1 = runtime.checkDoubleValue(stack.popValue(false, true));
 		stack.push(DoubleValue.Value(value1.getValue() - value2.getValue()), false);

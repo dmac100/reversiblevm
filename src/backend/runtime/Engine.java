@@ -68,12 +68,17 @@ public class Engine {
 		}
 
 		Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
-		instruction.execute(runtime);
+		try {
+			instruction.execute(runtime);
+		} catch(ExecutionException e) {
+			runtime.getUndoStack().undo(runtime, false);
+			throw e;
+		}
 		frame.setInstructionCounter(frame.getInstructionCounter() + 1);
 	}
 	
 	public void stepBackward() {
-		runtime.getUndoStack().undo(runtime);
+		runtime.getUndoStack().undo(runtime, true);
 	}
 
 	public static List<Instruction> parseFile(String name) {

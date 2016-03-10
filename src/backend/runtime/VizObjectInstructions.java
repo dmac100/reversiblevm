@@ -10,6 +10,8 @@ import backend.instruction.viz.VizIterateInstruction;
 import backend.observer.ValueChangeObservable;
 import backend.observer.ValueChangeObserver;
 import backend.observer.ValueReadObserver;
+import backend.value.ArrayValue;
+import backend.value.BooleanValue;
 import backend.value.FunctionValue;
 import backend.value.Value;
 
@@ -51,14 +53,19 @@ public class VizObjectInstructions implements ValueChangeObserver {
 			}
 		});
 		
-		executeInstructions(runtime, instructions, executedInstructions);
-		
-		runtime.clearValueReadObservers();
-		
-		Collections.reverse(executedInstructions);
-		for(Instruction instruction:executedInstructions) {
-			instruction.undo(runtime);
+		try {
+			executeInstructions(runtime, instructions, executedInstructions);
+		} catch(ExecutionException e) {
 			runtime.getUndoStack().undoCommands();
+			throw e;
+		} finally {
+			runtime.clearValueReadObservers();
+		
+			Collections.reverse(executedInstructions);
+			for(Instruction instruction:executedInstructions) {
+				instruction.undo(runtime);
+				runtime.getUndoStack().undoCommands();
+			}
 		}
 		
 		for(ValueChangeObservable valueChangeObservable:valueChangeObservables) {
@@ -79,17 +86,20 @@ public class VizObjectInstructions implements ValueChangeObserver {
 	private void executeInstructions(Runtime runtime, List<Instruction> instructions, List<Instruction> executedInstructions) {
 		for(int i = 0; i < instructions.size(); i++) {
 			Instruction instruction = instructions.get(i);
-			executedInstructions.add(instruction);
 			runtime.getUndoStack().saveUndoPoint();
 
 			if(instruction instanceof VizIterateInstruction) {
 				String name = ((VizIterateInstruction)instruction).getName();
-				Value array = runtime.getStack().popValue(false, true);
+				
+				runtime.checkArrayValue(runtime.getStack().peekValue(0));
+				ArrayValue array = runtime.checkArrayValue(runtime.getStack().popValue(false, true));
 				
 				runtime.addStackFrame(new FunctionValue(runtime.getScope(), 0, new ArrayList<Instruction>()));
 				runtime.getScope().create(name);
 				
-				for(Value value:runtime.checkArrayValue(array).values(runtime)) {
+				executedInstructions.add(instruction);
+				
+				for(Value value:array.values(runtime)) {
 					runtime.getScope().set(name, value);
 					executeInstructions(runtime, instructions.subList(i + 1, instructions.size()), executedInstructions);
 				}
@@ -98,13 +108,17 @@ public class VizObjectInstructions implements ValueChangeObserver {
 			}
 			
 			if(instruction instanceof VizFilterInstruction) {
-				Value condition = runtime.getStack().popValue(false, true);
-				if(!runtime.checkBooleanValue(condition).getValue()) {
+				runtime.checkBooleanValue(runtime.getStack().peekValue(0));
+				BooleanValue condition = runtime.checkBooleanValue(runtime.getStack().popValue(false, true));
+				
+				if(!condition.getValue()) {
+					executedInstructions.add(instruction);
 					return;
 				}
 			}
 
 			instruction.execute(runtime);
+			executedInstructions.add(instruction);
 		}
 	}
 
