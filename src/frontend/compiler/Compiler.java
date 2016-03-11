@@ -2,7 +2,9 @@ package frontend.compiler;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +29,7 @@ public class Compiler {
 	
 	private boolean runningForward;
 	private boolean runningBackward;
+	private Set<Instruction> lineBreakpoints = new HashSet<>();
 
 	private final MainController mainController;
 	
@@ -145,6 +148,7 @@ public class Compiler {
 				compile("");
 				runningForward = false;
 				runningBackward = false;
+				lineBreakpoints.clear();
 			}
 		});
 	}
@@ -159,6 +163,7 @@ public class Compiler {
 				engine = new Engine(runtime, new ArrayList<Instruction>());
 				runningForward = false;
 				runningBackward = false;
+				lineBreakpoints.clear();
 					
 				try {
 					List<Instruction> instructions = Engine.compile(program);
@@ -223,6 +228,7 @@ public class Compiler {
 	private void stepForwardSync() {
 		try {
 			int lineNumber = runtime.getLineNumber();
+			
 			while(runtime.getLineNumber() == lineNumber || runtime.getLineNumber() <= 0) {
 				if(runtime.getCurrentStackFrame() == null) {
 					runningForward = false;
@@ -230,6 +236,8 @@ public class Compiler {
 				}
 				engine.stepForward();
 			}
+			
+			lineBreakpoints.add(runtime.getInstruction());
 		} catch(ExecutionException e) {
 			runtime.throwError(e.getMessage());
 			runningForward = false;
@@ -252,8 +260,9 @@ public class Compiler {
 	 */
 	private void stepBackwardSync() {
 		try {
-			int lineNumber = runtime.getLineNumber();
-			while(runtime.getLineNumber() == lineNumber || runtime.getLineNumber() <= 0) {
+			engine.stepBackward();
+			
+			while(!lineBreakpoints.contains(runtime.getInstruction())) {
 				engine.stepBackward();
 				if(runtime.getUndoStack().getSize() == 0) {
 					runningBackward = false;
