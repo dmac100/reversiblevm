@@ -145,10 +145,7 @@ public class Compiler {
 	private void compileEmpty() {
 		runnableQueue.add(new Runnable() {
 			public void run() {
-				compile("");
-				runningForward = false;
-				runningBackward = false;
-				lineBreakpoints.clear();
+				compileSync("");
 			}
 		});
 	}
@@ -159,20 +156,27 @@ public class Compiler {
 	public void compile(final String program) {
 		runnableQueue.add(new Runnable() {
 			public void run() {
-				runtime = new Runtime();
-				engine = new Engine(runtime, new ArrayList<Instruction>());
-				runningForward = false;
-				runningBackward = false;
-				lineBreakpoints.clear();
-					
-				try {
-					List<Instruction> instructions = Engine.compile(program);
-					engine = new Engine(runtime, instructions);
-				} catch(CompileException e) {
-					runtime.throwError(e.getMessage());
-				}
+				compileSync(program);
 			}
 		});
+	}
+	
+	/**
+	 * Compiles the given program without adding to the queue.
+	 */
+	private void compileSync(String program) {
+		runtime = new Runtime();
+		engine = new Engine(runtime, new ArrayList<Instruction>());
+		runningForward = false;
+		runningBackward = false;
+		lineBreakpoints.clear();
+			
+		try {
+			List<Instruction> instructions = Engine.compile(program);
+			engine = new Engine(runtime, instructions);
+		} catch(CompileException e) {
+			runtime.throwError(e.getMessage());
+		}
 	}
 
 	/**
