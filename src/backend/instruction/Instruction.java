@@ -5,6 +5,7 @@ import backend.runtime.Runtime;
 
 public abstract class Instruction {
 	private short lineNumber;
+	private short instructionNumber;
 	private short columnNumber;
 	
 	public short getLineNumber() {
@@ -15,6 +16,14 @@ public abstract class Instruction {
 		this.lineNumber = lineNumber;
 	}
 	
+	public short getInstructionNumber() {
+		return instructionNumber;
+	}
+
+	public void setInstructionNumber(short instructionNumber) {
+		this.instructionNumber = instructionNumber;
+	}
+
 	public short getColumnNumber() {
 		return columnNumber;
 	}
