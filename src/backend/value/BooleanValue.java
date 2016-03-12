@@ -3,7 +3,7 @@ package backend.value;
 import java.util.Set;
 
 public class BooleanValue extends Value {
-	private boolean value;
+	private final boolean value;
 	
 	public BooleanValue(boolean value) {
 		this.value = value;

@@ -116,6 +116,7 @@ public class Compiler {
 		final CompilerModel compilerModel = new CompilerModel();
 		compilerModel.setOutput(new ArrayList<>(output));
 		compilerModel.setErrors(new ArrayList<>(errors));
+		compilerModel.setVizObjects(runtime.getVizObjects());
 		compilerModel.setLineNumber(runtime.getLineNumber());
 		compilerModel.setStepBackwardEnabled(!running);
 		compilerModel.setStepForwardEnabled(!running);

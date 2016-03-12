@@ -3,9 +3,12 @@ package frontend.compiler;
 import java.util.ArrayList;
 import java.util.List;
 
+import backend.runtime.VizObject;
+
 public class CompilerModel {
 	private List<String> output = new ArrayList<>();
 	private List<String> errors = new ArrayList<>();
+	private List<VizObject> vizObjects = new ArrayList<>();
 	private int lineNumber = -1;
 	private boolean stepForwardEnabled = true;
 	private boolean stepBackwardEnabled = true;
@@ -30,6 +33,14 @@ public class CompilerModel {
 		this.errors = errors;
 	}
 	
+	public List<VizObject> getVizObjects() {
+		return vizObjects;
+	}
+
+	public void setVizObjects(List<VizObject> vizObjects) {
+		this.vizObjects = vizObjects;
+	}
+
 	public int getLineNumber() {
 		return lineNumber;
 	}

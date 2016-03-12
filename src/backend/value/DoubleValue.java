@@ -3,7 +3,7 @@ package backend.value;
 import java.util.Set;
 
 public class DoubleValue extends Value {
-	private double value;
+	private final double value;
 	
 	public DoubleValue(double value) {
 		this.value = value;

@@ -108,6 +108,7 @@ public class MainController {
 	public void setCompilerModel(CompilerModel compilerModel) {
 		editorText.setDebugLineNumber(compilerModel.getLineNumber());
 		consoleText.setOutput(compilerModel.getOutput(), compilerModel.getErrors());
+		graphicsCanvas.setVizObjects(compilerModel.getVizObjects());
 		eventBus.post(new CompilerModelChangedEvent(compilerModel));
 	}
 	
