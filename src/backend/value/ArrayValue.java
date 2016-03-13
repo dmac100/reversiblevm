@@ -99,7 +99,7 @@ public class ArrayValue extends Value implements HasState {
 	}
 	
 	public void setValues(List<Value> values) {
-		final List<Value> oldValues = new ArrayList<>(values);
+		final List<Value> oldValues = new ArrayList<>(this.values);
 		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
 				ArrayValue.this.values = oldValues;
