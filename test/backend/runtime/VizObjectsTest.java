@@ -257,13 +257,11 @@ public class VizObjectsTest {
 		
 		// Save initial state.
 		String initialState = runtime.getState();
-		String initialUndoStack = runtime.getUndoStack().getState();
 		
 		// Run viz object instructions.
 		new VizObjectInstructions(runtime, instructions).updateObjects();
 		
 		// Check that the state is the same.
-		assertEquals(initialUndoStack, runtime.getUndoStack().getState());
 		assertEquals(initialState, runtime.getState());
 	}
 }

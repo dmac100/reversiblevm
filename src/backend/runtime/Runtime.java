@@ -267,7 +267,9 @@ public class Runtime implements HasState, ValueReadObserver {
 		}
 		s.append("  NestedFunctionDefinitionCount: " + nestedFunctionDefinitionCount).append("\n");
 		s.append("  Errors: " + errors).append("\n");
-		s.append("  Output: " + output);
+		s.append("  Output: " + output).append("\n");
+		s.append("  UndoStack: ").append("\n");
+		s.append(undoStack.getState("    "));
 		
 		return s.toString();
 	}

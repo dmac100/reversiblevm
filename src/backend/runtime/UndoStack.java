@@ -155,14 +155,14 @@ public class UndoStack {
 		instructionCounterUndos.add(currentIstructionPointer);
 	}
 	
-	public String getState() {
+	public String getState(String prefix) {
 		StringBuilder s = new StringBuilder();
-		s.append("Command Undos: " + commandUndos.size()).append("\n");
-		s.append("Instruction Counter Undos: " + instructionCounterUndos.size()).append("\n");
-		s.append("Pop Stack Frame Undos: " + popStackFrameUndos.size()).append("\n");
-		s.append("Pop Value Undos: " + popValueUndos.size()).append("\n");
-		s.append("Pop Double Value Undos: " + popDoubleValueUndos.size()).append("\n");
-		s.append("Pop Value Undo Types: " + popValueUndoTypes.size()).append("\n");
+		s.append(prefix).append("Command Undos: " + commandUndos.size()).append("\n");
+		s.append(prefix).append("Instruction Counter Undos: " + instructionCounterUndos.size()).append("\n");
+		s.append(prefix).append("Pop Stack Frame Undos: " + popStackFrameUndos.size()).append("\n");
+		s.append(prefix).append("Pop Value Undos: " + popValueUndos.size()).append("\n");
+		s.append(prefix).append("Pop Double Value Undos: " + popDoubleValueUndos.size()).append("\n");
+		s.append(prefix).append("Pop Value Undo Types: " + popValueUndoTypes.size());
 		return s.toString();
 	}
 	
