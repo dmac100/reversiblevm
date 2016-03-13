@@ -32,12 +32,15 @@ public class GetPropertyInstruction extends Instruction {
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		
-		Value value = stack.popValue(false, true);
+		Value value = stack.peekValue(0);
 		if(value instanceof ObjectValue) {
-			runtime.getStack().push(((ObjectValue)value).get(name, runtime), false);
+			ObjectValue objectValue = runtime.checkObjectValue(stack.popValue(false, true));
+			runtime.getStack().push(objectValue.get(name, runtime), false);
 		} else if(value instanceof ArrayValue) {
+			ArrayValue arrayValue = runtime.checkArrayValue(stack.popValue(false, true));
 			runtime.getStack().push(runtime.checkObjectValue(runtime.getScope().get("ArrayProto", runtime)).get(name, runtime), false);
 		} else if(value instanceof StringValue) {
+			StringValue stringValue = runtime.checkStringValue(stack.popValue(false, true));
 			runtime.getStack().push(runtime.checkObjectValue(runtime.getScope().get("StringProto", runtime)).get(name, runtime), false);
 		} else {
 			throw new ExecutionException("TypeError: Not an object: " + value);
