@@ -118,10 +118,10 @@ public class Compiler {
 		compilerModel.setErrors(new ArrayList<>(errors));
 		compilerModel.setVizObjects(runtime.getVizObjects());
 		compilerModel.setLineNumber(runtime.getLineNumber());
-		compilerModel.setStepBackwardEnabled(!running);
-		compilerModel.setStepForwardEnabled(!running);
-		compilerModel.setRunForwardEnabled(!running);
-		compilerModel.setRunBackwardEnabled(!running);
+		compilerModel.setStepBackwardEnabled(!running && !runtime.atStart());
+		compilerModel.setStepForwardEnabled(!running && !runtime.atEnd());
+		compilerModel.setRunBackwardEnabled(!running && !runtime.atStart());
+		compilerModel.setRunForwardEnabled(!running && !runtime.atEnd());
 		compilerModel.setPauseEnabled(running);
 		compilerModel.setCompileEnabled(true);
 		
