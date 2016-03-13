@@ -148,13 +148,6 @@ public class StepBackwardAfterErrorTest {
 	}
 	
 	@Test
-	public void VizStatement() {
-		assertStepBackward("print(1); @for(x <- null) rect(x: 1); print(2);");
-		assertStepBackward("print(1); @for(x <- null) rect(x: 1); print(2);");
-		assertStepBackward("print(1); @for(x <- [1], null) rect(x: 1); print(2);");
-	}
-	
-	@Test
 	public void MemberExpression() {
 		assertStepBackward("x = null; x[0];");
 		assertStepBackward("x[null] = 5;");

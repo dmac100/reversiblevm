@@ -54,7 +54,6 @@ public class VizObjectInstructions implements ValueChangeObserver {
 			
 			runtime.getUndoStack().undo(runtime, false);
 		} catch(ExecutionException e) {
-			runtime.getUndoStack().undo(runtime, false);
 			throw e;
 		} finally {
 			runtime.clearValueReadObservers();

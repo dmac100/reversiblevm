@@ -381,6 +381,10 @@ public class StepBackwardTest {
 		assertStepBackward("print(1); function f() { return 1; }; @for(x <- [1]) rect(x: f()); print(2);");
 		assertStepBackward("print(1); a = [1, 2]; @for(i <- a) rect(x: i); print(2);");
 		assertStepBackward("print(1); for(var i = 0; i < 3; i++) @rect(x: i); print(2);");
+		
+		assertStepBackward("print(1); @for(x <- null) rect(x: 1); print(2);");
+		assertStepBackward("print(1); @for(x <- null) rect(x: 1); print(2);");
+		assertStepBackward("print(1); @for(x <- [1], null) rect(x: 1); print(2);");
 	}
 	
 	@Test
