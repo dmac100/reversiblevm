@@ -50,7 +50,7 @@ public class StackFrame implements HasState {
 	
 	public void updateVizObjects() {
 		for(VizObjectInstructions vizObjectInstructions:vizObjectInstructionsList) {
-			vizObjectInstructions.updateObjects();
+			vizObjectInstructions.onValueChanged();
 		}
 	}
 	

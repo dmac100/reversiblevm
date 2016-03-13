@@ -379,6 +379,8 @@ public class StepBackwardTest {
 		assertStepBackward("print(1); @for(x <- [1]) rect(x: 1); print(2);");
 		
 		assertStepBackward("print(1); function f() { return 1; }; @for(x <- [1]) rect(x: f()); print(2);");
+		
+		assertStepBackward("print(1); a = [1, 2]; @for(i <- a) rect(x: i); print(2);");
 	}
 	
 	@Test
@@ -454,6 +456,31 @@ public class StepBackwardTest {
 	}
 
 	private static void assertStepBackward(String program) {
+		assertStepBackward(program, getProgramLength(program));
+	}
+	
+	private static void assertStepBackwardAllLengths(String program) {
+		int maxLength = getProgramLength(program);
+		for(int length = 0; length <= maxLength; length++) {
+			assertStepBackward(program, length);
+		}
+	}
+	
+	private static int getProgramLength(String program) {
+		Runtime runtime = new Runtime();
+		Engine engine = new Engine(runtime, Engine.compile(program));
+		
+		int length = 0;
+		
+		while(runtime.getCurrentStackFrame() != null) {
+			engine.stepForward();
+			length++;
+		}
+		
+		return length;
+	}
+
+	private static void assertStepBackward(String program, int length) {
 		Runtime runtime = new Runtime();
 		List<Instruction> instructions = Engine.compile(program);
 		
@@ -462,7 +489,7 @@ public class StepBackwardTest {
 		ArrayList<String> states = new ArrayList<>();
 		
 		states.add(runtime.getState());
-		while(runtime.getCurrentStackFrame() != null) {
+		for(int s = 0; s < length; s++) {
 			engine.stepForward();
 			states.add(runtime.getState());
 		}

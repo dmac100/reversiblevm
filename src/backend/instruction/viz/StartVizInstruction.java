@@ -27,7 +27,6 @@ public class StartVizInstruction extends Instruction {
 		
 		final VizObjectInstructions vizObjectInstructions = new VizObjectInstructions(runtime, instructions);
 		stackFrame.addVizObjectInstructions(vizObjectInstructions);
-		vizObjectInstructions.updateObjects();
 		
 		runtime.getUndoStack().addCommandUndo(new Runnable() {
 			public void run() {

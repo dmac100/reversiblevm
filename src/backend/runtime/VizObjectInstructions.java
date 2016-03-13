@@ -14,12 +14,14 @@ public class VizObjectInstructions implements ValueChangeObserver {
 	private final List<VizObject> vizObjects = new ArrayList<>();
 	private final List<ValueChangeObservable> activeObservers = new ArrayList<>();
 	
+	private boolean dirty = true;
+	
 	public VizObjectInstructions(Runtime runtime, List<Instruction> instructions) {
 		this.runtime = runtime;
 		this.instructions = new ArrayList<>(instructions);
 	}
 
-	public void updateObjects() {
+	protected void updateObjects() {
 		boolean undoStackEnabled = runtime.getUndoStack().isUndoEnabled();
 		runtime.getUndoStack().setUndoEnabled(true);
 		
@@ -78,11 +80,15 @@ public class VizObjectInstructions implements ValueChangeObserver {
 	}
 
 	public List<VizObject> getVizObjects() {
+		if(dirty) {
+			updateObjects();
+			dirty = false;
+		}
 		return vizObjects;
 	}
 
 	@Override
 	public void onValueChanged() {
-		updateObjects();
+		dirty = true;
 	}
 }
