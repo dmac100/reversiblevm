@@ -1,5 +1,7 @@
 package frontend.compiler;
 
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,6 +11,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.swt.widgets.Display;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 import backend.instruction.Instruction;
 import backend.runtime.CompileException;
@@ -78,8 +82,10 @@ public class Compiler {
 			
 			if(runningForward) {
 				stepForwardSync();
+				sleepUninterruptibly(3, TimeUnit.MILLISECONDS);
 			} else if(runningBackward) {
 				stepBackwardSync();
+				sleepUninterruptibly(3, TimeUnit.MILLISECONDS);
 			} else {
 				try {
 					updateUi();
@@ -94,7 +100,7 @@ public class Compiler {
 				}
 			}
 			
-			if(System.currentTimeMillis() - lastUiUpdate > 100) {
+			if(System.currentTimeMillis() - lastUiUpdate > 50) {
 				lastUiUpdate = System.currentTimeMillis();
 				updateUi();
 			}
