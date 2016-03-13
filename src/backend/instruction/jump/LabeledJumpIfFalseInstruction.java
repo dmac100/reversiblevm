@@ -33,6 +33,6 @@ public class LabeledJumpIfFalseInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "LABELEDJUMPIFFALSE: " + label;
+		return super.toString() + "LABELEDJUMPIFFALSE: " + label;
 	}
 }

@@ -34,6 +34,6 @@ public class BitwiseOrInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "BITWISEOR";
+		return super.toString() + "BITWISEOR";
 	}
 }

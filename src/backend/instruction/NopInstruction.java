@@ -23,6 +23,6 @@ public class NopInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "NOP";
+		return super.toString() + "NOP";
 	}
 }

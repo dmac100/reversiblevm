@@ -38,6 +38,6 @@ public class SetElementInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "SETELEMENT";
+		return super.toString() + "SETELEMENT";
 	}
 }

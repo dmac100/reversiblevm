@@ -35,6 +35,10 @@ public abstract class Instruction {
 		this.columnNumber = columnNumber;
 	}
 	
+	public String toString() {
+		return "";
+	}
+	
 	public static List<Instruction> copyInstructions(List<Instruction> instructions) {
 		List<Instruction> newInstructions = new ArrayList<>();
 		for(Instruction instruction:instructions) {

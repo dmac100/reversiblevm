@@ -25,6 +25,6 @@ public class ReturnInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "RETURN";
+		return super.toString() + "RETURN";
 	}
 }

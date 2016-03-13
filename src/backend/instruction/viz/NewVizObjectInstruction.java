@@ -27,6 +27,6 @@ public class NewVizObjectInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "NEWVIZOBJECT: " + name;
+		return super.toString() + "NEWVIZOBJECT: " + name;
 	}
 }

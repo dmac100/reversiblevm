@@ -33,6 +33,6 @@ public class LabeledJumpInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "LABELEDJUMP: " + label;
+		return super.toString() + "LABELEDJUMP: " + label;
 	}
 }

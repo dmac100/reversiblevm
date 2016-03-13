@@ -25,6 +25,6 @@ public class UnaryPlusInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "UNARYPLUS";
+		return super.toString() + "UNARYPLUS";
 	}
 }

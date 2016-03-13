@@ -34,6 +34,6 @@ public class LessThanEqualInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "LESSTHANEQUAL";
+		return super.toString() + "LESSTHANEQUAL";
 	}
 }

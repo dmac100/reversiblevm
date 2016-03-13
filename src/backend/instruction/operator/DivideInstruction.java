@@ -35,6 +35,6 @@ public class DivideInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "DIVIDE";
+		return super.toString() + "DIVIDE";
 	}
 }

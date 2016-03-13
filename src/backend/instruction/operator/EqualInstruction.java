@@ -57,6 +57,6 @@ public class EqualInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "EQUAL";
+		return super.toString() + "EQUAL";
 	}
 }

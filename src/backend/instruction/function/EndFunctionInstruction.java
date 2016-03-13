@@ -23,6 +23,6 @@ public class EndFunctionInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "ENDFUNCTION";
+		return super.toString() + "ENDFUNCTION";
 	}
 }

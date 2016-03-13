@@ -31,6 +31,6 @@ public class UnaryMinusInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "UNARYMINUS";
+		return super.toString() + "UNARYMINUS";
 	}
 }

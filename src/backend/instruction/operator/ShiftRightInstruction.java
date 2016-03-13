@@ -35,6 +35,6 @@ public class ShiftRightInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "SHIFTRIGHT";
+		return super.toString() + "SHIFTRIGHT";
 	}
 }

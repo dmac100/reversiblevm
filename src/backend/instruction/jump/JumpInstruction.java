@@ -34,6 +34,6 @@ public class JumpInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "JUMP: " + offset;
+		return super.toString() + "JUMP: " + offset;
 	}
 }

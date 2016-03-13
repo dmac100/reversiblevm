@@ -31,6 +31,6 @@ public class LabelInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "LABEL: " + label;
+		return super.toString() + "LABEL: " + label;
 	}
 }

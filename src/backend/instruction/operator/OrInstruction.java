@@ -35,6 +35,6 @@ public class OrInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "OR";
+		return super.toString() + "OR";
 	}
 }

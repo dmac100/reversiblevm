@@ -46,6 +46,6 @@ public class AddInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "ADD";
+		return super.toString() + "ADD";
 	}
 }

@@ -57,6 +57,6 @@ public class CallInstruction extends Instruction {
 	}
 
 	public String toString() {
-		return "CALL";
+		return super.toString() + "CALL";
 	}
 }

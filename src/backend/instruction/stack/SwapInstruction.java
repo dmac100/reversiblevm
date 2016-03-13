@@ -35,6 +35,6 @@ public class SwapInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "SWAP";
+		return super.toString() + "SWAP";
 	}
 }

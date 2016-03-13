@@ -35,6 +35,6 @@ public class VizFilterInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "VIZFILTER: " + offset;
+		return super.toString() + "VIZFILTER: " + offset;
 	}
 }

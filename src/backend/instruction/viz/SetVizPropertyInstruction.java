@@ -33,6 +33,6 @@ public class SetVizPropertyInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "SETVIZPROPERTY: " + name;
+		return super.toString() + "SETVIZPROPERTY: " + name;
 	}
 }

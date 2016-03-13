@@ -47,6 +47,6 @@ public class StartFunctionInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "STARTFUNCTION: " + paramCount;
+		return super.toString() + "STARTFUNCTION: " + paramCount;
 	}
 }

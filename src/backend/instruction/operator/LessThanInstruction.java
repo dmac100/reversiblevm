@@ -35,6 +35,6 @@ public class LessThanInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "LESSTHAN";
+		return super.toString() + "LESSTHAN";
 	}
 }

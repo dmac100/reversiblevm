@@ -29,6 +29,6 @@ public class PushInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "PUSH: " + value;
+		return super.toString() + "PUSH: " + value;
 	}
 }

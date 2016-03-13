@@ -43,6 +43,6 @@ public class StartVizInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "STARTVIZ";
+		return super.toString() + "STARTVIZ";
 	}
 }

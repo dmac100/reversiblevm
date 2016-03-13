@@ -33,6 +33,6 @@ public class PushElementInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "PUSHELEMENT";
+		return super.toString() + "PUSHELEMENT";
 	}
 }

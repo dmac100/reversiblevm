@@ -32,6 +32,6 @@ public class BitwiseNotInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "BITWISENOT";
+		return super.toString() + "BITWISENOT";
 	}
 }

@@ -51,6 +51,6 @@ public class VizIterateInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "VIZITERATE: " + name + ", " + offset;
+		return super.toString() + "VIZITERATE: " + name + ", " + offset;
 	}
 }

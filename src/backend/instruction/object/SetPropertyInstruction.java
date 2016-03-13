@@ -37,6 +37,6 @@ public class SetPropertyInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "SETPROPERTY: " + name;
+		return super.toString() + "SETPROPERTY: " + name;
 	}
 }

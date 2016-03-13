@@ -28,6 +28,6 @@ public class LocalInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "LOCAL: " + name;
+		return super.toString() + "LOCAL: " + name;
 	}
 }

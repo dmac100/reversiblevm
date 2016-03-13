@@ -31,6 +31,6 @@ public class DupInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "DUP";
+		return super.toString() + "DUP";
 	}
 }

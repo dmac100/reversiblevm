@@ -35,6 +35,6 @@ public class GreaterThanEqualInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "GREATERTHANEQUAL";
+		return super.toString() + "GREATERTHANEQUAL";
 	}
 }

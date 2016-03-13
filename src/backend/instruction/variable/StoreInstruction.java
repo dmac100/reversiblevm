@@ -36,6 +36,6 @@ public class StoreInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "STORE: " + name;
+		return super.toString() + "STORE: " + name;
 	}
 }

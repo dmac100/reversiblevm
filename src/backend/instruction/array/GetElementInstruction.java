@@ -36,6 +36,6 @@ public class GetElementInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "GETELEMENT";
+		return super.toString() + "GETELEMENT";
 	}
 }

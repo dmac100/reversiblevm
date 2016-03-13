@@ -35,6 +35,6 @@ public class LoadInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "LOAD: " + name;
+		return super.toString() + "LOAD: " + name;
 	}
 }

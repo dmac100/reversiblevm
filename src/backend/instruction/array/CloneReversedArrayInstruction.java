@@ -37,6 +37,6 @@ public class CloneReversedArrayInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "CLONEREVERSEDARRAY";
+		return super.toString() + "CLONEREVERSEDARRAY";
 	}
 }

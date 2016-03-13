@@ -34,6 +34,6 @@ public class MinusInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "MINUS";
+		return super.toString() + "MINUS";
 	}
 }

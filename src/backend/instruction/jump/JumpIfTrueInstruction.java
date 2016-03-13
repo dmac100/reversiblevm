@@ -41,6 +41,6 @@ public class JumpIfTrueInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "JUMPIFTRUE: " + offset;
+		return super.toString() + "JUMPIFTRUE: " + offset;
 	}
 }

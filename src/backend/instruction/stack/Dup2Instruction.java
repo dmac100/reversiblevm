@@ -34,6 +34,6 @@ public class Dup2Instruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "DUP2";
+		return super.toString() + "DUP2";
 	}
 }

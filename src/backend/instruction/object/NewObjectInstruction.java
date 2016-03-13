@@ -28,6 +28,6 @@ public class NewObjectInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "NEWOBJECT";
+		return super.toString() + "NEWOBJECT";
 	}
 }

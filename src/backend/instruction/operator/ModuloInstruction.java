@@ -34,6 +34,6 @@ public class ModuloInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "MODULO";
+		return super.toString() + "MODULO";
 	}
 }

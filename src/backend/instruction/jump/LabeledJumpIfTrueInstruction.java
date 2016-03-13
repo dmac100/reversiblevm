@@ -32,6 +32,6 @@ public class LabeledJumpIfTrueInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "LABELEDJUMPIFTRUE: " + label;
+		return super.toString() + "LABELEDJUMPIFTRUE: " + label;
 	}
 }

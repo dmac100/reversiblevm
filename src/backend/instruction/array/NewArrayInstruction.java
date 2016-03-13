@@ -26,6 +26,6 @@ public class NewArrayInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "NEWARRAY";
+		return super.toString() + "NEWARRAY";
 	}
 }

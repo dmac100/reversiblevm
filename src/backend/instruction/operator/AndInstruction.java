@@ -34,6 +34,6 @@ public class AndInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "AND";
+		return super.toString() + "AND";
 	}
 }

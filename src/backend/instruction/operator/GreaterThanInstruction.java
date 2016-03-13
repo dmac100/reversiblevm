@@ -36,6 +36,6 @@ public class GreaterThanInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "GREATERTHAN";
+		return super.toString() + "GREATERTHAN";
 	}
 }

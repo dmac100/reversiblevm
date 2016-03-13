@@ -24,6 +24,6 @@ public class PopInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "POP";
+		return super.toString() + "POP";
 	}
 }

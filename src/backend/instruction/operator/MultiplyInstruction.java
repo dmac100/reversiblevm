@@ -35,6 +35,6 @@ public class MultiplyInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "MULTIPLY";
+		return super.toString() + "MULTIPLY";
 	}
 }

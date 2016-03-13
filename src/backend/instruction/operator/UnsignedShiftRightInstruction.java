@@ -35,6 +35,6 @@ public class UnsignedShiftRightInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "UNSIGNEDSHIFTRIGHT";
+		return super.toString() + "UNSIGNEDSHIFTRIGHT";
 	}
 }

@@ -53,6 +53,6 @@ public class GetPropertyInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "GETPROPERTY: " + name;
+		return super.toString() + "GETPROPERTY: " + name;
 	}
 }

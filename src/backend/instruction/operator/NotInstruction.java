@@ -33,6 +33,6 @@ public class NotInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "NOT";
+		return super.toString() + "NOT";
 	}
 }

@@ -24,6 +24,6 @@ public class EndVizInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "ENDVIZ";
+		return super.toString() + "ENDVIZ";
 	}
 }

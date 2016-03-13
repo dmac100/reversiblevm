@@ -35,6 +35,6 @@ public class BitwiseXorInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return "BITWISEXOR";
+		return super.toString() + "BITWISEXOR";
 	}
 }
