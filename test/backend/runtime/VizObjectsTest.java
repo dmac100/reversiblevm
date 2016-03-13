@@ -68,6 +68,16 @@ public class VizObjectsTest {
 	}
 	
 	@Test
+	public void normalForLoop() {
+		assertVizObjects("for(var x = 0; x < 3; x++) @rect(x: x);", Arrays.asList(
+			Arrays.asList("rect(x: 0)"),
+			Arrays.asList("rect(x: 1)"),
+			Arrays.asList("rect(x: 2)"),
+			Arrays.asList("rect(x: 3)")
+		));
+	}
+	
+	@Test
 	public void forLoopWithConditional() {
 		assertVizObjects("var a = [1, 2, 3]; @for(x <- a, x >= 2) rect(x: x);", Arrays.asList(
 			Arrays.asList("rect(x: 2)", "rect(x: 3)")
