@@ -110,6 +110,20 @@ public class Runtime implements HasState, ValueReadObserver {
 		return instructions;
 	}
 	
+	/**
+	 * Returns whether the current instruction position is at the start of the program.
+	 */
+	public boolean atStart() {
+		return undoStack.getSize() == 0;
+	}
+
+	/**
+	 * Returns whether the current instruction position is at the end of the program.
+	 */
+	public boolean atEnd() {
+		return getCurrentStackFrame() == null;
+	}
+	
 	public StackFrame getCurrentStackFrame() {
 		return stackFrames.isEmpty() ? null : stackFrames.get(stackFrames.size() - 1);
 	}

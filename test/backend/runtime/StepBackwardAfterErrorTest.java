@@ -171,7 +171,7 @@ public class StepBackwardAfterErrorTest {
 		boolean error = false;
 		
 		states.add(runtime.getState());
-		while(runtime.getCurrentStackFrame() != null) {
+		while(!runtime.atEnd()) {
 			try {
 				engine.stepForward();
 				states.add(runtime.getState());

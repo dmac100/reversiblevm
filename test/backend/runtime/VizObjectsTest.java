@@ -196,7 +196,7 @@ public class VizObjectsTest {
 		List<List<String>> actualObjects = new ArrayList<>();
 		
 		// Step forwards to end of program.
-		while(runtime.getCurrentStackFrame() != null) {
+		while(!runtime.atEnd()) {
 			engine.stepForward();
 			if(!runtime.getVizObjects().isEmpty()) {
 				actualObjects.add(toStringList(runtime.getVizObjects()));
@@ -205,7 +205,7 @@ public class VizObjectsTest {
 		
 		// Step backwards to beginning of program.
 		if(stepBackwardsToo) {
-			while(runtime.getUndoStack().getSize() > 0) {
+			while(!runtime.atStart()) {
 				engine.stepBackward();
 				if(!runtime.getVizObjects().isEmpty()) {
 					actualObjects.add(toStringList(runtime.getVizObjects()));

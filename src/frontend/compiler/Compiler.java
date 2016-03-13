@@ -235,7 +235,7 @@ public class Compiler {
 			int lineNumber = runtime.getLineNumber();
 			
 			while(runtime.getLineNumber() == lineNumber || runtime.getLineNumber() <= 0) {
-				if(runtime.getCurrentStackFrame() == null) {
+				if(runtime.atEnd()) {
 					runningForward = false;
 					return;
 				}
@@ -269,7 +269,7 @@ public class Compiler {
 			
 			while(!lineBreakpoints.contains(runtime.getInstruction())) {
 				engine.stepBackward();
-				if(runtime.getUndoStack().getSize() == 0) {
+				if(runtime.atStart()) {
 					runningBackward = false;
 					return;
 				}

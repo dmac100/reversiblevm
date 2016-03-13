@@ -476,7 +476,7 @@ public class StepBackwardTest {
 		
 		int length = 0;
 		
-		while(runtime.getCurrentStackFrame() != null) {
+		while(!runtime.atEnd()) {
 			engine.stepForward();
 			length++;
 		}
