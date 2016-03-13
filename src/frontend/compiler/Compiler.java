@@ -59,7 +59,7 @@ public class Compiler {
 				e.printStackTrace();
 				startQueueThread();
 				
-				addError("Error: " + e.getMessage());
+				addError("Unhandled Error: " + e.getClass().getName() + ": " + e.getMessage());
 			}
 		});
 	}
