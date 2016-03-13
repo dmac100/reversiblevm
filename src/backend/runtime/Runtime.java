@@ -114,7 +114,7 @@ public class Runtime implements HasState, ValueReadObserver {
 	
 	public StackFrame popStackFrame() {
 		if(stackFrames.isEmpty()) return null;
-		stackFrames.get(stackFrames.size() - 1).getFunction().clearVizObjectInstructions();
+		stackFrames.get(stackFrames.size() - 1).clearVizObjectInstructions();
 		undoStack.addPopStackFrameUndo(stackFrames.get(stackFrames.size() - 1));
 		return stackFrames.remove(stackFrames.size() - 1);
 	}
@@ -130,7 +130,7 @@ public class Runtime implements HasState, ValueReadObserver {
 	public List<VizObject> getVizObjects() {
 		List<VizObject> vizObjects = new ArrayList<>();
 		for(StackFrame stackFrame:stackFrames) {
-			vizObjects.addAll(stackFrame.getFunction().getVizObjects());
+			vizObjects.addAll(stackFrame.getVizObjects());
 		}
 		return vizObjects;
 	}

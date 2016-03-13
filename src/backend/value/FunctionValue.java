@@ -13,7 +13,6 @@ import backend.runtime.VizObjectInstructions;
 public class FunctionValue extends Value implements HasState {
 	private final List<Instruction> instructions;
 	private final int paramCount;
-	private final List<VizObjectInstructions> vizObjectInstructionsList = new ArrayList<>();
 	
 	private Scope parentScope;
 	
@@ -33,25 +32,6 @@ public class FunctionValue extends Value implements HasState {
 	
 	public int getParamCount() {
 		return paramCount;
-	}
-	
-	public void addVizObjectInstructions(VizObjectInstructions vizObjectInstructions) {
-		vizObjectInstructionsList.add(vizObjectInstructions);
-	}
-	
-	public void clearVizObjectInstructions() {
-		for(VizObjectInstructions vizObjectInstructions:vizObjectInstructionsList) {
-			vizObjectInstructions.clear();
-		}
-		vizObjectInstructionsList.clear();
-	}
-	
-	public List<VizObject> getVizObjects() {
-		List<VizObject> objects = new ArrayList<>();
-		for(VizObjectInstructions vizObjectInstructions:vizObjectInstructionsList) {
-			objects.addAll(vizObjectInstructions.getVizObjects());
-		}
-		return objects;
 	}
 	
 	public String toString(Set<Value> used) {

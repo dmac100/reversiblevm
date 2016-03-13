@@ -29,6 +29,7 @@ public class VizObjectInstructions implements ValueChangeObserver {
 		
 		runtime.getUndoStack().setUndoEnabled(undoStackEnabled);
 		
+		vizObjects.clear();
 		vizObjects.addAll(runtime.getCurrentVizObjects());
 		runtime.getCurrentVizObjects().clear();
 	}
@@ -36,7 +37,7 @@ public class VizObjectInstructions implements ValueChangeObserver {
 	private void executeInstructions(final Runtime runtime) {
 		runtime.clearNumberExecutedInstructions();
 		
-		clear();
+		clearObservers();
 		
 		final List<ValueChangeObservable> valueChangeObservables = new ArrayList<>();
 		
@@ -68,13 +69,12 @@ public class VizObjectInstructions implements ValueChangeObserver {
 		}
 	}
 	
-	public void clear() {
+	public void clearObservers() {
 		for(ValueChangeObservable valueChangeObservable:activeObservers) {
 			valueChangeObservable.removeObserver(this);
 		}
 		
 		activeObservers.clear();
-		vizObjects.clear();
 	}
 
 	public List<VizObject> getVizObjects() {

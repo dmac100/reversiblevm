@@ -50,6 +50,15 @@ public class VizObjectsTest {
 			Arrays.asList("rect(x: 3)")
 		));
 	}
+	
+	@Test
+	public void multipleObjects() {
+		assertVizObjects("@rect(x: 1); @rect(x: 2); @rect(x: 3);", Arrays.asList(
+			Arrays.asList("rect(x: 1)"),
+			Arrays.asList("rect(x: 1)", "rect(x: 2)"),
+			Arrays.asList("rect(x: 1)", "rect(x: 2)", "rect(x: 3)")
+		));
+	}
 		
 	@Test
 	public void forLoop() {
@@ -128,6 +137,28 @@ public class VizObjectsTest {
 	}
 	
 	@Test
+	public void multipleObjects_forwardAndBackward() {
+		assertVizObjectsForwardAndBackward("@rect(x: 1); @rect(x: 2); @rect(x: 3);", Arrays.asList(
+			Arrays.asList("rect(x: 1)"),
+			Arrays.asList("rect(x: 1)", "rect(x: 2)"),
+			Arrays.asList("rect(x: 1)", "rect(x: 2)", "rect(x: 3)"),
+			Arrays.asList("rect(x: 1)", "rect(x: 2)"),
+			Arrays.asList("rect(x: 1)")
+		));
+	}
+	
+	@Test
+	public void multipleFunctionCalls_forwardAndBackward() {
+		assertVizObjectsForwardAndBackward("function f(x) { @rect(x: x); }; f(1); f(2); f(3);", Arrays.asList(
+			Arrays.asList("rect(x: 1)"),
+			Arrays.asList("rect(x: 2)"),
+			Arrays.asList("rect(x: 3)"),
+			Arrays.asList("rect(x: 2)"),
+			Arrays.asList("rect(x: 1)")
+		));
+	}
+	
+	@Test
 	public void vizObjectsDoNotChangeState() {
 		assertStateNotChanged("@rect();");
 		assertStateNotChanged("@rect(x: 1);");
@@ -140,20 +171,41 @@ public class VizObjectsTest {
 	}
 	
 	private static void assertVizObjects(String program, List<List<String>> expectedObjects) {
+		assertVizObjects(program, expectedObjects, false);
+	}
+	
+	private static void assertVizObjectsForwardAndBackward(String program, List<List<String>> expectedObjects) {
+		assertVizObjects(program, expectedObjects, true);
+	}
+	
+	private static void assertVizObjects(String program, List<List<String>> expectedObjects, boolean stepBackwardsToo) {
 		Runtime runtime = new Runtime();
 		List<Instruction> instructions = Engine.compile(program);
 		Engine engine = new Engine(runtime, instructions);
 		
 		List<List<String>> actualObjects = new ArrayList<>();
-		if(!runtime.getVizObjects().isEmpty()) {
-			actualObjects.add(toStringList(runtime.getVizObjects()));
-		}
+		
+		// Step forwards to end of program.
 		while(runtime.getCurrentStackFrame() != null) {
 			engine.stepForward();
 			if(!runtime.getVizObjects().isEmpty()) {
 				actualObjects.add(toStringList(runtime.getVizObjects()));
 			}
 		}
+		
+		// Step backwards to beginning of program.
+		if(stepBackwardsToo) {
+			while(runtime.getUndoStack().getSize() > 0) {
+				engine.stepBackward();
+				if(!runtime.getVizObjects().isEmpty()) {
+					actualObjects.add(toStringList(runtime.getVizObjects()));
+				}
+			}
+		}
+		
+		System.out.println("ACTUAL: " + actualObjects);
+		System.out.println("EXPECTED: " + expectedObjects);
+		
 		collapseDuplicates(actualObjects);
 		
 		assertEquals(expectedObjects, actualObjects);
