@@ -37,6 +37,10 @@ public class NonGlobalScope implements Scope, HasState {
 					values.put(name, oldValue);
 					valueObserverList.onChangeValue(name);
 				}
+				
+				public String toString() {
+					return "[SET]";
+				}
 			});
 			values.put(name, value);
 			valueObserverList.onChangeValue(name);
@@ -50,6 +54,10 @@ public class NonGlobalScope implements Scope, HasState {
 			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.remove(name);
+				}
+				
+				public String toString() {
+					return "[CREATE: " + name + "]";
 				}
 			});
 			values.put(name, new NullValue());

@@ -25,6 +25,10 @@ public class Stack implements HasState {
 				public void run() {
 					stack.remove(stack.size() - 1);
 				}
+				
+				public String toString() {
+					return "[STACK PUSH]";
+				}
 			});
 		}
 	}
@@ -36,6 +40,10 @@ public class Stack implements HasState {
 			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					stack.add(value);
+				}
+				
+				public String toString() {
+					return "[STACK POP]";
 				}
 			});
 		}

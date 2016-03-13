@@ -47,6 +47,10 @@ public class ArrayValue extends Value implements HasState {
 					values.set(index, oldValue);
 					valueObserverList.onChangeValue(null);
 				}
+				
+				public String toString() {
+					return "[ARRAY SET]";
+				}
 			});
 		} else {
 			final int oldSize = values.size();
@@ -56,6 +60,10 @@ public class ArrayValue extends Value implements HasState {
 						values.remove(values.size() - 1);
 					}
 					valueObserverList.onChangeValue(null);
+				}
+				
+				public String toString() {
+					return "[ARRAY SET]";
 				}
 			});
 		}
@@ -72,6 +80,10 @@ public class ArrayValue extends Value implements HasState {
 				values.remove(values.size() - 1);
 				valueObserverList.onChangeValue(null);
 			}
+			
+			public String toString() {
+				return "[ARRAY PUSH]";
+			}
 		});
 		values.add(value);
 		valueObserverList.onChangeValue(null);
@@ -86,6 +98,10 @@ public class ArrayValue extends Value implements HasState {
 				public void run() {
 					values.add(value);
 					valueObserverList.onChangeValue(null);
+				}
+				
+				public String toString() {
+					return "[ARRAY POP]";
 				}
 			});
 			valueObserverList.onChangeValue(null);
@@ -104,6 +120,10 @@ public class ArrayValue extends Value implements HasState {
 			public void run() {
 				ArrayValue.this.values = oldValues;
 				valueObserverList.onChangeValue(null);
+			}
+			
+			public String toString() {
+				return "[ARRAY SET VALUES]";
 			}
 		});
 		this.values = values;

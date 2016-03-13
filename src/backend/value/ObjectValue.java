@@ -42,12 +42,20 @@ public class ObjectValue extends Value implements HasState {
 					values.put(name, oldValue);
 					valueObserverList.onChangeValue(null);
 				}
+				
+				public String toString() {
+					return "[OBJECT SET]";
+				}
 			});
 		} else {
 			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.remove(name);
 					valueObserverList.onChangeValue(null);
+				}
+				
+				public String toString() {
+					return "[OBJECT SET]";
 				}
 			});
 		}

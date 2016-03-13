@@ -98,11 +98,19 @@ public class GlobalScope implements Scope, HasState {
 					values.put(name, oldValue);
 					valueObserverList.onChangeValue(name);
 				}
+				
+				public String toString() {
+					return "[GLOBAL SET]";
+				}
 			});
 		} else {
 			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.remove(name);
+				}
+				
+				public String toString() {
+					return "[GLOBAL SET]";
 				}
 			});
 		}
@@ -115,6 +123,10 @@ public class GlobalScope implements Scope, HasState {
 			undoStack.addCommandUndo(new Runnable() {
 				public void run() {
 					values.remove(name);
+				}
+				
+				public String toString() {
+					return "[CREATE GLOBAL: " + name + "]";
 				}
 			});
 			values.put(name, new NullValue());

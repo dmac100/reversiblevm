@@ -84,6 +84,10 @@ public class Runtime implements HasState, ValueReadObserver {
 				public void run() {
 					stackFrames.remove(stackFrames.size() - 1);
 				}
+				
+				public String toString() {
+					return "[ADD STACK FRAME]";
+				}
 			});
 		}
 	}
@@ -170,6 +174,10 @@ public class Runtime implements HasState, ValueReadObserver {
 			public void run() {
 				errors.remove(errors.size() - 1);
 			}
+			
+			public String toString() {
+				return "[THROW ERROR]";
+			}
 		});
 		errors.add(error);
 	}
@@ -179,6 +187,10 @@ public class Runtime implements HasState, ValueReadObserver {
 		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
 				output.remove(output.size() - 1);
+			}
+			
+			public String toString() {
+				return "[PRINT]";
 			}
 		});
 		output.add(value);

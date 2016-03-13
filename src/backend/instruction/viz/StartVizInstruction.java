@@ -31,6 +31,10 @@ public class StartVizInstruction extends Instruction {
 					stackFrame.removeVizObjectInstructions(StartVizInstruction.this, vizObjectInstructions);
 					stackFrame.updateVizObjects();
 				}
+				
+				public String toString() {
+					return "[STARTVIZINSTRUCTION]";
+				}
 			});
 		}
 	}
