@@ -491,7 +491,6 @@ public class StepBackwardTest {
 		states.add(runtime.getState());
 		for(int s = 0; s < length; s++) {
 			engine.stepForward();
-			runtime.getVizObjects();
 			states.add(runtime.getState());
 		}
 		

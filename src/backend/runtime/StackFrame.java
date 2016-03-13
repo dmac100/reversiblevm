@@ -14,7 +14,7 @@ public class StackFrame implements HasState {
 	private final FunctionValue function;
 	private final Scope scope;
 	private int instructionCounter = 0;
-	private final Map<StartVizInstruction, VizObjectInstructions> vizObjectInstructionsList = new LinkedHashMap<>();
+	private final Map<StartVizInstruction, List<VizObjectInstructions>> vizObjectInstructionsList = new LinkedHashMap<>();
 
 	public StackFrame(FunctionValue function, Scope scope, UndoStack undoStack) {
 		this.function = function;
@@ -38,29 +38,36 @@ public class StackFrame implements HasState {
 	}
 	
 	public void addVizObjectInstructions(StartVizInstruction startVizInstruction, VizObjectInstructions vizObjectInstructions) {
-		vizObjectInstructionsList.put(startVizInstruction, vizObjectInstructions);
+		if(!vizObjectInstructionsList.containsKey(startVizInstruction)) {
+			vizObjectInstructionsList.put(startVizInstruction, new ArrayList<VizObjectInstructions>());
+		}
+		vizObjectInstructionsList.get(startVizInstruction).add(vizObjectInstructions);
 	}
 	
 	public void removeVizObjectInstructions(StartVizInstruction startVizInstruction, VizObjectInstructions vizObjectInstructions) {
-		vizObjectInstructionsList.remove(startVizInstruction);
+		List<VizObjectInstructions> list = vizObjectInstructionsList.get(startVizInstruction);
+		list.remove(list.size() - 1);
+		if(list.isEmpty()) {
+			vizObjectInstructionsList.remove(startVizInstruction);
+		}
 	}
 	
 	public void clearVizObjectInstructions() {
-		for(VizObjectInstructions vizObjectInstructions:vizObjectInstructionsList.values()) {
-			vizObjectInstructions.clearObservers();
+		for(List<VizObjectInstructions> vizObjectInstructions:vizObjectInstructionsList.values()) {
+			vizObjectInstructions.get(0).clearObservers();
 		}
 	}
 	
 	public void updateVizObjects() {
-		for(VizObjectInstructions vizObjectInstructions:vizObjectInstructionsList.values()) {
-			vizObjectInstructions.onValueChanged();
+		for(List<VizObjectInstructions> vizObjectInstructions:vizObjectInstructionsList.values()) {
+			vizObjectInstructions.get(0).onValueChanged();
 		}
 	}
 	
 	public List<VizObject> getVizObjects() {
 		List<VizObject> objects = new ArrayList<>();
-		for(VizObjectInstructions vizObjectInstructions:vizObjectInstructionsList.values()) {
-			objects.addAll(vizObjectInstructions.getVizObjects());
+		for(List<VizObjectInstructions> vizObjectInstructions:vizObjectInstructionsList.values()) {
+			objects.addAll(vizObjectInstructions.get(0).getVizObjects());
 		}
 		return objects;
 	}

@@ -149,7 +149,7 @@ public class StepBackwardAfterErrorTest {
 	
 	@Test
 	public void VizStatement() {
-		assertStepBackward("@for(x <- null) rect(x: 1);");
+		assertStepBackward("print(1); @for(x <- null) rect(x: 1); print(2);");
 		assertStepBackward("print(1); @for(x <- null) rect(x: 1); print(2);");
 		assertStepBackward("print(1); @for(x <- [1], null) rect(x: 1); print(2);");
 	}
@@ -182,7 +182,6 @@ public class StepBackwardAfterErrorTest {
 			try {
 				engine.stepForward();
 				states.add(runtime.getState());
-				runtime.getVizObjects();
 			} catch(ExecutionException e) {
 				error = true;
 				break;
