@@ -80,10 +80,10 @@ public class Compiler {
 			
 			if(runningForward) {
 				stepForwardSync();
-				sleepUninterruptibly(3, TimeUnit.MILLISECONDS);
+				sleepUninterruptibly(1, TimeUnit.MILLISECONDS);
 			} else if(runningBackward) {
 				stepBackwardSync();
-				sleepUninterruptibly(3, TimeUnit.MILLISECONDS);
+				sleepUninterruptibly(1, TimeUnit.MILLISECONDS);
 			} else {
 				try {
 					updateUi();
