@@ -1,7 +1,6 @@
 package backend.parser;
 
 import static backend.instruction.NopInstruction.Nop;
-import static backend.instruction.array.CloneReversedArrayInstruction.CloneReversedArrayInstruction;
 import static backend.instruction.array.GetElementInstruction.GetElementInstruction;
 import static backend.instruction.array.NewArrayInstruction.NewArray;
 import static backend.instruction.array.PushElementInstruction.PushElement;
@@ -53,9 +52,7 @@ import static backend.value.DoubleValue.Value;
 import static backend.value.NullValue.NullValue;
 import static backend.value.StringValue.Value;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 import org.parboiled.BaseParser;
@@ -66,11 +63,8 @@ import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.support.Var;
 
 import backend.instruction.Instruction;
-import backend.instruction.array.CloneReversedArrayInstruction;
 import backend.instruction.function.ReturnInstruction;
-import backend.instruction.jump.JumpInstruction;
 import backend.instruction.viz.VizFilterInstruction;
-import backend.instruction.viz.VizIterateInstruction;
 
 public class Parser extends BaseParser<Instructions> {
 	public Rule Literal() {
@@ -789,7 +783,6 @@ public class Parser extends BaseParser<Instructions> {
 				mergeAfter()
 			),
 			push(Instructions(Instructions(StartVizInstruction()), pop(1), pop(), Instructions(EndVizInstruction()))),
-			push(Instructions(addVizJumps(pop().getInstructions()))),
 			Terminal(")"),
 			Terminal(";")
 		);
@@ -800,7 +793,7 @@ public class Parser extends BaseParser<Instructions> {
 			Sequence(
 				Optional(Terminal("var")),
 				Identifier(),
-				push(Instructions(CloneReversedArrayInstruction(), VizIterateInstruction(match().trim()))),
+				push(Instructions(VizIterateInstruction(match().trim()))),
 				Terminal("<-"),
 				AssignmentExpression(),
 				mergeBefore()
@@ -943,24 +936,6 @@ public class Parser extends BaseParser<Instructions> {
 	@DontLabel
 	public Rule Terminal(Object value) {
 		return Sequence(value, Spacing());
-	}
-	
-	public List<Instruction> addVizJumps(List<Instruction> instructions) {
-		for(int i = instructions.size() - 1; i >= 0; i--) {
-			if(instructions.get(i) instanceof CloneReversedArrayInstruction) {
-				// Add jump instruction at the end with offset to this instruction.
-				instructions.add(instructions.size() - 1, new JumpInstruction(i + 2 - instructions.size()));
-				
-				// Add offset to VizIterateInstruction after the CloneReversedArrayInstruction to after the jump instruction.
-				VizIterateInstruction vizIterateInstruction = (VizIterateInstruction) instructions.get(i + 1);
-				instructions.remove(i + 1);
-				instructions.add(i + 1, new VizIterateInstruction(vizIterateInstruction.getName(), instructions.size() - i - 1));
-			} else if(instructions.get(i) instanceof VizFilterInstruction) {
-				instructions.remove(i);
-				instructions.add(i, new VizFilterInstruction(instructions.size() - i));
-			}
-		}
-		return instructions;
 	}
 	
 	public Instructions addLineNumbers(Instructions instructions, short lineNumber, short columnNumber) {

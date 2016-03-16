@@ -24,12 +24,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Widget;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -55,8 +53,32 @@ public class Main {
 	private Button stepBackwardButton;
 	private Button stepForwardButton;
 	
-	private boolean graphicsPane = false;
+	private boolean graphicsPane = true;
 	private boolean consolePane = true;
+	
+	public static void main(String[] args) {
+		System.setProperty("line.separator", "\n");
+		
+		Display display = new Display();
+
+		Shell shell = new Shell(display);
+
+		Main main = new Main(shell);
+		main.parseArgs(args);
+		
+		shell.setSize(700, 600);
+		shell.open();
+		
+		main.addFileDropTarget(shell);
+
+		while(!shell.isDisposed()) {
+			if(!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+
+		display.dispose();
+	}
 	
 	public Main(final Shell shell) {
 		this.shell = shell;
@@ -73,7 +95,7 @@ public class Main {
 		GraphicsCanvas graphicsCanvas = new GraphicsCanvas(eventBus, horizontalSash);
 		ConsoleText consoleText = new ConsoleText(verticalSash);
 		
-		horizontalSash.setWeights(new int[] { 70, 30 });
+		horizontalSash.setWeights(new int[] { 60, 40 });
 		verticalSash.setWeights(new int[] { 75, 25 });
 		
 		mainController = new MainController(shell, eventBus, editorText, graphicsCanvas, consoleText);
@@ -472,30 +494,6 @@ public class Main {
 		});
 	}
 	
-	public static void main(String[] args) {
-		System.setProperty("line.separator", "\n");
-		
-		Display display = new Display();
-
-		Shell shell = new Shell(display);
-
-		Main main = new Main(shell);
-		main.parseArgs(args);
-		
-		shell.setSize(700, 600);
-		shell.open();
-		
-		main.addFileDropTarget(shell);
-
-		while(!shell.isDisposed()) {
-			if(!display.readAndDispatch()) {
-				display.sleep();
-			}
-		}
-
-		display.dispose();
-	}
-
 	private void parseArgs(String[] args) {
 		CommandLineParser parser = new GnuParser();
 		

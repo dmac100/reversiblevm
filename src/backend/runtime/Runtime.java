@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import backend.instruction.Instruction;
+import backend.instruction.viz.VizFilterInstruction;
+import backend.instruction.viz.VizIterateInstruction;
 import backend.observer.ValueChangeObservable;
 import backend.observer.ValueReadObserver;
 import backend.value.ArrayValue;
@@ -18,7 +20,6 @@ import backend.value.Value;
 
 public class Runtime implements HasState, ValueReadObserver {
 	private UndoStack undoStack = new UndoStack();
-	private int executedInstructions = 0;
 	
 	private Stack stack = new Stack(undoStack);
 	private StackFrame lastStackFrame = null;
@@ -31,41 +32,91 @@ public class Runtime implements HasState, ValueReadObserver {
 	private List<String> output = new ArrayList<>();
 	
 	/**
-	 * Runs all the given instructions within a new stack frame.
+	 * Runs and then undoes all the given instructions within a new stack frame,
+	 * for the purposes of getting the visual objects for a block of instructions.
 	 */
-	public void runInstructions(List<Instruction> instructions) {
+	public void runAndUndoInstructions(List<Instruction> instructions) {
 		undoStack.saveUndoPoint(getCurrentStackFrame().getInstructionCounter());
 		addStackFrame(new FunctionValue(getScope(), 0, instructions));
 		
 		int stackFrameCount = stackFrames.size();
 		
-		while(stackFrames.size() >= stackFrameCount) {
-			runNextInstruction();
+		try {
+			while(stackFrames.size() >= stackFrameCount) {
+				runNextInstruction();
+			}
+		} finally {
+			while(getInstruction() != instructions.get(0)) {
+				undoStack.undo(this);
+			}
+			undoStack.undo(this);
 		}
 	}
 	
+	/**
+	 * Runs the next instruction and advances the instruction counter to the
+	 * instruction to execute after that.
+	 */
 	public void runNextInstruction() {
-		if(getCurrentStackFrame() == null) return;
-		
-		undoStack.saveUndoPoint(getCurrentStackFrame().getInstructionCounter());
-		
 		StackFrame frame = getCurrentStackFrame();
 		FunctionValue function = frame.getFunction();
 		
+		undoStack.saveUndoPoint(frame.getInstructionCounter());
+		
+		// Return from current function if we've reached the end of the instruction list.
 		if(frame.getInstructionCounter() >= function.getInstructions().size()) {
 			popStackFrame();
 			return;
 		}
 		
 		Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
+
+		// Run any viz iterate instructions by running and undoing the remaining instructions for each value in the array.
+		if(instruction instanceof VizIterateInstruction) {
+			String name = ((VizIterateInstruction)instruction).getName();
+			
+			checkArrayValue(getStack().peekValue(0));
+			ArrayValue array = checkArrayValue(getStack().popValue(true, false));
+			
+			List<Instruction> instructions = function.getInstructions();
+			
+			popStackFrame();
+			addStackFrame(new FunctionValue(getScope(), 0, new ArrayList<Instruction>()));
+			getScope().create(name);
+			
+			for(Value value:array.values(this)) {
+				getScope().set(name, value);
+				runAndUndoInstructions(instructions.subList(frame.getInstructionCounter() + 1, instructions.size()));
+			}
+			
+			return;
+		}
 		
+		// Run any viz filter instruction by returning if the stack value is false.
+		if(instruction instanceof VizFilterInstruction) {
+			checkBooleanValue(getStack().peekValue(0));
+			BooleanValue condition = checkBooleanValue(getStack().popValue(true, false));
+			
+			if(!condition.getValue()) {
+				undoStack.saveUndoPoint(getCurrentStackFrame().getInstructionCounter());
+				popStackFrame();
+				return;
+			}
+			
+			frame.setInstructionCounter(frame.getInstructionCounter() + 1);
+
+			return;
+		}
+
+		// Execute normal instruction.
 		try {
 			instruction.execute(this);
-			executedInstructions++;
+			undoStack.addInstructionUndo();
 		} catch(ExecutionException e) {
-			undoStack.undo(this, false);
+			undoStack.undo(this);
 			throw e;
 		}
+		
 		frame.setInstructionCounter(frame.getInstructionCounter() + 1);
 	}
 	
@@ -161,7 +212,7 @@ public class Runtime implements HasState, ValueReadObserver {
 			return vizObjects;
 		} else {
 			List<VizObject> vizObjects = new ArrayList<>();
-			for(StackFrame stackFrame:stackFrames) {
+			for(StackFrame stackFrame:new ArrayList<>(stackFrames)) {
 				vizObjects.addAll(stackFrame.getVizObjects());
 			}
 			return vizObjects;
@@ -210,14 +261,6 @@ public class Runtime implements HasState, ValueReadObserver {
 	
 	public UndoStack getUndoStack() {
 		return undoStack;
-	}
-	
-	public int getNumberExecutedInstructions() {
-		return executedInstructions;
-	}
-	
-	public void clearNumberExecutedInstructions() {
-		executedInstructions = 0;
 	}
 	
 	/**

@@ -37,8 +37,6 @@ public class VizObjectInstructions implements ValueChangeObserver {
 	}
 
 	private void executeInstructions(final Runtime runtime) {
-		runtime.clearNumberExecutedInstructions();
-		
 		clearObservers();
 		
 		final List<ValueChangeObservable> valueChangeObservables = new ArrayList<>();
@@ -50,19 +48,9 @@ public class VizObjectInstructions implements ValueChangeObserver {
 		});
 		
 		try {
-			runtime.runInstructions(instructions);
-			
-			runtime.getUndoStack().undo(runtime, false);
-		} catch(ExecutionException e) {
-			throw e;
+			runtime.runAndUndoInstructions(instructions);
 		} finally {
 			runtime.clearValueReadObservers();
-			
-			for(int i = 0; i < runtime.getNumberExecutedInstructions(); i++) {
-				runtime.getUndoStack().undo(runtime, true);
-			}
-			
-			runtime.getUndoStack().undo(runtime, false);
 		}
 		
 		for(ValueChangeObservable valueChangeObservable:valueChangeObservables) {

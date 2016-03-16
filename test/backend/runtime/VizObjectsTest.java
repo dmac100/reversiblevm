@@ -62,6 +62,12 @@ public class VizObjectsTest {
 		
 	@Test
 	public void forLoop() {
+		assertVizObjects("var a = []; @for(x <- a) rect(x: x);", new ArrayList<List<String>>());
+		
+		assertVizObjects("var a = [5]; @for(x <- a) rect(x: x);", Arrays.asList(
+			Arrays.asList("rect(x: 5)")
+		));
+		
 		assertVizObjects("var a = [1, 2, 3]; @for(x <- a) rect(x: x);", Arrays.asList(
 			Arrays.asList("rect(x: 1)", "rect(x: 2)", "rect(x: 3)")
 		));
@@ -79,6 +85,8 @@ public class VizObjectsTest {
 	
 	@Test
 	public void forLoopWithConditional() {
+		assertVizObjects("var a = [1, 2, 3]; @for(x <- a, x >= 4) rect(x: x);", new ArrayList<List<String>>());
+		
 		assertVizObjects("var a = [1, 2, 3]; @for(x <- a, x >= 2) rect(x: x);", Arrays.asList(
 			Arrays.asList("rect(x: 2)", "rect(x: 3)")
 		));
@@ -173,8 +181,11 @@ public class VizObjectsTest {
 		assertStateNotChanged("@rect();");
 		assertStateNotChanged("@rect(x: 1);");
 		assertStateNotChanged("@for(true) rect(x: 1);");
+		assertStateNotChanged("@for(2 > 1) rect(x: 1);");
 		assertStateNotChanged("@for(x <- [1]) rect(x: 1);");
 		assertStateNotChanged("@for(x <- [1]) rect();");
+		assertStateNotChanged("@for(x <- [1, 2]) rect();");
+		assertStateNotChanged("@for(x <- [1, 2, 3]) rect();");
 		assertStateNotChanged("@for(x <- [1], y <- [2]) rect();");
 		assertStateNotChanged("@for(x <- [y = 1]) rect();");
 		assertStateNotChanged("@for(x <- [print()]) rect();");
@@ -257,7 +268,7 @@ public class VizObjectsTest {
 	private void assertStateNotChanged(String vizObjectInstructions) {
 		Runtime runtime = new Runtime();
 		List<Instruction> instructions = Engine.compile(vizObjectInstructions);
-		instructions = instructions.subList(1, instructions.size() - 2);
+		instructions = instructions.subList(1, instructions.size() - 1);
 		runtime.addStackFrame(new FunctionValue(new GlobalScope(runtime.getUndoStack()), 0, new ArrayList<Instruction>()));
 		
 		// Add some dummy values to the undo stack so that it's not empty.

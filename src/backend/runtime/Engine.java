@@ -66,7 +66,7 @@ public class Engine {
 	}
 	
 	public void stepBackward() {
-		runtime.getUndoStack().undo(runtime, true);
+		runtime.getUndoStack().undo(runtime);
 	}
 
 	public static List<Instruction> parseFile(String name) {

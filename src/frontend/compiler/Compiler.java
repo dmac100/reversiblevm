@@ -12,8 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.swt.widgets.Display;
 
-import com.google.common.util.concurrent.Uninterruptibles;
-
 import backend.instruction.Instruction;
 import backend.runtime.CompileException;
 import backend.runtime.Engine;

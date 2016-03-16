@@ -1,9 +1,8 @@
 package backend.instruction.operator;
 
 import backend.instruction.Instruction;
-import backend.instruction.array.CloneReversedArrayInstruction;
-import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
+import backend.runtime.Runtime;
 import backend.runtime.Stack;
 import backend.value.DoubleValue;
 

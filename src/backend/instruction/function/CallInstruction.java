@@ -1,9 +1,8 @@
 package backend.instruction.function;
 
 import backend.instruction.Instruction;
-import backend.instruction.array.CloneReversedArrayInstruction;
-import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
+import backend.runtime.Runtime;
 import backend.value.DoubleValue;
 import backend.value.FunctionValue;
 import backend.value.NativeFunctionValue;

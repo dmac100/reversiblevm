@@ -14,6 +14,7 @@ import backend.value.NullValue;
 import backend.value.Value;
 
 public class UndoStack {
+	public final static int RUNINSTRUCTION = -2;
 	public final static int POPSTACKFRAME = -1;
 	public final static Runnable UNDOPOINT = null;
 	
@@ -54,6 +55,12 @@ public class UndoStack {
 		popStackFrameUndos.add(stackFrame);
 	}
 	
+	public void addInstructionUndo() {
+		if(!undoEnabled) return;
+		
+		instructionCounterUndos.add(RUNINSTRUCTION);
+	}
+	
 	public void addPopValueUndo(Value value) {
 		if(!undoEnabled) return;
 		
@@ -91,14 +98,11 @@ public class UndoStack {
 		runtime.getStack().push(value, false);
 	}
 
-	public void undo(Runtime runtime, boolean undoInstruction) {
+	public void undo(Runtime runtime) {
 		if(!undoEnabled) return;
-		
+
 		undoCommands();
-		undoPopStackFrames(runtime);
-		if(undoInstruction) {
-			undoInstruction(runtime);
-		}
+		undoSpecialInstructionCounters(runtime);
 		undoInstructionCounterChange(runtime);
 	}
 	
@@ -112,13 +116,27 @@ public class UndoStack {
 		}
 	}
 
-	private void undoPopStackFrames(Runtime runtime) {
-		if(!instructionCounterUndos.isEmpty()) {
-			// Undo any pop stack frame.
-			if(instructionCounterUndos.get(instructionCounterUndos.size() - 1) == POPSTACKFRAME) {
+	private void undoSpecialInstructionCounters(Runtime runtime) {
+		boolean popStackFrames = false;
+		boolean undoInstructions = false;
+		
+		while(!instructionCounterUndos.isEmpty()) {
+			int instructionCounter = instructionCounterUndos.get(instructionCounterUndos.size() - 1);
+			if(instructionCounter == POPSTACKFRAME) {
+				popStackFrames = true;
 				instructionCounterUndos.removeAt(instructionCounterUndos.size() - 1);
-				StackFrame stackFrame = popStackFrameUndos.remove(popStackFrameUndos.size() - 1);
-				runtime.addStackFrame(stackFrame, false);
+			} else if(instructionCounter == RUNINSTRUCTION) {
+				undoInstructions = true;
+				instructionCounterUndos.removeAt(instructionCounterUndos.size() - 1);
+			} else {
+				if(popStackFrames) {
+					StackFrame stackFrame = popStackFrameUndos.remove(popStackFrameUndos.size() - 1);
+					runtime.addStackFrame(stackFrame, false);
+				}
+				if(undoInstructions) {
+					undoInstruction(runtime);
+				}
+				return;
 			}
 		}
 	}
@@ -148,11 +166,11 @@ public class UndoStack {
 		}
 	}
 
-	public void saveUndoPoint(int currentIstructionPointer) {
+	public void saveUndoPoint(int currentInstructionCounter) {
 		if(!undoEnabled) return;
 		
 		commandUndos.add(UNDOPOINT);
-		instructionCounterUndos.add(currentIstructionPointer);
+		instructionCounterUndos.add(currentInstructionCounter);
 	}
 	
 	public String getState(String prefix) {
