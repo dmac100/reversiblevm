@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import backend.instruction.Instruction;
+import backend.util.IntStack;
 import backend.value.BooleanValue;
 import backend.value.DoubleValue;
 import backend.value.NullValue;
@@ -25,12 +26,12 @@ public class UndoStack {
 	private final short GENERALTYPE = 4;
 	
 	private final List<Runnable> commandUndos = new ArrayList<>();
-	private final TIntArrayList instructionCounterUndos = new TIntArrayList();
+	private final IntStack instructionCounterUndos = new IntStack();
 	private final List<StackFrame> popStackFrameUndos = new ArrayList<>();
 	
 	private final List<Value> popValueUndos = new ArrayList<>();
 	private final TDoubleArrayList popDoubleValueUndos = new TDoubleArrayList();
-	private final TShortArrayList popValueUndoTypes = new TShortArrayList();
+	private final IntStack popValueUndoTypes = new IntStack();
 	
 	private boolean undoEnabled = true;
 
@@ -51,14 +52,14 @@ public class UndoStack {
 	public void addPopStackFrameUndo(StackFrame stackFrame) {
 		if(!undoEnabled) return;
 		
-		instructionCounterUndos.add(POPSTACKFRAME);
+		instructionCounterUndos.push(POPSTACKFRAME);
 		popStackFrameUndos.add(stackFrame);
 	}
 	
 	public void addInstructionUndo() {
 		if(!undoEnabled) return;
 		
-		instructionCounterUndos.add(RUNINSTRUCTION);
+		instructionCounterUndos.push(RUNINSTRUCTION);
 	}
 	
 	public void addPopValueUndo(Value value) {
@@ -66,13 +67,13 @@ public class UndoStack {
 		
 		if(value instanceof DoubleValue) {
 			popDoubleValueUndos.add(((DoubleValue)value).getValue());
-			popValueUndoTypes.add(DOUBLETYPE);
+			popValueUndoTypes.push(DOUBLETYPE);
 		} else if(value instanceof BooleanValue) {
-			popValueUndoTypes.add(((BooleanValue)value).getValue() ? BOOLEANTRUETYPE : BOOLEANFALSETYPE);
+			popValueUndoTypes.push(((BooleanValue)value).getValue() ? BOOLEANTRUETYPE : BOOLEANFALSETYPE);
 		} else if(value instanceof NullValue) {
-			popValueUndoTypes.add(NULLTYPE);
+			popValueUndoTypes.push(NULLTYPE);
 		} else {
-			popValueUndoTypes.add(GENERALTYPE);
+			popValueUndoTypes.push(GENERALTYPE);
 			popValueUndos.add(value);
 		}
 	}
@@ -80,7 +81,7 @@ public class UndoStack {
 	public void undoPopValue(Runtime runtime) {
 		if(!undoEnabled) return;
 		
-		short type = popValueUndoTypes.removeAt(popValueUndoTypes.size() - 1);
+		int type = popValueUndoTypes.pop();
 		
 		final Value value;
 		if(type == DOUBLETYPE) {
@@ -121,13 +122,13 @@ public class UndoStack {
 		boolean undoInstructions = false;
 		
 		while(!instructionCounterUndos.isEmpty()) {
-			int instructionCounter = instructionCounterUndos.get(instructionCounterUndos.size() - 1);
+			int instructionCounter = instructionCounterUndos.peek();
 			if(instructionCounter == POPSTACKFRAME) {
 				popStackFrames = true;
-				instructionCounterUndos.removeAt(instructionCounterUndos.size() - 1);
+				instructionCounterUndos.pop();
 			} else if(instructionCounter == RUNINSTRUCTION) {
 				undoInstructions = true;
-				instructionCounterUndos.removeAt(instructionCounterUndos.size() - 1);
+				instructionCounterUndos.pop();
 			} else {
 				if(popStackFrames) {
 					StackFrame stackFrame = popStackFrameUndos.remove(popStackFrameUndos.size() - 1);
@@ -143,7 +144,7 @@ public class UndoStack {
 	
 	private void undoInstruction(Runtime runtime) {
 		if(!instructionCounterUndos.isEmpty()) {
-			int instructionCounter = instructionCounterUndos.get(instructionCounterUndos.size() - 1);
+			int instructionCounter = instructionCounterUndos.peek();
 		
 			// Undo instruction.
 			StackFrame stackFrame = runtime.getCurrentStackFrame();
@@ -159,7 +160,7 @@ public class UndoStack {
 	private void undoInstructionCounterChange(Runtime runtime) {
 		// Undo instruction counter changes.
 		if(!instructionCounterUndos.isEmpty()) {
-			int instructionCounter = instructionCounterUndos.removeAt(instructionCounterUndos.size() - 1);
+			int instructionCounter = instructionCounterUndos.pop();
 			if(runtime.getCurrentStackFrame() != null) {
 				runtime.getCurrentStackFrame().setInstructionCounter(instructionCounter);
 			}
@@ -170,7 +171,7 @@ public class UndoStack {
 		if(!undoEnabled) return;
 		
 		commandUndos.add(UNDOPOINT);
-		instructionCounterUndos.add(currentInstructionCounter);
+		instructionCounterUndos.push(currentInstructionCounter);
 	}
 	
 	public String getState(String prefix) {
