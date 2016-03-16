@@ -99,8 +99,8 @@ public class Compiler {
 			}
 			
 			if(System.currentTimeMillis() - lastUiUpdate > 50) {
-				lastUiUpdate = System.currentTimeMillis();
 				updateUi();
+				lastUiUpdate = System.currentTimeMillis();
 			}
 		}
 	}
