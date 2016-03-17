@@ -16,8 +16,8 @@ import org.eclipse.swt.widgets.Display;
 import backend.runtime.VizObject;
 import backend.value.BooleanValue;
 import backend.value.DoubleValue;
+import backend.value.ImmutableValue;
 import backend.value.StringValue;
-import backend.value.Value;
 
 import com.google.common.eventbus.EventBus;
 
@@ -120,7 +120,7 @@ public class GraphicsCanvas {
 	}
 
 	private double getDoubleOrDefault(VizObject vizObject, String name, double defaultValue) {
-		Value value = vizObject.getProperty(name);
+		ImmutableValue value = vizObject.getProperty(name);
 		if(value instanceof DoubleValue) {
 			return ((DoubleValue)value).getValue();
 		} else {
@@ -129,7 +129,7 @@ public class GraphicsCanvas {
 	}
 	
 	private String getStringOrDefault(VizObject vizObject, String name, String defaultValue) {
-		Value value = vizObject.getProperty(name);
+		ImmutableValue value = vizObject.getProperty(name);
 		if(value instanceof StringValue) {
 			return ((StringValue)value).getValue();
 		} else {
@@ -138,7 +138,7 @@ public class GraphicsCanvas {
 	}
 	
 	private boolean getBooleanOrDefault(VizObject vizObject, String name, boolean defaultValue) {
-		Value value = vizObject.getProperty(name);
+		ImmutableValue value = vizObject.getProperty(name);
 		if(value instanceof BooleanValue) {
 			return ((BooleanValue)value).getValue();
 		} else {

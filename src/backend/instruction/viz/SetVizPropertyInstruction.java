@@ -2,10 +2,13 @@ package backend.instruction.viz;
 
 import java.util.List;
 
+import backend.runtime.ExecutionException;
 import backend.runtime.Runtime;
 import backend.instruction.Instruction;
 import backend.instruction.variable.StoreInstruction;
 import backend.runtime.VizObject;
+import backend.value.ImmutableValue;
+import backend.value.Value;
 
 public class SetVizPropertyInstruction extends Instruction {
 	private final String name;
@@ -25,7 +28,11 @@ public class SetVizPropertyInstruction extends Instruction {
 	public void execute(Runtime runtime) {
 		List<VizObject> vizObjects = runtime.getCurrentVizObjects();
 		VizObject vizObject = vizObjects.get(vizObjects.size() - 1);
-		vizObject.setProperty(name, runtime.getStack().popValue(false, true));
+		Value value = runtime.getStack().peekValue(0);
+		if(!(value instanceof ImmutableValue)) {
+			throw new ExecutionException("Property value must be immutable");
+		}
+		vizObject.setProperty(name, (ImmutableValue) runtime.getStack().popValue(false, true));
 	}
 	
 	public void undo(Runtime runtime) {

@@ -388,6 +388,10 @@ public class StepBackwardTest {
 		assertStepBackward("print(1); @for(null) rect(x: 1); print(2);");
 		assertStepBackward("print(1); @for(x <- [1], x <- null) rect(x: 1); print(2);");
 		assertStepBackward("print(1); @for(x <- [1], null) rect(x: 1); print(2);");
+		
+		assertStepBackward("print(1); @rect(x: function() {}); print(2);");
+		assertStepBackward("print(1); @rect(x: {x: 2}); print(2);");
+		assertStepBackward("print(1); @rect(x: []); print(2);");
 	}
 	
 	@Test

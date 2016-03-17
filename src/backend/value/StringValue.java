@@ -2,7 +2,7 @@ package backend.value;
 
 import java.util.Set;
 
-public class StringValue extends Value {
+public class StringValue extends Value implements ImmutableValue {
 	private final String value;
 	
 	public StringValue(String value) {

@@ -2,7 +2,7 @@ package backend.value;
 
 import java.util.Set;
 
-public class BooleanValue extends Value {
+public class BooleanValue extends Value implements ImmutableValue {
 	private final boolean value;
 	
 	public BooleanValue(boolean value) {

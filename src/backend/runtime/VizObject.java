@@ -3,12 +3,12 @@ package backend.runtime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import backend.value.ImmutableValue;
 import backend.value.NullValue;
-import backend.value.Value;
 
 public class VizObject {
 	private final String name;
-	private final Map<String, Value> values = new LinkedHashMap<>();
+	private final Map<String, ImmutableValue> values = new LinkedHashMap<>();
 	
 	public VizObject(String name) {
 		this.name = name;
@@ -18,7 +18,7 @@ public class VizObject {
 		return name;
 	}
 	
-	public Value getProperty(String name) {
+	public ImmutableValue getProperty(String name) {
 		if(values.containsKey(name)) {
 			return values.get(name);
 		} else {
@@ -26,7 +26,7 @@ public class VizObject {
 		}
 	}
 	
-	public void setProperty(String name, Value value) {
+	public void setProperty(String name, ImmutableValue value) {
 		values.put(name, value);
 	}
 	
