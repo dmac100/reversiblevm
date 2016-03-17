@@ -28,6 +28,7 @@ public class UndoStackTest {
 		undoStack = runtime.getUndoStack();
 		
 		// Add some dummy values to the undo stack so that it's not empty.
+		runtime.getUndoStack().saveUndoPoint(0);
 		runtime.getUndoStack().addCommandUndo(null);
 		runtime.getUndoStack().addPopStackFrameUndo(null);
 		runtime.getUndoStack().addPopValueUndo(null);
@@ -58,6 +59,21 @@ public class UndoStackTest {
 		
 		// Undo twice.
 		undoStack.undo(runtime);
+		undoStack.undo(runtime);
+		
+		// Check that state is the same as the initial state.
+		assertEquals(initialState, runtime.getState());
+	}
+	
+	@Test
+	public void undoPopStackFrame() {
+		String initialState = runtime.getState();
+		
+		// Execute first instruction.
+		runtime.getUndoStack().saveUndoPoint(0);
+		runtime.popStackFrame();
+		
+		// Undo twice.
 		undoStack.undo(runtime);
 		
 		// Check that state is the same as the initial state.

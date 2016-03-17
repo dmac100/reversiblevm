@@ -1,8 +1,6 @@
 package backend.runtime;
 
 import gnu.trove.list.array.TDoubleArrayList;
-import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.list.array.TShortArrayList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +13,9 @@ import backend.value.NullValue;
 import backend.value.Value;
 
 public class UndoStack {
-	public final static int RUNINSTRUCTION = -2;
-	public final static int POPSTACKFRAME = -1;
-	public final static Runnable UNDOPOINT = null;
+	private final int RUNINSTRUCTION = 1;
+	private final int POPSTACKFRAME = 2;
+	private final static Runnable UNDOPOINT = null;
 	
 	private final short DOUBLETYPE = 0;
 	private final short BOOLEANTRUETYPE = 1;
@@ -32,6 +30,8 @@ public class UndoStack {
 	private final List<Value> popValueUndos = new ArrayList<>();
 	private final TDoubleArrayList popDoubleValueUndos = new TDoubleArrayList();
 	private final IntStack popValueUndoTypes = new IntStack();
+	
+	private final IntStack flagStack = new IntStack();
 	
 	private boolean undoEnabled = true;
 
@@ -52,14 +52,14 @@ public class UndoStack {
 	public void addPopStackFrameUndo(StackFrame stackFrame) {
 		if(!undoEnabled) return;
 		
-		instructionCounterUndos.push(POPSTACKFRAME);
+		flagStack.push(flagStack.pop() | POPSTACKFRAME);
 		popStackFrameUndos.add(stackFrame);
 	}
 	
 	public void addInstructionUndo() {
 		if(!undoEnabled) return;
 		
-		instructionCounterUndos.push(RUNINSTRUCTION);
+		flagStack.push(flagStack.pop() | RUNINSTRUCTION);
 	}
 	
 	public void addPopValueUndo(Value value) {
@@ -103,7 +103,7 @@ public class UndoStack {
 		if(!undoEnabled) return;
 
 		undoCommands();
-		undoSpecialInstructionCounters(runtime);
+		undoFlags(runtime);
 		undoInstructionCounterChange(runtime);
 	}
 	
@@ -117,27 +117,17 @@ public class UndoStack {
 		}
 	}
 
-	private void undoSpecialInstructionCounters(Runtime runtime) {
-		boolean popStackFrames = false;
-		boolean undoInstructions = false;
-		
-		while(!instructionCounterUndos.isEmpty()) {
-			int instructionCounter = instructionCounterUndos.peek();
-			if(instructionCounter == POPSTACKFRAME) {
-				popStackFrames = true;
-				instructionCounterUndos.pop();
-			} else if(instructionCounter == RUNINSTRUCTION) {
-				undoInstructions = true;
-				instructionCounterUndos.pop();
-			} else {
-				if(popStackFrames) {
-					StackFrame stackFrame = popStackFrameUndos.remove(popStackFrameUndos.size() - 1);
-					runtime.addStackFrame(stackFrame, false);
-				}
-				if(undoInstructions) {
-					undoInstruction(runtime);
-				}
-				return;
+	private void undoFlags(Runtime runtime) {
+		if(!flagStack.isEmpty()) {
+			int flag = flagStack.pop();
+			
+			if((flag & POPSTACKFRAME) > 0) {
+				StackFrame stackFrame = popStackFrameUndos.remove(popStackFrameUndos.size() - 1);
+				runtime.addStackFrame(stackFrame, false);
+			}
+			
+			if((flag & RUNINSTRUCTION) > 0) {
+				undoInstruction(runtime);
 			}
 		}
 	}
@@ -172,6 +162,7 @@ public class UndoStack {
 		
 		commandUndos.add(UNDOPOINT);
 		instructionCounterUndos.push(currentInstructionCounter);
+		flagStack.push(0);
 	}
 	
 	public String getState(String prefix) {
@@ -181,7 +172,8 @@ public class UndoStack {
 		s.append(prefix).append("Pop Stack Frame Undos: " + popStackFrameUndos.size()).append("\n");
 		s.append(prefix).append("Pop Value Undos: " + popValueUndos.size()).append("\n");
 		s.append(prefix).append("Pop Double Value Undos: " + popDoubleValueUndos.size()).append("\n");
-		s.append(prefix).append("Pop Value Undo Types: " + popValueUndoTypes.size());
+		s.append(prefix).append("Pop Value Undo Types: " + popValueUndoTypes.size()).append("\n");
+		s.append(prefix).append("Flags: " + flagStack.size());
 		return s.toString();
 	}
 	
@@ -193,6 +185,7 @@ public class UndoStack {
 		size += popValueUndos.size();
 		size += popDoubleValueUndos.size();
 		size += popValueUndoTypes.size();
+		size += flagStack.size();
 		return size;
 	}
 	
@@ -203,5 +196,6 @@ public class UndoStack {
 		popValueUndos.clear();
 		popDoubleValueUndos.clear();
 		popValueUndoTypes.clear();
+		flagStack.clear();
 	}
 }

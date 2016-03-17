@@ -272,6 +272,7 @@ public class VizObjectsTest {
 		runtime.addStackFrame(new FunctionValue(new GlobalScope(runtime.getUndoStack()), 0, new ArrayList<Instruction>()));
 		
 		// Add some dummy values to the undo stack so that it's not empty.
+		runtime.getUndoStack().saveUndoPoint(0);
 		runtime.getUndoStack().addCommandUndo(null);
 		runtime.getUndoStack().addPopStackFrameUndo(null);
 		runtime.getUndoStack().addPopValueUndo(null);
