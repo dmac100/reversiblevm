@@ -53,11 +53,16 @@ public class IntStack {
 		
 		// Variable-length encoding. The 8th bit being set indicates that there is another
 		// byte for this value.
-		values[size++] = (byte)(storedValue & 0x3F);
-		storedValue >>>= 6;
+		values[size++] = (byte)(storedValue & 0x7F);
+		storedValue >>>= 7;
 		while(storedValue > 0) {
-			values[size++] = (byte)((storedValue & 0x3F) | 0x80);
-			storedValue >>>= 6;
+			values[size++] = (byte)((storedValue & 0x7F) | 0x80);
+			storedValue >>>= 7;
+		}
+		
+		// Ensure that the 7th is not set in the last byte without run-length encoding.
+		if((values[size - 1] & 0x40) > 0) {
+			values[size++] = (byte) 0x80;
 		}
 	}
 	
@@ -76,10 +81,10 @@ public class IntStack {
 			}
 		} else {
 			// Read variable length value.
-			storedValue = (values[--size] & 0x3F);
+			storedValue = (values[--size] & 0x7F);
 			while((values[size] & 0x80) > 0) {
-				storedValue <<= 6;
-				storedValue += (values[--size] & 0x3F);
+				storedValue <<= 7;
+				storedValue += (values[--size] & 0x7F);
 			}
 		}
 		
