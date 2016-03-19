@@ -48,12 +48,12 @@ import static backend.instruction.viz.SetVizPropertyInstruction.SetVizPropertyIn
 import static backend.instruction.viz.StartVizInstruction.StartVizInstruction;
 import static backend.instruction.viz.VizFilterInstruction.VizFilterInstruction;
 import static backend.instruction.viz.VizIterateInstruction.VizIterateInstruction;
+import static backend.parser.Instructions.Instructions;
 import static backend.value.BooleanValue.Value;
 import static backend.value.DoubleValue.Value;
 import static backend.value.NullValue.NullValue;
 import static backend.value.StringValue.Value;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.parboiled.BaseParser;
@@ -65,7 +65,6 @@ import org.parboiled.support.Var;
 
 import backend.instruction.Instruction;
 import backend.instruction.function.ReturnInstruction;
-import backend.instruction.viz.VizFilterInstruction;
 
 public class Parser extends BaseParser<Instructions> {
 	public Rule Literal() {
@@ -950,22 +949,6 @@ public class Parser extends BaseParser<Instructions> {
 		}
 		
 		return new Instructions(newInstructions);
-	}
-	
-	public Instructions Instructions() {
-		return new Instructions();
-	}
-	
-	public Instructions Instructions(Instruction... instructions) {
-		return Instructions(Arrays.asList(instructions));
-	}
-	
-	public Instructions Instructions(Instructions... instructions) {
-		return new Instructions(instructions);
-	}
-	
-	public Instructions Instructions(List<Instruction> instructions) {
-		return new Instructions(instructions);
 	}
 	
 	public boolean mergeBefore() {

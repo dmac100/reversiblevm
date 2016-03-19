@@ -1,6 +1,7 @@
 package backend.parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import backend.instruction.Instruction;
@@ -38,6 +39,22 @@ public class Instructions {
 		for(int i = 0; i < children.length; i++) {
 			this.children[i] = new Instructions(children[i]);
 		}
+	}
+	
+	public static Instructions Instructions() {
+		return new Instructions();
+	}
+	
+	public static Instructions Instructions(Instruction... instructions) {
+		return Instructions(Arrays.asList(instructions));
+	}
+	
+	public static Instructions Instructions(Instructions... instructions) {
+		return new Instructions(instructions);
+	}
+	
+	public static Instructions Instructions(List<Instruction> instructions) {
+		return new Instructions(instructions);
 	}
 	
 	public List<Instruction> getInstructions() {
