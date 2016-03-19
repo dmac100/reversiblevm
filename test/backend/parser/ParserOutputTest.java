@@ -321,12 +321,12 @@ public class ParserOutputTest {
 		assertParseOutput("@rect(x: 1, y: 2, z: 3);", Arrays.asList("STARTVIZ", "NEWVIZOBJECT: rect", "PUSH: 1", "SETVIZPROPERTY: x", "PUSH: 2", "SETVIZPROPERTY: y", "PUSH: 3", "SETVIZPROPERTY: z", "ENDVIZ"));
 		assertParseOutput("@rect(x: 1 + 2);", Arrays.asList("STARTVIZ", "NEWVIZOBJECT: rect", "PUSH: 1", "PUSH: 2", "ADD", "SETVIZPROPERTY: x", "ENDVIZ"));
 		
-		assertParseOutput("@for(x <- a) rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "NEWVIZOBJECT: rect", "ENDVIZ"));
-		assertParseOutput("@for(x <- a) rect(x: 1);", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "NEWVIZOBJECT: rect", "PUSH: 1", "SETVIZPROPERTY: x", "ENDVIZ"));
-		assertParseOutput("@for(x <- a, y <- b) rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "LOAD: b", "VIZITERATE: y", "NEWVIZOBJECT: rect", "ENDVIZ"));
-		assertParseOutput("@for(x <- a, x < 2) rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "LOAD: x", "PUSH: 2", "LESSTHAN", "VIZFILTER", "NEWVIZOBJECT: rect", "ENDVIZ"));
-		assertParseOutput("@for(var x <- a) rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "NEWVIZOBJECT: rect", "ENDVIZ"));
-		assertParseOutput("@for(var x <- a, y <- b) rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "LOAD: b", "VIZITERATE: y", "NEWVIZOBJECT: rect", "ENDVIZ"));
+		assertParseOutput("@for(x <- a) @rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "NEWVIZOBJECT: rect", "ENDVIZ"));
+		assertParseOutput("@for(x <- a) @rect(x: 1);", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "NEWVIZOBJECT: rect", "PUSH: 1", "SETVIZPROPERTY: x", "ENDVIZ"));
+		assertParseOutput("@for(x <- a, y <- b) @rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "LOAD: b", "VIZITERATE: y", "NEWVIZOBJECT: rect", "ENDVIZ"));
+		assertParseOutput("@for(x <- a, x < 2) @rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "LOAD: x", "PUSH: 2", "LESSTHAN", "VIZFILTER", "NEWVIZOBJECT: rect", "ENDVIZ"));
+		assertParseOutput("@for(var x <- a) @rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "NEWVIZOBJECT: rect", "ENDVIZ"));
+		assertParseOutput("@for(var x <- a, y <- b) @rect();", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "LOAD: b", "VIZITERATE: y", "NEWVIZOBJECT: rect", "ENDVIZ"));
 	}
 	
 	@Test

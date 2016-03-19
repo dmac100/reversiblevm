@@ -46,6 +46,7 @@ import static backend.instruction.viz.EndVizInstruction.EndVizInstruction;
 import static backend.instruction.viz.NewVizObjectInstruction.NewVizObjectInstruction;
 import static backend.instruction.viz.SetVizPropertyInstruction.SetVizPropertyInstruction;
 import static backend.instruction.viz.StartVizInstruction.StartVizInstruction;
+import static backend.instruction.viz.VizFilterInstruction.VizFilterInstruction;
 import static backend.instruction.viz.VizIterateInstruction.VizIterateInstruction;
 import static backend.value.BooleanValue.Value;
 import static backend.value.DoubleValue.Value;
@@ -756,10 +757,9 @@ public class Parser extends BaseParser<Instructions> {
 	
 	public Rule VizStatement() {
 		return Sequence(
-			Terminal("@"),
 			push(Instructions()),
 			Optional(
-				Terminal("for"),
+				Terminal("@for"),
 				Terminal("("),
 				VizForExpression(),
 				ZeroOrMore(
@@ -770,6 +770,7 @@ public class Parser extends BaseParser<Instructions> {
 				mergeBefore(),
 				Terminal(")")
 			),
+			Terminal("@"),
 			Sequence(TestNot(Terminal("for"), Terminal("(")), Identifier()),
 			push(Instructions(NewVizObjectInstruction(match().trim()))),
 			Terminal("("),
@@ -800,7 +801,7 @@ public class Parser extends BaseParser<Instructions> {
 			),
 			Sequence(
 				AssignmentExpression(),
-				push(Instructions(pop(), Instructions(VizFilterInstruction.VizFilterInstruction())))
+				push(Instructions(pop(), Instructions(VizFilterInstruction())))
 			)
 		);
 	}

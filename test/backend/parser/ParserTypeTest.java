@@ -318,9 +318,9 @@ public class ParserTypeTest {
 		assertParseType("@rect(x: 1, y: 2);", parser.VizStatement());
 		assertParseType("@rect(x: 1, y: 2, z: 3);", parser.VizStatement());
 		assertParseType("@rect(x: 1 + 2);", parser.VizStatement());
-		assertParseType("@for(x <- a) rect();", parser.VizStatement());
-		assertParseType("@for(x <- a, y <- b) rect();", parser.VizStatement());
-		assertParseType("@for(x <- a, x < 2) rect();", parser.VizStatement());
+		assertParseType("@for(x <- a) @rect();", parser.VizStatement());
+		assertParseType("@for(x <- a, y <- b) @rect();", parser.VizStatement());
+		assertParseType("@for(x <- a, x < 2) @rect();", parser.VizStatement());
 	}
 
 	@Test

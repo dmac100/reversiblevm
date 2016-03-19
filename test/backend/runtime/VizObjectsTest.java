@@ -62,13 +62,13 @@ public class VizObjectsTest {
 		
 	@Test
 	public void forLoop() {
-		assertVizObjects("var a = []; @for(x <- a) rect(x: x);", new ArrayList<List<String>>());
+		assertVizObjects("var a = []; @for(x <- a) @rect(x: x);", new ArrayList<List<String>>());
 		
-		assertVizObjects("var a = [5]; @for(x <- a) rect(x: x);", Arrays.asList(
+		assertVizObjects("var a = [5]; @for(x <- a) @rect(x: x);", Arrays.asList(
 			Arrays.asList("rect(x: 5)")
 		));
 		
-		assertVizObjects("var a = [1, 2, 3]; @for(x <- a) rect(x: x);", Arrays.asList(
+		assertVizObjects("var a = [1, 2, 3]; @for(x <- a) @rect(x: x);", Arrays.asList(
 			Arrays.asList("rect(x: 1)", "rect(x: 2)", "rect(x: 3)")
 		));
 	}
@@ -85,30 +85,30 @@ public class VizObjectsTest {
 	
 	@Test
 	public void forLoopWithConditional() {
-		assertVizObjects("var a = [1, 2, 3]; @for(x <- a, x >= 4) rect(x: x);", new ArrayList<List<String>>());
+		assertVizObjects("var a = [1, 2, 3]; @for(x <- a, x >= 4) @rect(x: x);", new ArrayList<List<String>>());
 		
-		assertVizObjects("var a = [1, 2, 3]; @for(x <- a, x >= 2) rect(x: x);", Arrays.asList(
+		assertVizObjects("var a = [1, 2, 3]; @for(x <- a, x >= 2) @rect(x: x);", Arrays.asList(
 			Arrays.asList("rect(x: 2)", "rect(x: 3)")
 		));
 	}
 	
 	@Test
 	public void nestedForLoops() {
-		assertVizObjects("var a = [[1, 2], [3, 4]]; @for(x <- a, y <- x) rect(x: y);", Arrays.asList(
+		assertVizObjects("var a = [[1, 2], [3, 4]]; @for(x <- a, y <- x) @rect(x: y);", Arrays.asList(
 			Arrays.asList("rect(x: 1)", "rect(x: 2)", "rect(x: 3)", "rect(x: 4)")
 		));
 	}
 	
 	@Test
 	public void multipleForLoops() {
-		assertVizObjects("var a = [1, 2]; var b = [3, 4]; @for(x <- a, y <- b) rect(x: x, y: y);", Arrays.asList(
+		assertVizObjects("var a = [1, 2]; var b = [3, 4]; @for(x <- a, y <- b) @rect(x: x, y: y);", Arrays.asList(
 			Arrays.asList("rect(x: 1, y: 3)", "rect(x: 1, y: 4)", "rect(x: 2, y: 3)", "rect(x: 2, y: 4)")
 		));
 	}
 	
 	@Test
 	public void observeArray() {
-		assertVizObjects("var a = [1, 2, 3]; @for(x <- a) rect(x: x); a.push(4);", Arrays.asList(
+		assertVizObjects("var a = [1, 2, 3]; @for(x <- a) @rect(x: x); a.push(4);", Arrays.asList(
 			Arrays.asList("rect(x: 1)", "rect(x: 2)", "rect(x: 3)"),
 			Arrays.asList("rect(x: 1)", "rect(x: 2)", "rect(x: 3)", "rect(x: 4)")
 		));
@@ -116,7 +116,7 @@ public class VizObjectsTest {
 	
 	@Test
 	public void observeArrayElement() {
-		assertVizObjects("var a = [1, 2, 3]; @for(x <- a) rect(x: x); a[0] = 4;", Arrays.asList(
+		assertVizObjects("var a = [1, 2, 3]; @for(x <- a) @rect(x: x); a[0] = 4;", Arrays.asList(
 			Arrays.asList("rect(x: 1)", "rect(x: 2)", "rect(x: 3)"),
 			Arrays.asList("rect(x: 4)", "rect(x: 2)", "rect(x: 3)")
 		));
@@ -180,15 +180,15 @@ public class VizObjectsTest {
 	public void vizObjectsDoNotChangeState() {
 		assertStateNotChanged("@rect();");
 		assertStateNotChanged("@rect(x: 1);");
-		assertStateNotChanged("@for(true) rect(x: 1);");
-		assertStateNotChanged("@for(2 > 1) rect(x: 1);");
-		assertStateNotChanged("@for(x <- [1]) rect(x: 1);");
-		assertStateNotChanged("@for(x <- [1]) rect();");
-		assertStateNotChanged("@for(x <- [1, 2]) rect();");
-		assertStateNotChanged("@for(x <- [1, 2, 3]) rect();");
-		assertStateNotChanged("@for(x <- [1], y <- [2]) rect();");
-		assertStateNotChanged("@for(x <- [y = 1]) rect();");
-		assertStateNotChanged("@for(x <- [print()]) rect();");
+		assertStateNotChanged("@for(true) @rect(x: 1);");
+		assertStateNotChanged("@for(2 > 1) @rect(x: 1);");
+		assertStateNotChanged("@for(x <- [1]) @rect(x: 1);");
+		assertStateNotChanged("@for(x <- [1]) @rect();");
+		assertStateNotChanged("@for(x <- [1, 2]) @rect();");
+		assertStateNotChanged("@for(x <- [1, 2, 3]) @rect();");
+		assertStateNotChanged("@for(x <- [1], y <- [2]) @rect();");
+		assertStateNotChanged("@for(x <- [y = 1]) @rect();");
+		assertStateNotChanged("@for(x <- [print()]) @rect();");
 	}
 	
 	private static void assertVizObjects(String program, List<List<String>> expectedObjects) {

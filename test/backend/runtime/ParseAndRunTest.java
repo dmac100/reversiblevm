@@ -383,11 +383,11 @@ public class ParseAndRunTest {
 	public void VizStatement() {
 		assertOutput("1\n2", "print(1); @rect(); print(2);");
 		assertOutput("1\n2", "print(1); @rect(x: 1); print(2);");
-		assertOutput("1\n2", "print(1); @for(true) rect(x: 1); print(2);");
-		assertOutput("1\n2", "print(1); @for(x <- [1]) rect(x: 1); print(2);");
-		assertOutput("2", "var x = 2; @for(x <- [1]) rect(); print(x);");
-		assertOutput("null", "@for(x <- [1]) rect(); print(x);");
-		assertOutput("0", "var y = 0; @for(x <- [y++]) rect(); print(y);");
+		assertOutput("1\n2", "print(1); @for(true) @rect(x: 1); print(2);");
+		assertOutput("1\n2", "print(1); @for(x <- [1]) @rect(x: 1); print(2);");
+		assertOutput("2", "var x = 2; @for(x <- [1]) @rect(); print(x);");
+		assertOutput("null", "@for(x <- [1]) @rect(); print(x);");
+		assertOutput("0", "var y = 0; @for(x <- [y++]) @rect(); print(y);");
 	}
 	
 	@Test
