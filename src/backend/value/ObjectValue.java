@@ -119,4 +119,9 @@ public class ObjectValue extends Value implements HasState {
 		
 		return s.toString().replaceAll("\\s+$", "");
 	}
+	
+	@Override
+	public Object getKey() {
+		return this;
+	}
 }

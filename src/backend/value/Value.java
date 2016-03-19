@@ -9,6 +9,12 @@ public abstract class Value implements HasState {
 	public String toString() {
 		return toString(new HashSet<Value>());
 	}
+
+	/**
+	 * Returns a key that can be compared to see whether two values are equal.
+	 */
+	public abstract Object getKey();
+
 	
 	public String getState(String prefix, Set<Object> used) {
 		return prefix + toString();

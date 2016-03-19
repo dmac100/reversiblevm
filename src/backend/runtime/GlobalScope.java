@@ -77,6 +77,10 @@ public class GlobalScope implements Scope, HasState {
 					throw new ExecutionException("Error running native function: " + method.getName(), e);
 				}
 			}
+			
+			public Object getKey() {
+				return this;
+			}
 		};
 	}
 	

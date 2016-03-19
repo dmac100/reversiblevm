@@ -20,4 +20,9 @@ public class BooleanValue extends Value implements ImmutableValue {
 	public String toString(Set<Value> used) {
 		return value ? "true" : "false";
 	}
+	
+	@Override
+	public Object getKey() {
+		return value;
+	}
 }

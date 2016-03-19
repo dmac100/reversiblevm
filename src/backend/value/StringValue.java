@@ -20,4 +20,9 @@ public class StringValue extends Value implements ImmutableValue {
 	public String toString(Set<Value> used) {
 		return String.valueOf(value);
 	}
+	
+	@Override
+	public Object getKey() {
+		return value;
+	}
 }

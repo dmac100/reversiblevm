@@ -52,4 +52,9 @@ public class FunctionValue extends Value implements HasState {
 		
 		return s.toString();
 	}
+	
+	@Override
+	public Object getKey() {
+		return this;
+	}
 }

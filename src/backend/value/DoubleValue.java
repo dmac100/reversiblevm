@@ -25,4 +25,9 @@ public class DoubleValue extends Value implements ImmutableValue {
 			return String.valueOf(value);
 		}
 	}
+	
+	@Override
+	public Object getKey() {
+		return value;
+	}
 }

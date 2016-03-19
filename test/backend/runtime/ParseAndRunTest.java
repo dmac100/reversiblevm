@@ -216,6 +216,16 @@ public class ParseAndRunTest {
 		assertOutput("false", "print(null != null);");
 		assertOutput("false", "print('a' != 'a');");
 		assertOutput("true", "print('a' != 'b');");
+		
+		assertOutput("true", "a = []; print(a == a);");
+		assertOutput("true", "print(print == print);");
+		assertOutput("true", "print(ArrayProto == ArrayProto);");
+		assertOutput("false", "print([] == []);");
+		assertOutput("false", "print({} == {});");
+		assertOutput("false", "print([] == {});");
+		assertOutput("false", "print({} == []);");
+		assertOutput("false", "print({} == null);");
+		assertOutput("false", "print('1' == 1);");
 	}
 	
 	@Test
