@@ -1,5 +1,7 @@
 package frontend.ui;
 
+import integration.BrushJs;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +41,6 @@ import syntaxhighlighter.brush.Brush;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 
-import frontend.compiler.BracketMatcher;
-import frontend.compiler.BrushJs;
 import frontend.event.EnabledChangedEvent;
 
 public class EditorText {

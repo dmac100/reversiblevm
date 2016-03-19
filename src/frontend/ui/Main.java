@@ -1,5 +1,8 @@
 package frontend.ui;
 
+import integration.GraphicsCanvas;
+import integration.RuntimeModel;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -32,7 +35,6 @@ import org.eclipse.swt.widgets.Shell;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import frontend.compiler.CompilerModel;
 import frontend.controller.MainController;
 import frontend.event.CompilerModelChangedEvent;
 import frontend.event.EnabledChangedEvent;
@@ -105,7 +107,7 @@ public class Main {
 		refreshTitle();
 		setGraphicsPaneVisible(graphicsPane);
 		
-		refreshToolbarEnabled(new CompilerModel());
+		refreshToolbarEnabled(new RuntimeModel());
 		
 		eventBus.register(new Object() {
 			@Subscribe @SuppressWarnings("unused")
@@ -417,7 +419,7 @@ public class Main {
 		});
 	}
 
-	private void refreshToolbarEnabled(CompilerModel compilerModel) {
+	private void refreshToolbarEnabled(RuntimeModel compilerModel) {
 		compileButton.setEnabled(compilerModel.isCompileEnabled());
 		runForwardButton.setEnabled(compilerModel.isRunForwardEnabled());
 		runBackwardButton.setEnabled(compilerModel.isRunBackwardEnabled());

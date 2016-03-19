@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import com.google.common.base.Optional;
 
+import frontend.ui.BracketMatcher;
+
 public class BracketMatcherTest {
 	private BracketMatcher matcher = new BracketMatcher();
 	

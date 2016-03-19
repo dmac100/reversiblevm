@@ -1,15 +1,15 @@
 package frontend.event;
 
-import frontend.compiler.CompilerModel;
+import integration.RuntimeModel;
 
 public class CompilerModelChangedEvent {
-	private final CompilerModel compilerModel;
+	private final RuntimeModel compilerModel;
 
-	public CompilerModelChangedEvent(CompilerModel compilerModel) {
+	public CompilerModelChangedEvent(RuntimeModel compilerModel) {
 		this.compilerModel = compilerModel;
 	}
 	
-	public CompilerModel getCompilerModel() {
+	public RuntimeModel getCompilerModel() {
 		return compilerModel;
 	}
 }

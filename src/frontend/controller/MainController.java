@@ -1,5 +1,9 @@
 package frontend.controller;
 
+import integration.GraphicsCanvas;
+import integration.RuntimeController;
+import integration.RuntimeModel;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,14 +16,11 @@ import backend.runtime.Engine;
 
 import com.google.common.eventbus.EventBus;
 
-import frontend.compiler.Compiler;
-import frontend.compiler.CompilerModel;
 import frontend.event.CompilerModelChangedEvent;
 import frontend.event.ModifiedEvent;
 import frontend.ui.Callback;
 import frontend.ui.ConsoleText;
 import frontend.ui.EditorText;
-import frontend.ui.GraphicsCanvas;
 
 public class MainController {
 	private final Shell shell;
@@ -33,7 +34,7 @@ public class MainController {
 	private File file = null;
 	private boolean modified = false;
 	
-	private final Compiler compiler = new Compiler(this);
+	private final RuntimeController runtime = new RuntimeController(this);
 	
 	public MainController(Shell shell, final EventBus eventBus, EditorText editorText, GraphicsCanvas graphicsCanvas, ConsoleText consoleText) {
 		this.shell = shell;
@@ -43,7 +44,7 @@ public class MainController {
 		this.graphicsCanvas = graphicsCanvas;
 		this.consoleText = consoleText;
 
-		compiler.startQueueThread();
+		runtime.startQueueThread();
 		
 		loadDefaultText();
 		
@@ -105,35 +106,35 @@ public class MainController {
 		return file;
 	}
 	
-	public void setCompilerModel(CompilerModel compilerModel) {
-		editorText.setDebugLineNumber(compilerModel.getLineNumber());
-		consoleText.setOutput(compilerModel.getOutput(), compilerModel.getErrors());
-		graphicsCanvas.setVizObjects(compilerModel.getVizObjects());
-		eventBus.post(new CompilerModelChangedEvent(compilerModel));
+	public void setRuntimeModel(RuntimeModel runtimeModel) {
+		editorText.setDebugLineNumber(runtimeModel.getLineNumber());
+		consoleText.setOutput(runtimeModel.getOutput(), runtimeModel.getErrors());
+		graphicsCanvas.setVizObjects(runtimeModel.getVizObjects());
+		eventBus.post(new CompilerModelChangedEvent(runtimeModel));
 	}
 	
 	public void compile() {
-		compiler.compile(editorText.getText());
+		runtime.compile(editorText.getText());
 	}
 	
 	public void runForward() {
-		compiler.runForward();
+		runtime.runForward();
 	}
 	
 	public void runBackward() {
-		compiler.runBackward();
+		runtime.runBackward();
 	}
 	
 	public void stepBackward() {
-		compiler.stepBackward();
+		runtime.stepBackward();
 	}
 	
 	public void stepForward() {
-		compiler.stepForward();
+		runtime.stepForward();
 	}
 	
 	public void stop() {
-		compiler.pause();
+		runtime.pause();
 	}
 
 	public void undo() {

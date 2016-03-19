@@ -1,4 +1,4 @@
-package frontend.compiler;
+package frontend.ui;
 
 import com.google.common.base.Optional;
 

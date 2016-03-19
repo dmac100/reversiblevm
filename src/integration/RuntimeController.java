@@ -1,4 +1,4 @@
-package frontend.compiler;
+package integration;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 
@@ -23,7 +23,7 @@ import frontend.controller.MainController;
  * Handles the interaction between the frontend and the backend compiler and runtime.
  * Runs the actions in a queue so that all compiler interactions are on the same thread.
  */
-public class Compiler {
+public class RuntimeController {
 	private final ArrayBlockingQueue<Runnable> runnableQueue = new ArrayBlockingQueue<>(50);
 	
 	private Runtime runtime;
@@ -35,7 +35,7 @@ public class Compiler {
 
 	private final MainController mainController;
 	
-	public Compiler(MainController mainController) {
+	public RuntimeController(MainController mainController) {
 		this.mainController = mainController;
 		compileEmpty();
 	}
@@ -117,21 +117,21 @@ public class Compiler {
 		output = output.subList(Math.max(0, output.size() - bufferSize), output.size());
 		errors = errors.subList(Math.max(0, errors.size() - bufferSize), errors.size());
 		
-		final CompilerModel compilerModel = new CompilerModel();
-		compilerModel.setOutput(new ArrayList<>(output));
-		compilerModel.setErrors(new ArrayList<>(errors));
-		compilerModel.setVizObjects(runtime.getVizObjects());
-		compilerModel.setLineNumber(runtime.getLineNumber());
-		compilerModel.setStepBackwardEnabled(!running && !runtime.atStart());
-		compilerModel.setStepForwardEnabled(!running && !runtime.atEnd());
-		compilerModel.setRunBackwardEnabled(!running && !runtime.atStart());
-		compilerModel.setRunForwardEnabled(!running && !runtime.atEnd());
-		compilerModel.setPauseEnabled(running);
-		compilerModel.setCompileEnabled(true);
+		final RuntimeModel runtimeModel = new RuntimeModel();
+		runtimeModel.setOutput(new ArrayList<>(output));
+		runtimeModel.setErrors(new ArrayList<>(errors));
+		runtimeModel.setVizObjects(runtime.getVizObjects());
+		runtimeModel.setLineNumber(runtime.getLineNumber());
+		runtimeModel.setStepBackwardEnabled(!running && !runtime.atStart());
+		runtimeModel.setStepForwardEnabled(!running && !runtime.atEnd());
+		runtimeModel.setRunBackwardEnabled(!running && !runtime.atStart());
+		runtimeModel.setRunForwardEnabled(!running && !runtime.atEnd());
+		runtimeModel.setPauseEnabled(running);
+		runtimeModel.setCompileEnabled(true);
 		
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				mainController.setCompilerModel(compilerModel);
+				mainController.setRuntimeModel(runtimeModel);
 			}
 		});
 	}

@@ -1,11 +1,11 @@
-package frontend.compiler;
+package integration;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import backend.runtime.VizObject;
 
-public class CompilerModel {
+public class RuntimeModel {
 	private List<String> output = new ArrayList<>();
 	private List<String> errors = new ArrayList<>();
 	private List<VizObject> vizObjects = new ArrayList<>();

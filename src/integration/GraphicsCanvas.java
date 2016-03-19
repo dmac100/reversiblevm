@@ -1,4 +1,4 @@
-package frontend.ui;
+package integration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,8 @@ import backend.value.ImmutableValue;
 import backend.value.StringValue;
 
 import com.google.common.eventbus.EventBus;
+
+import frontend.ui.ColorCache;
 
 public class GraphicsCanvas {
 	private final Canvas canvas;
