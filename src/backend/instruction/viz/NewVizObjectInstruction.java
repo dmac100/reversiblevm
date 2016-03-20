@@ -1,6 +1,7 @@
 package backend.instruction.viz;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import backend.instruction.Instruction;
 import backend.runtime.Runtime;
@@ -22,7 +23,9 @@ public class NewVizObjectInstruction extends Instruction {
 	}
 	
 	public void execute(Runtime runtime) {
-		VizObject vizObject = new VizObject(name, new ArrayList<>(runtime.getCurrentVizObjectKey()));
+		List<Object> key = runtime.getCurrentVizObjectKey();
+		key.add(this);
+		VizObject vizObject = new VizObject(name, new ArrayList<>(key));
 		runtime.getCurrentVizObjects().add(vizObject);
 	}
 	
