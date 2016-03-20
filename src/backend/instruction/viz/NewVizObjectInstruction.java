@@ -1,5 +1,7 @@
 package backend.instruction.viz;
 
+import java.util.ArrayList;
+
 import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 import backend.runtime.VizObject;
@@ -20,7 +22,8 @@ public class NewVizObjectInstruction extends Instruction {
 	}
 	
 	public void execute(Runtime runtime) {
-		runtime.getCurrentVizObjects().add(new VizObject(name));
+		VizObject vizObject = new VizObject(name, new ArrayList<>(runtime.getCurrentVizObjectKey()));
+		runtime.getCurrentVizObjects().add(vizObject);
 	}
 	
 	public void undo(Runtime runtime) {

@@ -26,6 +26,7 @@ public class Runtime implements HasState, ValueReadObserver {
 	private List<StackFrame> stackFrames = new ArrayList<>();
 	private int nestedFunctionDefinitionCount = 0;
 	private List<VizObject> currentVizObjects = new ArrayList<>();
+	private List<Object> currentVizObjectKey = new ArrayList<>();
 	private Set<ValueReadObserver> valueReadObservers = new HashSet<>();
 	
 	private List<String> errors = new ArrayList<>();
@@ -85,8 +86,11 @@ public class Runtime implements HasState, ValueReadObserver {
 			getScope().create(name);
 			
 			for(Value value:array.values(this)) {
+				List<Object> key = getCurrentVizObjectKey();
 				getScope().set(name, value);
+				key.add(value.getKey());
 				runAndUndoInstructions(instructions.subList(frame.getInstructionCounter() + 1, instructions.size()));
+				key.remove(key.size() - 1);
 			}
 			
 			return;
@@ -268,6 +272,13 @@ public class Runtime implements HasState, ValueReadObserver {
 	 */
 	public List<VizObject> getCurrentVizObjects() {
 		return currentVizObjects;
+	}
+
+	/**
+	 * Returns the key for the next viz object to be created with.
+	 */
+	public List<Object> getCurrentVizObjectKey() {
+		return currentVizObjectKey;
 	}
 	
 	public void addValueReadObserver(ValueReadObserver observer) {

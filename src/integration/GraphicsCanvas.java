@@ -1,7 +1,12 @@
 package integration;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -27,7 +32,9 @@ public class GraphicsCanvas {
 	private final Canvas canvas;
 	private final ColorCache colorCache;
 	
-	private List<VizObject> vizObjects = new ArrayList<>();
+	private Map<Object, DisplayedVizObject> displayedVizObjects = new LinkedHashMap<>();
+	
+	private Thread refreshLoopThread;
 	
 	public GraphicsCanvas(final EventBus eventBus, Composite parent) {
 		canvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
@@ -40,12 +47,81 @@ public class GraphicsCanvas {
 		});
 	}
 	
-	public void setVizObjects(List<VizObject> vizObjects) {
-		this.vizObjects = vizObjects;
+	private Thread startRefreshLoopThread() {
+		Thread thread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					runRefreshLoop();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.setDaemon(true);
+		thread.start();
+		return thread;
+	}
+	
+	private void runRefreshLoop() throws InterruptedException {
+		while(true) {
+			if(!canvas.isDisposed()) {
+				canvas.getDisplay().syncExec(new Runnable() {
+					public void run() {
+						if(!canvas.isDisposed()) {
+							redraw();
+						}
+					}
+				});
+				Thread.sleep(10);
+			}
+		}
+	}
+	
+	public void setVizObjects(List<VizObject> newVizObjects) {
+		Map<Object, DisplayedVizObject> newDisplayedVizObjects = new LinkedHashMap<>();
+		
+		Set<Object> keys = new HashSet<>();
+		
+		for(VizObject newVizObject:newVizObjects) {
+			Object key = newVizObject.getKey();
+			if(displayedVizObjects.containsKey(key)) {
+				DisplayedVizObject vizObject = displayedVizObjects.get(key);
+				newDisplayedVizObjects.put(key, vizObject);
+				vizObject.update(newVizObject);
+			} else {
+				DisplayedVizObject vizObject = new DisplayedVizObject(newVizObject);
+				vizObject.create();
+				newDisplayedVizObjects.put(key, vizObject);
+			}
+			keys.add(key);
+		}
+		
+		for(Object key:displayedVizObjects.keySet()) {
+			if(!keys.contains(key)) {
+				DisplayedVizObject vizObject = displayedVizObjects.get(key);
+				vizObject.delete();
+				newDisplayedVizObjects.put(key, vizObject);
+			}
+		}
+		
+		displayedVizObjects = newDisplayedVizObjects;
+		
 		redraw();
+		
+		if(refreshLoopThread == null) {
+			refreshLoopThread = startRefreshLoopThread();
+		}
 	}
 	
 	public void redraw() {
+		for(Iterator<DisplayedVizObject> iterator = displayedVizObjects.values().iterator(); iterator.hasNext();) {
+			DisplayedVizObject vizObject = iterator.next();
+			vizObject.redraw();
+			if(vizObject.isDeleted()) {
+				iterator.remove();
+			}
+		}
+		
 		canvas.redraw();
 	}
 	
@@ -62,7 +138,7 @@ public class GraphicsCanvas {
 		gc.setClipping(canvasMargin + 1, canvasMargin + 1, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2);
 		
 		// Paint the visual objects.
-		paintVizObjects(gc, canvasWidth, canvasHeight, canvasMargin, vizObjects);
+		paintVizObjects(gc, canvasWidth, canvasHeight, canvasMargin, displayedVizObjects.values());
 		
 		// Draw border around canvas.
 		gc.setClipping(0, 0, canvasWidth, canvasHeight);
@@ -70,25 +146,8 @@ public class GraphicsCanvas {
 		gc.drawRoundRectangle(canvasMargin + 1, canvasMargin + 1, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2, 3, 3);
 	}
 
-	private List<VizObject> getVizObjects() {
-		String[] colors = { "red", "green", "blue", "yellow", "magenta", "cyan", "white", "lightgrey", "grey", "darkgrey", "black" };
-		
-		List<VizObject> vizObjects = new ArrayList<>();
-		for(int i = 0; i < colors.length; i++) {
-			VizObject vizObject = new VizObject("rect");
-			vizObject.setProperty("x", new DoubleValue(50));
-			vizObject.setProperty("y", new DoubleValue(i * 40));
-			vizObject.setProperty("width", new DoubleValue(50));
-			vizObject.setProperty("height", new DoubleValue(30));
-			vizObject.setProperty("color", new StringValue(colors[i]));
-			vizObjects.add(vizObject);
-		}
-		
-		return vizObjects;
-	}
-
-	private void paintVizObjects(GC gc, int canvasWidth, int canvasHeight, int canvasMargin, List<VizObject> vizObjects) {
-		for(VizObject vizObject:vizObjects) {
+	private void paintVizObjects(GC gc, int canvasWidth, int canvasHeight, int canvasMargin, Collection<DisplayedVizObject> vizObjects) {
+		for(DisplayedVizObject vizObject:vizObjects) {
 			String name = vizObject.getName();
 			
 			if(name.equals("rect")) {
@@ -96,14 +155,19 @@ public class GraphicsCanvas {
 				int y = (int) getDoubleOrDefault(vizObject, "y", 0);
 				int width = (int) getDoubleOrDefault(vizObject, "width", 50);
 				int height = (int) getDoubleOrDefault(vizObject, "height", 50);
+				double opacity = (double) getDoubleOrDefault(vizObject, "opacity", 1);
+				
+				gc.setAlpha((int)(opacity * 255));
 				
 				gc.setBackground(getColorOrDefault(vizObject, "color", "red"));
 				gc.fillRectangle(x + canvasMargin, y + canvasMargin, width, height);
 			}
 		}
+		
+		gc.setAlpha(255);
 	}
 
-	private Color getColorOrDefault(VizObject vizObject, String name, String defaultValue) {
+	private Color getColorOrDefault(DisplayedVizObject vizObject, String name, String defaultValue) {
 		String color = getStringOrDefault(vizObject, name, "red");
 		
 		if(color.equals("red")) return colorCache.getColor(200, 100, 100);
@@ -121,7 +185,7 @@ public class GraphicsCanvas {
 		return colorCache.getColor(200, 100, 100);
 	}
 
-	private double getDoubleOrDefault(VizObject vizObject, String name, double defaultValue) {
+	private double getDoubleOrDefault(DisplayedVizObject vizObject, String name, double defaultValue) {
 		ImmutableValue value = vizObject.getProperty(name);
 		if(value instanceof DoubleValue) {
 			return ((DoubleValue)value).getValue();
@@ -130,7 +194,7 @@ public class GraphicsCanvas {
 		}
 	}
 	
-	private String getStringOrDefault(VizObject vizObject, String name, String defaultValue) {
+	private String getStringOrDefault(DisplayedVizObject vizObject, String name, String defaultValue) {
 		ImmutableValue value = vizObject.getProperty(name);
 		if(value instanceof StringValue) {
 			return ((StringValue)value).getValue();
@@ -139,7 +203,7 @@ public class GraphicsCanvas {
 		}
 	}
 	
-	private boolean getBooleanOrDefault(VizObject vizObject, String name, boolean defaultValue) {
+	private boolean getBooleanOrDefault(DisplayedVizObject vizObject, String name, boolean defaultValue) {
 		ImmutableValue value = vizObject.getProperty(name);
 		if(value instanceof BooleanValue) {
 			return ((BooleanValue)value).getValue();

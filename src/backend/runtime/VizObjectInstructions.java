@@ -26,6 +26,8 @@ public class VizObjectInstructions implements ValueChangeObserver {
 		runtime.getUndoStack().setUndoEnabled(true);
 		
 		runtime.getCurrentVizObjects().clear();
+		runtime.getCurrentVizObjectKey().clear();
+		runtime.getCurrentVizObjectKey().add(this);
 		
 		executeInstructions(runtime);
 		
