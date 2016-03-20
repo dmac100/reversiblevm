@@ -171,7 +171,7 @@ public class GraphicsCanvas {
 		String color = getStringOrDefault(vizObject, name, "red");
 		
 		if(color.equals("red")) return colorCache.getColor(200, 100, 100);
-		if(color.equals("green")) return colorCache.getColor(150, 200, 100);
+		if(color.equals("green")) return colorCache.getColor(100, 200, 100);
 		if(color.equals("blue")) return colorCache.getColor(100, 100, 200);
 		if(color.equals("yellow")) return colorCache.getColor(200, 200, 100);
 		if(color.equals("magenta")) return colorCache.getColor(200, 100, 200);
