@@ -17,6 +17,7 @@ public class DisplayedVizObject {
 	private Map<String, ImmutableValue> currentValues = new HashMap<>();
 	private Map<String, ImmutableValue> targetValues = new HashMap<>();
 	private boolean deletePending = false;
+	private boolean updatePending = false;
 	private boolean deleted;
 	
 	public DisplayedVizObject(VizObject vizObject) {
@@ -62,6 +63,7 @@ public class DisplayedVizObject {
 		targetValues.putAll(newVizObject.getValues());
 		updateTime = System.currentTimeMillis();
 		deletePending = false;
+		updatePending = true;
 		
 		setDefaultValues(targetValues);
 		
@@ -78,6 +80,7 @@ public class DisplayedVizObject {
 		targetValues = new HashMap<>(currentValues);
 		updateTime = System.currentTimeMillis();
 		deletePending = false;
+		updatePending = true;
 		
 		initialValues.put("opacity", new DoubleValue(0));
 		if(!targetValues.containsKey("opacity")) {
@@ -90,6 +93,7 @@ public class DisplayedVizObject {
 		targetValues = new HashMap<>(currentValues);
 		updateTime = System.currentTimeMillis();
 		deletePending = true;
+		updatePending = true;
 		
 		initialValues.put("opacity", currentValues.get("opacity"));
 		targetValues.put("opacity", new DoubleValue(0));
@@ -99,11 +103,21 @@ public class DisplayedVizObject {
 		return deleted;
 	}
 	
+	public boolean isUpdatePending() {
+		return updatePending;
+	}
+	
 	public void redraw() {
 		double t = Math.min(1, (System.currentTimeMillis() - updateTime) / 400.0);
 		
-		if(t >= 1 && deletePending) {
-			deleted = true;
+		if(t >= 1) {
+			if(deletePending) {
+				deleted = true;
+				return;
+			}
+			
+			updatePending = false;
+			currentValues = new HashMap<>(targetValues);
 			return;
 		}
 		

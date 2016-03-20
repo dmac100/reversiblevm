@@ -7,11 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -35,6 +35,8 @@ public class GraphicsCanvas {
 	private Map<Object, DisplayedVizObject> displayedVizObjects = new LinkedHashMap<>();
 	
 	private Thread refreshLoopThread;
+	
+	private final Object refreshLock = new Object();
 	
 	public GraphicsCanvas(final EventBus eventBus, Composite parent) {
 		canvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
@@ -65,13 +67,21 @@ public class GraphicsCanvas {
 	private void runRefreshLoop() throws InterruptedException {
 		while(true) {
 			if(!canvas.isDisposed()) {
+				final AtomicBoolean updatePending = new AtomicBoolean(false);
 				canvas.getDisplay().syncExec(new Runnable() {
 					public void run() {
 						if(!canvas.isDisposed()) {
-							redraw();
+							if(redraw()) {
+								updatePending.set(true);
+							}
 						}
 					}
 				});
+				if(!updatePending.get()) {
+					synchronized(refreshLock) {
+						refreshLock.wait();
+					}
+				}
 				Thread.sleep(10);
 			}
 		}
@@ -111,18 +121,27 @@ public class GraphicsCanvas {
 		if(refreshLoopThread == null) {
 			refreshLoopThread = startRefreshLoopThread();
 		}
+		
+		synchronized (refreshLock) {
+			refreshLock.notifyAll();
+		}
 	}
 	
-	public void redraw() {
+	public boolean redraw() {
+		boolean updatePending = false;
 		for(Iterator<DisplayedVizObject> iterator = displayedVizObjects.values().iterator(); iterator.hasNext();) {
 			DisplayedVizObject vizObject = iterator.next();
 			vizObject.redraw();
 			if(vizObject.isDeleted()) {
 				iterator.remove();
+			} else if(vizObject.isUpdatePending()) {
+				updatePending = true;
 			}
 		}
 		
 		canvas.redraw();
+		
+		return updatePending;
 	}
 	
 	private void paint(Display display, GC gc) {
