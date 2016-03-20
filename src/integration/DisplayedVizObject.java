@@ -100,7 +100,7 @@ public class DisplayedVizObject {
 	}
 	
 	public void redraw() {
-		double t = Math.min(1, (System.currentTimeMillis() - updateTime) / 200.0);
+		double t = Math.min(1, (System.currentTimeMillis() - updateTime) / 400.0);
 		
 		if(t >= 1 && deletePending) {
 			deleted = true;
@@ -115,7 +115,7 @@ public class DisplayedVizObject {
 				double a = ((DoubleValue)value1).getValue();
 				double b = ((DoubleValue)value2).getValue();
 				
-				double c = a + (b - a) * t;
+				double c = new CubicBezier(0.8, 0.2, 0.2, 0.8).getBezierYValue(t) * (b - a) + a;
 				
 				currentValues.put(property, new DoubleValue(c));
 			}
