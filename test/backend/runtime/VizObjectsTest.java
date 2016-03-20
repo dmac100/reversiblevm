@@ -191,6 +191,28 @@ public class VizObjectsTest {
 		assertStateNotChanged("@for(x <- [print()]) @rect();");
 	}
 	
+	@Test
+	public void vizFilter() {
+		assertVizObjects("@rect(id: 1, x: 10); @rect[id: 1](x: 20);", Arrays.asList(
+			Arrays.asList("rect(id: 1, x: 10)"),
+			Arrays.asList("rect(id: 1, x: 20)")
+		));
+		assertVizObjects("@rect(id: 1, x: 10, y: 5); @rect[id: 1](x: 20);", Arrays.asList(
+			Arrays.asList("rect(id: 1, x: 10, y: 5)"),
+			Arrays.asList("rect(id: 1, x: 20, y: 5)")
+		));
+		assertVizObjects("@rect(id: 1); @rect(id: 2); @rect[id: 1](x: 20);", Arrays.asList(
+			Arrays.asList("rect(id: 1)"),
+			Arrays.asList("rect(id: 1)", "rect(id: 2)"),
+			Arrays.asList("rect(id: 1, x: 20)", "rect(id: 2)")
+		));
+		assertVizObjects("@rect(id: 1); @rect(id: 2); @rect[](x: 20);", Arrays.asList(
+			Arrays.asList("rect(id: 1)"),
+			Arrays.asList("rect(id: 1)", "rect(id: 2)"),
+			Arrays.asList("rect(id: 1, x: 20)", "rect(id: 2, x: 20)")
+		));
+	}
+	
 	private static void assertVizObjects(String program, List<List<String>> expectedObjects) {
 		assertVizObjects(program, expectedObjects, false);
 	}

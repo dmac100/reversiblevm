@@ -42,8 +42,10 @@ import static backend.instruction.stack.SwapInstruction.Swap;
 import static backend.instruction.variable.LoadInstruction.Load;
 import static backend.instruction.variable.LocalInstruction.Local;
 import static backend.instruction.variable.StoreInstruction.Store;
+import static backend.instruction.viz.EnableVizFilterInstruction.EnableVizFilterInstruction;
 import static backend.instruction.viz.EndVizInstruction.EndVizInstruction;
 import static backend.instruction.viz.NewVizObjectInstruction.NewVizObjectInstruction;
+import static backend.instruction.viz.SetVizFilterPropertyInstruction.SetVizFilterPropertyInstruction;
 import static backend.instruction.viz.SetVizPropertyInstruction.SetVizPropertyInstruction;
 import static backend.instruction.viz.StartVizInstruction.StartVizInstruction;
 import static backend.instruction.viz.VizFilterInstruction.VizFilterInstruction;
@@ -65,6 +67,7 @@ import org.parboiled.support.Var;
 
 import backend.instruction.Instruction;
 import backend.instruction.function.ReturnInstruction;
+import backend.instruction.viz.EnableVizFilterInstruction;
 
 public class Parser extends BaseParser<Instructions> {
 	public Rule Literal() {
@@ -772,6 +775,21 @@ public class Parser extends BaseParser<Instructions> {
 			Terminal("@"),
 			Sequence(TestNot(Terminal("for"), Terminal("(")), Identifier()),
 			push(Instructions(NewVizObjectInstruction(match().trim()))),
+			Optional(
+				Terminal("["),
+				push(Instructions(EnableVizFilterInstruction())),
+				mergeAfter(),
+				Optional(
+					VizFilterProperty(),
+					ZeroOrMore(
+						Terminal(","),
+						VizFilterProperty(),
+						mergeAfter()
+					),
+					mergeAfter()
+				),
+				Terminal("]")
+			),
 			Terminal("("),
 			Optional(
 				VizProperty(),
@@ -809,6 +827,16 @@ public class Parser extends BaseParser<Instructions> {
 		return Sequence(
 			Identifier(),
 			push(Instructions(SetVizPropertyInstruction(match().trim()))),
+			Terminal(":"),
+			AssignmentExpression(),
+			mergeBefore()
+		);
+	}
+	
+	public Rule VizFilterProperty() {
+		return Sequence(
+			Identifier(),
+			push(Instructions(SetVizFilterPropertyInstruction(match().trim()))),
 			Terminal(":"),
 			AssignmentExpression(),
 			mergeBefore()

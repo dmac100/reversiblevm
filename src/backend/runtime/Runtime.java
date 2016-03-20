@@ -3,6 +3,7 @@ package backend.runtime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import backend.instruction.Instruction;
@@ -14,6 +15,7 @@ import backend.value.ArrayValue;
 import backend.value.BooleanValue;
 import backend.value.DoubleValue;
 import backend.value.FunctionValue;
+import backend.value.ImmutableValue;
 import backend.value.ObjectValue;
 import backend.value.StringValue;
 import backend.value.Value;
@@ -213,16 +215,36 @@ public class Runtime implements HasState, ValueReadObserver {
 			stackFrames.add(lastStackFrame);
 			List<VizObject> vizObjects = lastStackFrame.getVizObjects();
 			stackFrames.clear();
-			return vizObjects;
+			return applyVizObjectFilters(vizObjects);
 		} else {
 			List<VizObject> vizObjects = new ArrayList<>();
 			for(StackFrame stackFrame:new ArrayList<>(stackFrames)) {
 				vizObjects.addAll(stackFrame.getVizObjects());
 			}
-			return vizObjects;
+			return applyVizObjectFilters(vizObjects);
 		}
 	}
-	
+
+	/**
+	 * Filter earlier viz objects based on any filters defined in later ones.
+	 */
+	private static List<VizObject> applyVizObjectFilters(List<VizObject> vizObjectsWithFilters) {
+		List<VizObject> vizObjects = new ArrayList<>();
+		for(int i = 0; i < vizObjectsWithFilters.size(); i++) {
+			VizObject filter = vizObjectsWithFilters.get(i);
+			if(!filter.isFilterEnabled()) {
+				// Object without filter - add directly to list.
+				vizObjects.add(filter);
+			} else {
+				// Object with filter - apply filter to previous items.
+				for(int j = 0; j < i; j++) {
+					vizObjectsWithFilters.get(j).applyFilter(filter);
+				}
+			}
+		}
+		return vizObjects;
+	}
+
 	public void throwError(String error) {
 		System.err.println("Error: " + error);
 		undoStack.addCommandUndo(new Runnable() {

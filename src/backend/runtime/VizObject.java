@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import backend.value.DoubleValue;
 import backend.value.ImmutableValue;
 import backend.value.NullValue;
 
@@ -13,6 +12,9 @@ public class VizObject {
 	private final String name;
 	private final Object key;
 	private final Map<String, ImmutableValue> values = new LinkedHashMap<>();
+	private final Map<String, ImmutableValue> filters = new LinkedHashMap<>();
+	
+	private boolean filterEnabled = false;
 	
 	public VizObject(String name) {
 		this(name, new Object());
@@ -39,6 +41,10 @@ public class VizObject {
 		values.put(name, value);
 	}
 	
+	public void setFilterProperty(String name, ImmutableValue value) {
+		filters.put(name, value);
+	}
+	
 	public Object getKey() {
 		return key;
 	}
@@ -51,15 +57,51 @@ public class VizObject {
 		return Collections.unmodifiableMap(values);
 	}
 	
+	public Map<String, ImmutableValue> getFilters() {
+		return Collections.unmodifiableMap(filters);
+	}
+	
+	public void enableFilter() {
+		filterEnabled = true;
+	}
+	
+	public boolean isFilterEnabled() {
+		return filterEnabled;
+	}
+	
+	public void applyFilter(VizObject vizObject) {
+		Map<String, ImmutableValue> filter = vizObject.getFilters();
+		// Check if the filter in vizObject matches this object.
+		boolean match = true;
+		for(String key:filter.keySet()) {
+			if(!filter.get(key).getKey().equals(values.get(key).getKey())) {
+				match = false;
+			}
+		}
+		if(match) {
+			// Copy properties from vizObject to this object.
+			Map<String, ImmutableValue> values = vizObject.getValues();
+			for(String key:values.keySet()) {
+				setProperty(key, values.get(key));
+			}
+		}
+	}
+	
 	public String toString() {
+		String s = name;
+		if(!filters.isEmpty()) s += "[" + toString(filters) + "]";
+		s += "(" + toString(values) + ")";
+		return s;
+	}
+	
+	private static String toString(Map<String, ImmutableValue> map) {
 		StringBuilder s = new StringBuilder();
-		for(String key:values.keySet()) {
+		for(String key:map.keySet()) {
 			if(s.length() > 0) {
 				s.append(", ");
 			}
-			s.append(key).append(": ").append(values.get(key));
+			s.append(key).append(": ").append(map.get(key));
 		}
-		
-		return name + "(" + s.toString() + ")";
+		return s.toString();
 	}
 }

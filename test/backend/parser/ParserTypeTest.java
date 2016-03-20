@@ -321,6 +321,9 @@ public class ParserTypeTest {
 		assertParseType("@for(x <- a) @rect();", parser.VizStatement());
 		assertParseType("@for(x <- a, y <- b) @rect();", parser.VizStatement());
 		assertParseType("@for(x <- a, x < 2) @rect();", parser.VizStatement());
+		assertParseType("@rect[]();", parser.VizStatement());
+		assertParseType("@rect[x: 2]();", parser.VizStatement());
+		assertParseType("@rect[x: 2, y: 3]();", parser.VizStatement());
 	}
 
 	@Test
