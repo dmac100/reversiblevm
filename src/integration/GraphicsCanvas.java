@@ -156,33 +156,18 @@ public class GraphicsCanvas {
 				int width = (int) getDoubleOrDefault(vizObject, "width", 50);
 				int height = (int) getDoubleOrDefault(vizObject, "height", 50);
 				double opacity = (double) getDoubleOrDefault(vizObject, "opacity", 1);
+				int colorRed = (int) getDoubleOrDefault(vizObject, "colorRed", 200);
+				int colorGreen = (int) getDoubleOrDefault(vizObject, "colorGreen", 200);
+				int colorBlue = (int) getDoubleOrDefault(vizObject, "colorBlue", 200);
 				
 				gc.setAlpha((int)(opacity * 255));
+				gc.setBackground(colorCache.getColor(colorRed, colorGreen, colorBlue));
 				
-				gc.setBackground(getColorOrDefault(vizObject, "color", "red"));
 				gc.fillRectangle(x + canvasMargin, y + canvasMargin, width, height);
 			}
 		}
 		
 		gc.setAlpha(255);
-	}
-
-	private Color getColorOrDefault(DisplayedVizObject vizObject, String name, String defaultValue) {
-		String color = getStringOrDefault(vizObject, name, "red");
-		
-		if(color.equals("red")) return colorCache.getColor(200, 100, 100);
-		if(color.equals("green")) return colorCache.getColor(100, 200, 100);
-		if(color.equals("blue")) return colorCache.getColor(100, 100, 200);
-		if(color.equals("yellow")) return colorCache.getColor(200, 200, 100);
-		if(color.equals("magenta")) return colorCache.getColor(200, 100, 200);
-		if(color.equals("cyan")) return colorCache.getColor(100, 200, 200);
-		if(color.equals("white")) return colorCache.getColor(255, 255, 255);
-		if(color.equals("lightgrey")) return colorCache.getColor(200, 200, 200);
-		if(color.equals("grey")) return colorCache.getColor(150, 150, 150);
-		if(color.equals("darkgrey")) return colorCache.getColor(50, 50, 50);
-		if(color.equals("black")) return colorCache.getColor(0, 0, 0);
-		
-		return colorCache.getColor(200, 100, 100);
 	}
 
 	private double getDoubleOrDefault(DisplayedVizObject vizObject, String name, double defaultValue) {

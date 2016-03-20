@@ -7,6 +7,7 @@ import backend.runtime.VizObject;
 import backend.value.DoubleValue;
 import backend.value.ImmutableValue;
 import backend.value.NullValue;
+import backend.value.StringValue;
 
 public class DisplayedVizObject {
 	private final String name;
@@ -21,6 +22,35 @@ public class DisplayedVizObject {
 	public DisplayedVizObject(VizObject vizObject) {
 		this.name = vizObject.getName();
 		this.currentValues = new HashMap<>(vizObject.getValues());
+		
+		setDefaultValues(currentValues);
+	}
+	
+	private static void setDefaultValues(Map<String, ImmutableValue> values) {
+		ImmutableValue color = values.get("color");
+		if(color instanceof StringValue) {
+			setDefaultColorValues(values, ((StringValue)color).getValue());
+		} else {
+			setDefaultColorValues(values, "red");
+		}
+	}
+
+	private static void setDefaultColorValues(Map<String, ImmutableValue> values, String color) {
+		int[] rgb = new int[] { 200, 100, 100 };
+		if(color.equals("red")) rgb = new int[] { 200, 100, 100 };
+		if(color.equals("green")) rgb = new int[] { 100, 200, 100 };
+		if(color.equals("blue")) rgb = new int[] { 100, 100, 200 };
+		if(color.equals("yellow")) rgb = new int[] { 200, 200, 100 };
+		if(color.equals("magenta")) rgb = new int[] { 200, 100, 200 };
+		if(color.equals("cyan")) rgb = new int[] { 100, 200, 200 };
+		if(color.equals("white")) rgb = new int[] { 255, 255, 255 };
+		if(color.equals("lightgrey")) rgb = new int[] { 200, 200, 200 };
+		if(color.equals("grey")) rgb = new int[] { 150, 150, 150 };
+		if(color.equals("darkgrey")) rgb = new int[] { 50, 50, 50 };
+		if(color.equals("black")) rgb = new int[] { 0, 0, 0 };
+		values.put("colorRed", new DoubleValue(rgb[0]));
+		values.put("colorGreen", new DoubleValue(rgb[1]));
+		values.put("colorBlue", new DoubleValue(rgb[2]));
 	}
 
 	public String getName() {
@@ -32,6 +62,8 @@ public class DisplayedVizObject {
 		targetValues.putAll(newVizObject.getValues());
 		updateTime = System.currentTimeMillis();
 		deletePending = false;
+		
+		setDefaultValues(targetValues);
 		
 		for(String property:currentValues.keySet()) {
 			ImmutableValue value = targetValues.get(property);
