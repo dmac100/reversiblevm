@@ -246,10 +246,10 @@ public class VizObjectsTest {
 			}
 		}
 		
+		collapseDuplicates(actualObjects);
+		
 		System.out.println("ACTUAL: " + actualObjects);
 		System.out.println("EXPECTED: " + expectedObjects);
-		
-		collapseDuplicates(actualObjects);
 		
 		assertEquals(expectedObjects, actualObjects);
 		
