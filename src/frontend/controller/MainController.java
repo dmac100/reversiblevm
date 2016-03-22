@@ -152,15 +152,27 @@ public class MainController {
 	}
 	
 	public void cut() {
-		editorText.getEditFunctions().cut();
+		if(consoleText.hasFocus()) {
+			consoleText.cut();
+		} else if(editorText.hasFocus()) {
+			editorText.getEditFunctions().cut();
+		}
 	}
 	
 	public void copy() {
-		editorText.getEditFunctions().copy();
+		if(consoleText.hasFocus()) {
+			consoleText.copy();
+		} else {
+			editorText.getEditFunctions().copy();
+		}
 	}
 	
 	public void paste() {
-		editorText.getEditFunctions().paste();
+		if(consoleText.hasFocus()) {
+			consoleText.paste();
+		} else {
+			editorText.getEditFunctions().paste();
+		}
 	}
 
 	public void find() {

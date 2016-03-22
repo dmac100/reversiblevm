@@ -193,4 +193,20 @@ public class ConsoleText {
 		
 		text.setStyleRange(range);
 	}
+	
+	public boolean hasFocus() {
+		return commandText.isFocusControl();
+	}
+	
+	public void cut() {
+		commandText.cut();
+	}
+	
+	public void copy() {
+		commandText.copy();
+	}
+	
+	public void paste() {
+		commandText.paste();
+	}
 }
