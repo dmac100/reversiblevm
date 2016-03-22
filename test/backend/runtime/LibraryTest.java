@@ -145,6 +145,11 @@ public class LibraryTest {
 		assertOutput("-1", "print([].findIndex(function(x) { return x == 3; }));");
 		assertOutput("2", "print([1, 2, 3, 4, 5].findIndex(function(x) { return x == 3; }));");
 	}
+	
+	@Test
+	public void arrayForEach() {
+		assertOutput("1\n2\n3", "[1, 2, 3].forEach(function(x) { print(x); });");
+	}
 
 	@Test
 	public void arrayIndexOf() {
