@@ -15,7 +15,7 @@ import frontend.util.StringUtil;
  * on words that already exist in the control. Repeating a completion will cycle through a
  * completion list until the caret position or text are changed.
  */
-public class Completion {
+public class StyledTextCompletion {
 	private final StyledText styledText;
 	
 	private int lastCaretOffset = -1;
@@ -25,7 +25,7 @@ public class Completion {
 	private int completionIndex;
 	private int wordStartOffset;
 
-	public Completion(StyledText styledText) {
+	public StyledTextCompletion(StyledText styledText) {
 		this.styledText = styledText;
 		dismissCompletions();
 	}

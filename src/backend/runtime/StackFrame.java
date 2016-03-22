@@ -1,6 +1,7 @@
 package backend.runtime;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,6 +40,10 @@ public class StackFrame implements HasState {
 	
 	public void addVizObjectInstructions(StartVizInstruction startVizInstruction, VizObjectInstructions vizObjectInstructions) {
 		vizObjectInstructionsList.put(startVizInstruction, vizObjectInstructions);
+	}
+	
+	public Map<StartVizInstruction, VizObjectInstructions> getVizObjectInstructions() {
+		return Collections.unmodifiableMap(vizObjectInstructionsList);
 	}
 	
 	public boolean containsVizObjectInstructionsFor(StartVizInstruction startVizInstruction) {

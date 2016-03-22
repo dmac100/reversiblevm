@@ -183,6 +183,34 @@ public class RuntimeController {
 			runtime.throwError(e.getMessage());
 		}
 	}
+	
+	/**
+	 * Runs the given command in the current runtime.
+	 */
+	public void runCommand(final String command) {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				runCommandSync(command);
+			}
+		});
+	}
+	
+	/**
+	 * Runs the given command in the current runtime without adding to the queue.
+	 */
+	private void runCommandSync(String command) {
+		command = command.trim();
+		if(!command.endsWith(";")) {
+			command += ";";
+		}
+		
+		try {
+			List<Instruction> instructions = Engine.compile(command);
+			runtime.runInstructions(instructions);
+		} catch(CompileException e) {
+			runtime.throwError(e.getMessage());
+		}
+	}
 
 	/**
 	 * Runs the current program forward.

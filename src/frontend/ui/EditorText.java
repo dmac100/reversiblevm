@@ -47,7 +47,7 @@ public class EditorText {
 	private final Shell shell;
 	private final StyledText styledText;
 	private final ColorCache colorCache;
-	private final Completion completion;
+	private final StyledTextCompletion completion;
 	private final EditFunctions editFunctions;
 	
 	private Callback<Void> compileCallback;
@@ -70,7 +70,7 @@ public class EditorText {
 		refreshStyle();
 		
 		editFunctions = new EditFunctions(styledText);
-		completion = new Completion(styledText);
+		completion = new StyledTextCompletion(styledText);
 		
 		styledText.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent event) {

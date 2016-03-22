@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import backend.instruction.Instruction;
+import backend.instruction.viz.StartVizInstruction;
 import backend.instruction.viz.VizFilterInstruction;
 import backend.instruction.viz.VizIterateInstruction;
 import backend.observer.ValueChangeObservable;
@@ -33,6 +34,40 @@ public class Runtime implements HasState, ValueReadObserver {
 	
 	private List<String> errors = new ArrayList<>();
 	private List<String> output = new ArrayList<>();
+	
+	/**
+	 * Runs instructions at the current position in the runtime.
+	 */
+	public void runInstructions(List<Instruction> instructions) {
+		// Get current stack frame or last stack frame if at the end of the program.
+		StackFrame parentStackFrame = getCurrentStackFrame();
+		if(parentStackFrame == null) {
+			parentStackFrame = lastStackFrame;
+		}
+		
+		undoStack.saveUndoPoint(parentStackFrame.getInstructionCounter());
+		
+		// Add new function with same scope as current function with instructions to execute.
+		FunctionValue function = new FunctionValue(parentStackFrame.getScope(), 0, instructions);
+		StackFrame stackFrame = new StackFrame(function, parentStackFrame.getScope(), undoStack);
+		addStackFrame(stackFrame, true);
+		
+		int stackFrameCount = stackFrames.size();
+		
+		while(stackFrames.size() >= stackFrameCount) {
+			runNextInstruction();
+		}
+		
+		// Copy and viz object instructions from new function into current function.
+		Map<StartVizInstruction, VizObjectInstructions> vizObjectInstructionsList = stackFrame.getVizObjectInstructions();
+		for(StartVizInstruction startVizInstruction:vizObjectInstructionsList.keySet()) {
+			VizObjectInstructions vizObjectInstructions = vizObjectInstructionsList.get(startVizInstruction);
+			parentStackFrame.addVizObjectInstructions(startVizInstruction, vizObjectInstructions);
+		}
+		
+		// Restore lastStackFrame in case it's been changed.
+		lastStackFrame = parentStackFrame;
+	}
 	
 	/**
 	 * Runs and then undoes all the given instructions within a new stack frame,

@@ -61,6 +61,12 @@ public class MainController {
 				eventBus.post(new ModifiedEvent(modified));
 			}
 		});
+		
+		consoleText.setRunCommandCallback(new Callback<String>() {
+			public void onCallback(String command) {
+				runtime.runCommand(command);
+			}
+		});
 	}
 
 	private void loadDefaultText() {
