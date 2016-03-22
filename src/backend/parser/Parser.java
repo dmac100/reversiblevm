@@ -208,9 +208,10 @@ public class Parser extends BaseParser<Instructions> {
 			ZeroOrMore(FirstOf(
 				Sequence(
 					Arguments(),
+					callable.set(new CallableInstructions(pop(2))),
 					push(Instructions(
-						Instructions(Push(NullValue())),
-						Instructions(pop(2)),
+						Instructions(callable.get().getPrefix()),
+						Instructions(callable.get().getRead()),
 						pop(),
 						pop(),
 						Instructions(Call())

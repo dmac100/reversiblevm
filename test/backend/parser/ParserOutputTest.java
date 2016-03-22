@@ -424,7 +424,7 @@ public class ParserOutputTest {
 		assertParseOutput("f().a;", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "GETPROPERTY: a", "POP"));
 		assertParseOutput("f()[0].a;", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "PUSH: 0", "GETELEMENT", "GETPROPERTY: a", "POP"));
 		assertParseOutput("f().a[0];", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "GETPROPERTY: a", "PUSH: 0", "GETELEMENT", "POP"));
-		assertParseOutput("f().a[0]();", Arrays.asList("PUSH: null", "PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "GETPROPERTY: a", "PUSH: 0", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
+		assertParseOutput("f().a[0]();", Arrays.asList("PUSH: null", "LOAD: f", "PUSH: 1", "SWAP", "CALL", "GETPROPERTY: a", "PUSH: 0", "DUP2", "POP", "SWAP2", "GETELEMENT", "PUSH: 1", "SWAP", "CALL", "POP"));
 		
 		assertParseOutput("a.b.c();", Arrays.asList("LOAD: a", "GETPROPERTY: b", "DUP", "GETPROPERTY: c", "PUSH: 1", "SWAP", "CALL", "POP"));
 		

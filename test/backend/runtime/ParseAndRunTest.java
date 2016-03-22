@@ -471,5 +471,7 @@ public class ParseAndRunTest {
 		
 		assertOutput("1", "print({a: function() { return 1; }}.a());");
 		assertOutput("2", "print([function() { return 1; }, function() { return 2; }][1+0]());");
+		
+		assertOutput("0", "function f() { return []; }; print(f().length());");
 	}
 }
