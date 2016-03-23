@@ -40,10 +40,7 @@ public class Runtime implements HasState, ValueReadObserver {
 	 */
 	public void runInstructions(String infoMessage, List<Instruction> instructions) {
 		// Get current stack frame or last stack frame if at the end of the program.
-		StackFrame parentStackFrame = getCurrentStackFrame();
-		if(parentStackFrame == null) {
-			parentStackFrame = lastStackFrame;
-		}
+		final StackFrame parentStackFrame = (getCurrentStackFrame() == null) ? lastStackFrame : getCurrentStackFrame();
 		
 		undoStack.saveUndoPoint(parentStackFrame.getInstructionCounter());
 		
@@ -62,9 +59,20 @@ public class Runtime implements HasState, ValueReadObserver {
 		
 		// Copy and viz object instructions from new function into current function.
 		Map<StartVizInstruction, VizObjectInstructions> vizObjectInstructionsList = stackFrame.getVizObjectInstructions();
-		for(StartVizInstruction startVizInstruction:vizObjectInstructionsList.keySet()) {
-			VizObjectInstructions vizObjectInstructions = vizObjectInstructionsList.get(startVizInstruction);
+		for(final StartVizInstruction startVizInstruction:vizObjectInstructionsList.keySet()) {
+			final VizObjectInstructions vizObjectInstructions = vizObjectInstructionsList.get(startVizInstruction);
 			parentStackFrame.addVizObjectInstructions(startVizInstruction, vizObjectInstructions);
+			
+			undoStack.addCommandUndo(new Runnable() {
+				public void run() {
+					parentStackFrame.removeVizObjectInstructions(startVizInstruction, vizObjectInstructions);
+					parentStackFrame.updateVizObjects();
+				}
+				
+				public String toString() {
+					return "COPY VIZ OBJECT";
+				}
+			});
 		}
 		
 		// Restore lastStackFrame in case it's been changed.
