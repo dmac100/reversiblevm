@@ -254,7 +254,6 @@ public class VizObjectsTest {
 		assertEquals(expectedObjects, actualObjects);
 		
 		assertTrue(runtime.getOutput().isEmpty());
-		assertTrue(runtime.getErrors().isEmpty());
 		assertTrue(runtime.getStack().isEmpty());
 	}
 

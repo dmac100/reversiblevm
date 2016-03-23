@@ -16,6 +16,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
+import backend.runtime.OutputLine;
+import backend.runtime.OutputLine.OutputType;
+
 /**
  * A text widget containing console output.
  */
@@ -161,37 +164,38 @@ public class ConsoleText {
 	/**
 	 * Sets the whole output of the console.
 	 */
-	public void setOutput(List<String> output, List<String> errors) {
+	public void setOutput(List<OutputLine> output) {
+		List<StyleRange> styleRanges = new ArrayList<>();
+		
 		List<String> newText = new ArrayList<>();
-		newText.addAll(output);
-		newText.addAll(errors);
+		for(OutputLine line:output) {
+			newText.add(line.getText());
+		}
 		
 		if(!newText.equals(currentText)) {
 			StringBuilder s = new StringBuilder();
-			for(String line:newText) {
-				s.append(line).append("\n");
+			for(OutputLine line:output) {
+				s.append(line.getText()).append("\n");
+				
+				StyleRange styleRange = new StyleRange();
+				styleRange.start = s.length() - line.getText().length() - 1;
+				styleRange.length = line.getText().length() + 1;
+				styleRange.fontStyle = SWT.NONE;
+				if(line.getType() == OutputType.ERROR) {
+					styleRange.foreground = text.getDisplay().getSystemColor(SWT.COLOR_RED);
+				} else if(line.getType() == OutputType.INFO) {
+					styleRange.foreground = text.getDisplay().getSystemColor(SWT.COLOR_BLUE);
+				} else {
+					styleRange.foreground = text.getDisplay().getSystemColor(SWT.COLOR_BLACK);
+				}
+				styleRanges.add(styleRange);
 			}
+			
 			text.setText(s.toString());
 			currentText = newText;
 			text.setTopIndex(text.getLineCount() - 1);
-			
-			highlightErrors(errors);
+			text.setStyleRanges(styleRanges.toArray(new StyleRange[styleRanges.size()]));
 		}
-	}
-
-	private void highlightErrors(List<String> errors) {
-		int errorLength = 0;
-		for(String line:errors) {
-			errorLength += line.length() + 1;
-		}
-		
-		StyleRange range = new StyleRange();
-		range.start = text.getText().length() - errorLength;
-		range.length = errorLength;
-		range.fontStyle = SWT.NONE;
-		range.foreground = text.getDisplay().getSystemColor(SWT.COLOR_RED);
-		
-		text.setStyleRange(range);
 	}
 	
 	public boolean hasFocus() {

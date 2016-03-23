@@ -114,7 +114,7 @@ public class MainController {
 	
 	public void setRuntimeModel(RuntimeModel runtimeModel) {
 		editorText.setDebugLineNumber(runtimeModel.getLineNumber());
-		consoleText.setOutput(runtimeModel.getOutput(), runtimeModel.getErrors());
+		consoleText.setOutput(runtimeModel.getOutput());
 		graphicsCanvas.setVizObjects(runtimeModel.getVizObjects());
 		eventBus.post(new CompilerModelChangedEvent(runtimeModel));
 	}

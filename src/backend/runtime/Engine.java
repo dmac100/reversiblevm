@@ -15,6 +15,7 @@ import org.parboiled.support.ParsingResult;
 import backend.instruction.Instruction;
 import backend.parser.Instructions;
 import backend.parser.Parser;
+import backend.runtime.OutputLine.OutputType;
 import backend.value.FunctionValue;
 
 public class Engine {
@@ -57,7 +58,7 @@ public class Engine {
 			}
 		} catch(ExecutionException e) {
 			System.err.println("Error: " + e.getMessage());
-			runtime.getErrors().add(e.getMessage());
+			runtime.getOutput().add(new OutputLine(e.getMessage(), OutputType.ERROR));
 		}
 	}
 	

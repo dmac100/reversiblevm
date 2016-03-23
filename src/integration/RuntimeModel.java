@@ -3,11 +3,11 @@ package integration;
 import java.util.ArrayList;
 import java.util.List;
 
+import backend.runtime.OutputLine;
 import backend.runtime.VizObject;
 
 public class RuntimeModel {
-	private List<String> output = new ArrayList<>();
-	private List<String> errors = new ArrayList<>();
+	private List<OutputLine> output = new ArrayList<>();
 	private List<VizObject> vizObjects = new ArrayList<>();
 	private int lineNumber = -1;
 	private boolean stepForwardEnabled = true;
@@ -17,20 +17,12 @@ public class RuntimeModel {
 	private boolean pauseEnabled = true;
 	private boolean compileEnabled = true;
 	
-	public List<String> getOutput() {
+	public List<OutputLine> getOutput() {
 		return output;
 	}
 	
-	public void setOutput(List<String> output) {
+	public void setOutput(List<OutputLine> output) {
 		this.output = output;
-	}
-	
-	public List<String> getErrors() {
-		return errors;
-	}
-	
-	public void setErrors(List<String> errors) {
-		this.errors = errors;
 	}
 	
 	public List<VizObject> getVizObjects() {

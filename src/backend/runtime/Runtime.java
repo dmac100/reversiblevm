@@ -12,6 +12,7 @@ import backend.instruction.viz.VizFilterInstruction;
 import backend.instruction.viz.VizIterateInstruction;
 import backend.observer.ValueChangeObservable;
 import backend.observer.ValueReadObserver;
+import backend.runtime.OutputLine.OutputType;
 import backend.value.ArrayValue;
 import backend.value.BooleanValue;
 import backend.value.DoubleValue;
@@ -32,13 +33,12 @@ public class Runtime implements HasState, ValueReadObserver {
 	private List<Object> currentVizObjectKey = new ArrayList<>();
 	private Set<ValueReadObserver> valueReadObservers = new HashSet<>();
 	
-	private List<String> errors = new ArrayList<>();
-	private List<String> output = new ArrayList<>();
+	private List<OutputLine> output = new ArrayList<>();
 	
 	/**
 	 * Runs instructions at the current position in the runtime.
 	 */
-	public void runInstructions(List<Instruction> instructions) {
+	public void runInstructions(String infoMessage, List<Instruction> instructions) {
 		// Get current stack frame or last stack frame if at the end of the program.
 		StackFrame parentStackFrame = getCurrentStackFrame();
 		if(parentStackFrame == null) {
@@ -46,6 +46,8 @@ public class Runtime implements HasState, ValueReadObserver {
 		}
 		
 		undoStack.saveUndoPoint(parentStackFrame.getInstructionCounter());
+		
+		info(infoMessage);
 		
 		// Add new function with same scope as current function with instructions to execute.
 		FunctionValue function = new FunctionValue(parentStackFrame.getScope(), 0, instructions);
@@ -284,14 +286,28 @@ public class Runtime implements HasState, ValueReadObserver {
 		System.err.println("Error: " + error);
 		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
-				errors.remove(errors.size() - 1);
+				output.remove(output.size() - 1);
 			}
 			
 			public String toString() {
 				return "[THROW ERROR]";
 			}
 		});
-		errors.add(error);
+		output.add(new OutputLine(error, OutputType.ERROR));
+	}
+	
+	public void info(String command) {
+		System.out.println(command);
+		undoStack.addCommandUndo(new Runnable() {
+			public void run() {
+				output.remove(output.size() - 1);
+			}
+			
+			public String toString() {
+				return "[INFO]";
+			}
+		});
+		output.add(new OutputLine(command, OutputType.INFO));
 	}
 	
 	public void print(String value) {
@@ -305,19 +321,15 @@ public class Runtime implements HasState, ValueReadObserver {
 				return "[PRINT]";
 			}
 		});
-		output.add(value);
+		output.add(new OutputLine(value, OutputType.STANDARD));
 	}
 
 	public Stack getStack() {
 		return stack;
 	}
 
-	public List<String> getOutput() {
+	public List<OutputLine> getOutput() {
 		return output;
-	}
-	
-	public List<String> getErrors() {
-		return errors;
 	}
 	
 	public UndoStack getUndoStack() {
@@ -416,7 +428,6 @@ public class Runtime implements HasState, ValueReadObserver {
 			s.append(stackFrame.getState("      ", used)).append("\n");
 		}
 		s.append("  NestedFunctionDefinitionCount: " + nestedFunctionDefinitionCount).append("\n");
-		s.append("  Errors: " + errors).append("\n");
 		s.append("  Output: " + output).append("\n");
 		s.append("  UndoStack: ").append("\n");
 		s.append("  VizObjects: ").append(getVizObjects()).append("\n");

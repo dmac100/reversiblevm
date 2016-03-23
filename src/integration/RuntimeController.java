@@ -16,6 +16,7 @@ import backend.instruction.Instruction;
 import backend.runtime.CompileException;
 import backend.runtime.Engine;
 import backend.runtime.ExecutionException;
+import backend.runtime.OutputLine;
 import backend.runtime.Runtime;
 import frontend.controller.MainController;
 
@@ -112,14 +113,11 @@ public class RuntimeController {
 		boolean running = runningBackward || runningForward;
 		
 		int bufferSize = 1000;
-		List<String> output = runtime.getOutput();
-		List<String> errors = runtime.getErrors();
+		List<OutputLine> output = runtime.getOutput();
 		output = output.subList(Math.max(0, output.size() - bufferSize), output.size());
-		errors = errors.subList(Math.max(0, errors.size() - bufferSize), errors.size());
 		
 		final RuntimeModel runtimeModel = new RuntimeModel();
 		runtimeModel.setOutput(new ArrayList<>(output));
-		runtimeModel.setErrors(new ArrayList<>(errors));
 		runtimeModel.setVizObjects(runtime.getVizObjects());
 		runtimeModel.setLineNumber(runtime.getLineNumber());
 		runtimeModel.setStepBackwardEnabled(!running && !runtime.atStart());
@@ -199,14 +197,14 @@ public class RuntimeController {
 	 * Runs the given command in the current runtime without adding to the queue.
 	 */
 	private void runCommandSync(String command) {
-		command = command.trim();
-		if(!command.endsWith(";")) {
-			command += ";";
+		String modifiedCommand = command.trim();
+		if(!modifiedCommand.endsWith(";")) {
+			modifiedCommand += ";";
 		}
 		
 		try {
-			List<Instruction> instructions = Engine.compile(command);
-			runtime.runInstructions(instructions);
+			List<Instruction> instructions = Engine.compile(modifiedCommand);
+			runtime.runInstructions("> " + command.trim(), instructions);
 		} catch(CompileException e) {
 			runtime.throwError(e.getMessage());
 		}
