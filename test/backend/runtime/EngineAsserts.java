@@ -50,7 +50,7 @@ public class EngineAsserts {
 		assertTrue(filterStandard(runtime.getOutput()).isEmpty());
 	}
 	
-	private static List<OutputLine> filterStandard(List<OutputLine> output) {
+	public static List<OutputLine> filterStandard(List<OutputLine> output) {
 		List<OutputLine> filtered = new ArrayList<>();
 		for(OutputLine line:output) {
 			if(line.getType() == OutputType.STANDARD) {
@@ -60,7 +60,7 @@ public class EngineAsserts {
 		return filtered;
 	}
 	
-	private static List<OutputLine> filterError(List<OutputLine> output) {
+	public static List<OutputLine> filterError(List<OutputLine> output) {
 		List<OutputLine> filtered = new ArrayList<>();
 		for(OutputLine line:output) {
 			if(line.getType() == OutputType.ERROR) {
