@@ -62,7 +62,7 @@ public class ConsoleText {
 			}
 		});
 
-		text.setFont(FontList.consolas8);
+		text.setFont(FontList.consolas9);
 		
 		commandText = new Text(composite, SWT.BORDER);
 		commandText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
