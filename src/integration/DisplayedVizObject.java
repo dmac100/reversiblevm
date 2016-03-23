@@ -49,9 +49,9 @@ public class DisplayedVizObject {
 		if(color.equals("grey")) rgb = new int[] { 150, 150, 150 };
 		if(color.equals("darkgrey")) rgb = new int[] { 50, 50, 50 };
 		if(color.equals("black")) rgb = new int[] { 0, 0, 0 };
-		values.put("colorRed", new DoubleValue(rgb[0]));
-		values.put("colorGreen", new DoubleValue(rgb[1]));
-		values.put("colorBlue", new DoubleValue(rgb[2]));
+		values.put("color-red", new DoubleValue(rgb[0]));
+		values.put("color-green", new DoubleValue(rgb[1]));
+		values.put("color-blue", new DoubleValue(rgb[2]));
 	}
 
 	public String getName() {

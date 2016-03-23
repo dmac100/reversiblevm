@@ -175,9 +175,9 @@ public class GraphicsCanvas {
 				int width = (int) getDoubleOrDefault(vizObject, "width", 50);
 				int height = (int) getDoubleOrDefault(vizObject, "height", 50);
 				double opacity = (double) getDoubleOrDefault(vizObject, "opacity", 1);
-				int colorRed = (int) getDoubleOrDefault(vizObject, "colorRed", 200);
-				int colorGreen = (int) getDoubleOrDefault(vizObject, "colorGreen", 200);
-				int colorBlue = (int) getDoubleOrDefault(vizObject, "colorBlue", 200);
+				int colorRed = (int) getDoubleOrDefault(vizObject, "color-red", 200);
+				int colorGreen = (int) getDoubleOrDefault(vizObject, "color-green", 200);
+				int colorBlue = (int) getDoubleOrDefault(vizObject, "color-blue", 200);
 				
 				gc.setAlpha((int)(opacity * 255));
 				gc.setBackground(colorCache.getColor(colorRed, colorGreen, colorBlue));
