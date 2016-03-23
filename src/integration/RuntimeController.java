@@ -197,13 +197,8 @@ public class RuntimeController {
 	 * Runs the given command in the current runtime without adding to the queue.
 	 */
 	private void runCommandSync(String command) {
-		String modifiedCommand = command.trim();
-		if(!modifiedCommand.endsWith(";")) {
-			modifiedCommand += ";";
-		}
-		
 		try {
-			List<Instruction> instructions = Engine.compile(modifiedCommand);
+			List<Instruction> instructions = Engine.compile(command);
 			runtime.runInstructions("> " + command.trim(), instructions);
 		} catch(CompileException e) {
 			runtime.throwError(e.getMessage());

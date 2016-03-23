@@ -616,7 +616,7 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule VariableStatement() {
-		return Sequence(Terminal("var"), VariableDeclarationList(), Terminal(";"));
+		return Sequence(Terminal("var"), VariableDeclarationList(), Optional(Terminal(";")));
 	}
 	
 	public Rule VariableDeclarationList() {
@@ -660,7 +660,7 @@ public class Parser extends BaseParser<Instructions> {
 			TestNot(FirstOf("{", "function")),
 			Expression(),
 			push(Instructions(pop(), Instructions(Pop()))),
-			Terminal(";")
+			Optional(Terminal(";"))
 		);
 	}
 	
@@ -690,7 +690,7 @@ public class Parser extends BaseParser<Instructions> {
 	public Rule IterationStatement() {
 		return FirstOf(
 			Sequence(
-				Terminal("do"), Statement(), Terminal("while"), Terminal("("), Expression(), Terminal(")"), Terminal(";"),
+				Terminal("do"), Statement(), Terminal("while"), Terminal("("), Expression(), Terminal(")"), Optional(Terminal(";")),
 				push(Instructions(
 					peek(1),
 					peek(),
@@ -754,7 +754,7 @@ public class Parser extends BaseParser<Instructions> {
 	public Rule ReturnStatement() {
 		return Sequence(
 			Terminal("return"), push(Instructions(ReturnInstruction.Return())),
-			Optional(Expression(), push(Instructions(Instructions(Pop()), pop(), pop()))), Terminal(";")
+			Optional(Expression(), push(Instructions(Instructions(Pop()), pop(), pop()))), Optional(Terminal(";"))
 		);
 	}
 	
@@ -803,7 +803,7 @@ public class Parser extends BaseParser<Instructions> {
 			),
 			push(Instructions(Instructions(StartVizInstruction()), pop(1), pop(), Instructions(EndVizInstruction()))),
 			Terminal(")"),
-			Terminal(";")
+			Optional(Terminal(";"))
 		);
 	}
 	
