@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import backend.value.NullValue;
 import backend.value.Value;
 
 public class Stack implements HasState {
 	private final UndoStack undoStack;
 	private final List<Value> stack = new ArrayList<>();
+	
+	private Value lastPoppedValue = new NullValue();
 	
 	public Stack(UndoStack undoStack) {
 		this.undoStack = undoStack;
@@ -52,11 +55,21 @@ public class Stack implements HasState {
 			undoStack.addPopValueUndo(value);
 		}
 		
+		lastPoppedValue = value;
+		
 		return (Value) value;
 	}
 	
 	public Value peekValue(int n) {
 		return stack.get(stack.size() - 1 - n);
+	}
+	
+	public Value getLastPoppedValue() {
+		return lastPoppedValue;
+	}
+	
+	public void resetLastPoppedValue() {
+		lastPoppedValue = new NullValue();
 	}
 	
 	public String toString() {

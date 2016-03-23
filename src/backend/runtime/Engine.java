@@ -78,14 +78,20 @@ public class Engine {
 		}
 	}
 	
-	public static List<Instruction> compile(String program) {
+	public static List<Instruction> compile(String command) {
+		return compile(command, true);
+	}
+	
+	public static List<Instruction> compile(String program, boolean optimize) {
 		ReportingParseRunner<Instructions> parseRunner = new ReportingParseRunner<Instructions>(parser.Sequence(parser.Program(), BaseParser.EOI));
 		ParsingResult<Instructions> result = parseRunner.run(program);
 		if(result.valueStack.size() != 1) {
 			throw new CompileException("Invalid value stack size: " + printParseErrors(parseRunner.getParseErrors()));
 		}
 		List<Instruction> instructions = result.valueStack.pop().getInstructions();
-		instructions = new Optimizer().optimize(instructions);
+		if(optimize) {
+			instructions = new Optimizer().optimize(instructions);
+		}
 		instructions = Instruction.copyInstructions(instructions);
 		for(int i = 0; i < instructions.size(); i++) {
 			instructions.get(i).setInstructionNumber((short) i);

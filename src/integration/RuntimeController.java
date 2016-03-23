@@ -198,7 +198,7 @@ public class RuntimeController {
 	 */
 	private void runCommandSync(String command) {
 		try {
-			List<Instruction> instructions = Engine.compile(command);
+			List<Instruction> instructions = Engine.compile(command, false);
 			runtime.runInstructions("> " + command.trim(), instructions);
 		} catch(CompileException e) {
 			runtime.throwError(e.getMessage());

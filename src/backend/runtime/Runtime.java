@@ -44,6 +44,8 @@ public class Runtime implements HasState, ValueReadObserver {
 		
 		undoStack.saveUndoPoint(parentStackFrame.getInstructionCounter());
 		
+		stack.resetLastPoppedValue();
+		
 		info(infoMessage);
 		
 		// Add new function with same scope as current function with instructions to execute.
@@ -74,6 +76,8 @@ public class Runtime implements HasState, ValueReadObserver {
 				}
 			});
 		}
+		
+		info(stack.getLastPoppedValue().toString());
 		
 		// Restore lastStackFrame in case it's been changed.
 		lastStackFrame = parentStackFrame;
