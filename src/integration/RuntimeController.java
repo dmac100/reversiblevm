@@ -177,6 +177,10 @@ public class RuntimeController {
 		try {
 			List<Instruction> instructions = Engine.compile(program);
 			engine = new Engine(runtime, instructions);
+			
+			if(!instructions.isEmpty()) {
+				lineBreakpoints.add(instructions.get(0));
+			}
 		} catch(CompileException e) {
 			runtime.throwError(e.getMessage());
 		}
@@ -292,7 +296,7 @@ public class RuntimeController {
 		try {
 			engine.stepBackward();
 			
-			while(!lineBreakpoints.contains(runtime.getInstruction())) {
+			while(runtime.getCurrentStackFrame() != null && !lineBreakpoints.contains(runtime.getInstruction())) {
 				engine.stepBackward();
 				if(runtime.atStart()) {
 					runningBackward = false;
