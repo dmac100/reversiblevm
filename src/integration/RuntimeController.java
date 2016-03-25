@@ -129,7 +129,11 @@ public class RuntimeController {
 		
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				mainController.setRuntimeModel(runtimeModel);
+				try {
+					mainController.setRuntimeModel(runtimeModel);
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 	}
