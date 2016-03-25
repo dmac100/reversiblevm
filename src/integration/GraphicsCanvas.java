@@ -1,6 +1,5 @@
 package integration;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -13,16 +12,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 import backend.runtime.VizObject;
-import backend.value.BooleanValue;
-import backend.value.DoubleValue;
-import backend.value.ImmutableValue;
-import backend.value.StringValue;
 
 import com.google.common.eventbus.EventBus;
 
@@ -156,64 +152,23 @@ public class GraphicsCanvas {
 		// Clip to within the margin of the canvas.
 		gc.setClipping(canvasMargin + 1, canvasMargin + 1, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2);
 		
+		Transform transform = new Transform(display);
+		transform.translate(canvasMargin, canvasMargin);
+		gc.setTransform(transform);
+		
 		// Paint the visual objects.
-		paintVizObjects(gc, canvasWidth, canvasHeight, canvasMargin, displayedVizObjects.values());
+		GraphicsCanvasObjectRenderer renderer = new GraphicsCanvasObjectRenderer(colorCache);
+		for(DisplayedVizObject vizObject:displayedVizObjects.values()) {
+			renderer.paint(gc, vizObject);
+		}
+		
+		transform.dispose();
+		gc.setTransform(null);
 		
 		// Draw border around canvas.
 		gc.setClipping(0, 0, canvasWidth, canvasHeight);
 		gc.setForeground(colorCache.getColor(150, 150, 150));
 		gc.drawRoundRectangle(canvasMargin + 1, canvasMargin + 1, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2, 3, 3);
-	}
-
-	private void paintVizObjects(GC gc, int canvasWidth, int canvasHeight, int canvasMargin, Collection<DisplayedVizObject> vizObjects) {
-		for(DisplayedVizObject vizObject:vizObjects) {
-			String name = vizObject.getName();
-			
-			if(name.equals("rect")) {
-				int x = (int) getDoubleOrDefault(vizObject, "x", 0);
-				int y = (int) getDoubleOrDefault(vizObject, "y", 0);
-				int width = (int) getDoubleOrDefault(vizObject, "width", 50);
-				int height = (int) getDoubleOrDefault(vizObject, "height", 50);
-				double opacity = (double) getDoubleOrDefault(vizObject, "opacity", 1);
-				int colorRed = (int) getDoubleOrDefault(vizObject, "color-red", 200);
-				int colorGreen = (int) getDoubleOrDefault(vizObject, "color-green", 200);
-				int colorBlue = (int) getDoubleOrDefault(vizObject, "color-blue", 200);
-				
-				gc.setAlpha((int)(opacity * 255));
-				gc.setBackground(colorCache.getColor(colorRed, colorGreen, colorBlue));
-				
-				gc.fillRectangle(x + canvasMargin, y + canvasMargin, width, height);
-			}
-		}
-		
-		gc.setAlpha(255);
-	}
-
-	private double getDoubleOrDefault(DisplayedVizObject vizObject, String name, double defaultValue) {
-		ImmutableValue value = vizObject.getProperty(name);
-		if(value instanceof DoubleValue) {
-			return ((DoubleValue)value).getValue();
-		} else {
-			return defaultValue;
-		}
-	}
-	
-	private String getStringOrDefault(DisplayedVizObject vizObject, String name, String defaultValue) {
-		ImmutableValue value = vizObject.getProperty(name);
-		if(value instanceof StringValue) {
-			return ((StringValue)value).getValue();
-		} else {
-			return defaultValue;
-		}
-	}
-	
-	private boolean getBooleanOrDefault(DisplayedVizObject vizObject, String name, boolean defaultValue) {
-		ImmutableValue value = vizObject.getProperty(name);
-		if(value instanceof BooleanValue) {
-			return ((BooleanValue)value).getValue();
-		} else {
-			return defaultValue;
-		}
 	}
 
 	public Control getControl() {

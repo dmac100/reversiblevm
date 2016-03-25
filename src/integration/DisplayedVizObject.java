@@ -1,6 +1,7 @@
 package integration;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import backend.runtime.VizObject;
@@ -13,45 +14,53 @@ public class DisplayedVizObject {
 	private final String name;
 	
 	private long updateTime;
-	private Map<String, ImmutableValue> initialValues = new HashMap<>();
-	private Map<String, ImmutableValue> currentValues = new HashMap<>();
-	private Map<String, ImmutableValue> targetValues = new HashMap<>();
+	private Map<String, ImmutableValue> initialValues = new LinkedHashMap<>();
+	private Map<String, ImmutableValue> currentValues = new LinkedHashMap<>();
+	private Map<String, ImmutableValue> targetValues = new LinkedHashMap<>();
 	private boolean deletePending = false;
 	private boolean updatePending = false;
 	private boolean deleted;
 	
 	public DisplayedVizObject(VizObject vizObject) {
 		this.name = vizObject.getName();
-		this.currentValues = new HashMap<>(vizObject.getValues());
+		this.currentValues = new LinkedHashMap<>(vizObject.getValues());
 		
 		setDefaultValues(currentValues);
 	}
 	
 	private static void setDefaultValues(Map<String, ImmutableValue> values) {
-		ImmutableValue color = values.get("color");
+		setDefaultColorValues(values, "fill", "red");
+		setDefaultColorValues(values, "stroke", "darkgrey");
+	}
+	
+	private static void setDefaultColorValues(Map<String, ImmutableValue> values, String prefix, String defaultValue) {
+		ImmutableValue color = values.get(prefix);
 		if(color instanceof StringValue) {
-			setDefaultColorValues(values, ((StringValue)color).getValue());
+			setComponentColorValues(values, prefix, ((StringValue)color).getValue());
 		} else {
-			setDefaultColorValues(values, "red");
+			setComponentColorValues(values, prefix, defaultValue);
 		}
 	}
 
-	private static void setDefaultColorValues(Map<String, ImmutableValue> values, String color) {
+	/**
+	 * Splits the color value into separate red, green, and blue properties with the given prefix.
+	 */
+	private static void setComponentColorValues(Map<String, ImmutableValue> values, String prefix, String value) {
 		int[] rgb = new int[] { 200, 100, 100 };
-		if(color.equals("red")) rgb = new int[] { 200, 100, 100 };
-		if(color.equals("green")) rgb = new int[] { 100, 200, 100 };
-		if(color.equals("blue")) rgb = new int[] { 100, 100, 200 };
-		if(color.equals("yellow")) rgb = new int[] { 200, 200, 100 };
-		if(color.equals("magenta")) rgb = new int[] { 200, 100, 200 };
-		if(color.equals("cyan")) rgb = new int[] { 100, 200, 200 };
-		if(color.equals("white")) rgb = new int[] { 255, 255, 255 };
-		if(color.equals("lightgrey")) rgb = new int[] { 200, 200, 200 };
-		if(color.equals("grey")) rgb = new int[] { 150, 150, 150 };
-		if(color.equals("darkgrey")) rgb = new int[] { 50, 50, 50 };
-		if(color.equals("black")) rgb = new int[] { 0, 0, 0 };
-		values.put("color-red", new DoubleValue(rgb[0]));
-		values.put("color-green", new DoubleValue(rgb[1]));
-		values.put("color-blue", new DoubleValue(rgb[2]));
+		if(value.equals("red")) rgb = new int[] { 200, 100, 100 };
+		if(value.equals("green")) rgb = new int[] { 100, 200, 100 };
+		if(value.equals("blue")) rgb = new int[] { 100, 100, 200 };
+		if(value.equals("yellow")) rgb = new int[] { 200, 200, 100 };
+		if(value.equals("magenta")) rgb = new int[] { 200, 100, 200 };
+		if(value.equals("cyan")) rgb = new int[] { 100, 200, 200 };
+		if(value.equals("white")) rgb = new int[] { 255, 255, 255 };
+		if(value.equals("lightgrey")) rgb = new int[] { 200, 200, 200 };
+		if(value.equals("grey")) rgb = new int[] { 150, 150, 150 };
+		if(value.equals("darkgrey")) rgb = new int[] { 50, 50, 50 };
+		if(value.equals("black")) rgb = new int[] { 0, 0, 0 };
+		values.put(prefix + "-red", new DoubleValue(rgb[0]));
+		values.put(prefix + "-green", new DoubleValue(rgb[1]));
+		values.put(prefix + "-blue", new DoubleValue(rgb[2]));
 	}
 
 	public String getName() {
@@ -134,6 +143,10 @@ public class DisplayedVizObject {
 				currentValues.put(property, new DoubleValue(c));
 			}
 		}
+	}
+	
+	public boolean hasProperty(String name) {
+		return currentValues.containsKey(name);
 	}
 	
 	public ImmutableValue getProperty(String name) {
