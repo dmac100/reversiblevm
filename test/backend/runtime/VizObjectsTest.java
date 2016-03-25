@@ -211,6 +211,11 @@ public class VizObjectsTest {
 			Arrays.asList("rect(id: 1)", "rect(id: 2)"),
 			Arrays.asList("rect(id: 1, x: 20)", "rect(id: 2, x: 20)")
 		));
+		assertVizObjects("@rect(id: 1); @circle(id: 2); @rect[](x: 20);", Arrays.asList(
+			Arrays.asList("rect(id: 1)"),
+			Arrays.asList("rect(id: 1)", "circle(id: 2)"),
+			Arrays.asList("rect(id: 1, x: 20)", "circle(id: 2)")
+		));
 	}
 	
 	private static void assertVizObjects(String program, List<List<String>> expectedObjects) {

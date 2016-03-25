@@ -71,19 +71,22 @@ public class VizObject {
 	
 	public void applyFilter(VizObject vizObject) {
 		Map<String, ImmutableValue> filter = vizObject.getFilters();
+		
+		if(!vizObject.getName().equals(getName())) {
+			return;
+		}
+		
 		// Check if the filter in vizObject matches this object.
-		boolean match = true;
 		for(String key:filter.keySet()) {
 			if(!filter.get(key).getKey().equals(values.get(key).getKey())) {
-				match = false;
+				return;
 			}
 		}
-		if(match) {
-			// Copy properties from vizObject to this object.
-			Map<String, ImmutableValue> values = vizObject.getValues();
-			for(String key:values.keySet()) {
-				setProperty(key, values.get(key));
-			}
+		
+		// Copy properties from vizObject to this object.
+		Map<String, ImmutableValue> values = vizObject.getValues();
+		for(String key:values.keySet()) {
+			setProperty(key, values.get(key));
 		}
 	}
 	
