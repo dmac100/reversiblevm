@@ -71,6 +71,12 @@ public class DisplayedVizObject {
 		initialValues = new HashMap<>(currentValues);
 		targetValues.putAll(newVizObject.getValues());
 		updateTime = System.currentTimeMillis();
+		
+		if(deletePending) {
+			deleted = false;
+			targetValues.put("opacity", new DoubleValue(1));
+		}
+		
 		deletePending = false;
 		updatePending = true;
 		
@@ -92,9 +98,7 @@ public class DisplayedVizObject {
 		updatePending = true;
 		
 		initialValues.put("opacity", new DoubleValue(0));
-		if(!targetValues.containsKey("opacity")) {
-			targetValues.put("opacity", new DoubleValue(1));
-		}
+		targetValues.put("opacity", new DoubleValue(1));
 	}
 
 	public void delete() {
