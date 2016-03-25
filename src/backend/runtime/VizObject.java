@@ -78,7 +78,9 @@ public class VizObject {
 		
 		// Check if the filter in vizObject matches this object.
 		for(String key:filter.keySet()) {
-			if(!filter.get(key).getKey().equals(values.get(key).getKey())) {
+			ImmutableValue value1 = filter.get(key);
+			ImmutableValue value2 = values.get(key);
+			if(value1 != null && value2 != null && !value1.getKey().equals(value2.getKey())) {
 				return;
 			}
 		}
