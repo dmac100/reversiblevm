@@ -23,9 +23,9 @@ public class NewVizObjectInstruction extends Instruction {
 	}
 	
 	public void execute(Runtime runtime) {
-		List<Object> key = runtime.getCurrentVizObjectKey();
+		List<Object> key = new ArrayList<>(runtime.getCurrentVizObjectKey());
 		key.add(this);
-		VizObject vizObject = new VizObject(name, new ArrayList<>(key));
+		VizObject vizObject = new VizObject(name, key);
 		runtime.getCurrentVizObjects().add(vizObject);
 	}
 	
