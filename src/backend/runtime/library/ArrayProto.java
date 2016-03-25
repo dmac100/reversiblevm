@@ -154,7 +154,7 @@ public class ArrayProto {
 	}
 
 	public static Value unshift(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
-		while(params.size() <= 0) params.add(new NullValue());
+		while(params.size() <= 1) params.add(new NullValue());
 		ArrayValue array = runtime.checkArrayValue(params.get(0));
 		Value value = params.get(1);
 		List<Value> values = array.values(runtime);
