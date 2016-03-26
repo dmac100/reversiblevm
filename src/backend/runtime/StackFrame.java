@@ -66,10 +66,13 @@ public class StackFrame implements HasState {
 		}
 	}
 	
-	public List<VizObject> getVizObjects() {
+	public List<VizObject> getVizObjects(boolean dirty) {
 		List<VizObject> objects = new ArrayList<>();
 		for(VizObjectInstructions vizObjectInstructions:vizObjectInstructionsList.values()) {
 			try {
+				if(dirty) {
+					vizObjectInstructions.onValueChanged();
+				}
 				objects.addAll(vizObjectInstructions.getVizObjects());
 			} catch(ExecutionException e) {
 				System.err.println("Error getting viz object: " + e);

@@ -72,6 +72,10 @@ public class VizObject {
 	public void applyFilter(VizObject vizObject) {
 		Map<String, ImmutableValue> filter = vizObject.getFilters();
 		
+		if(filterEnabled) {
+			return;
+		}
+		
 		if(!vizObject.getName().equals(getName())) {
 			return;
 		}

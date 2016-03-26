@@ -31,7 +31,8 @@ public class EnableVizUpdatesInstruction extends Instruction {
 		});
 		
 		if(!enabled && runtime.getVizUpdatesEnabled()) {
-			runtime.refreshVizObjects();
+			runtime.markVizObjectsDirty();
+			runtime.getVizObjects();
 		}
 		runtime.setVizUpdatesEnabled(enabled);
 	}

@@ -225,6 +225,25 @@ public class VizObjectsTest {
 		));
 	}
 	
+	@Test
+	public void multipleFilters() {
+		assertVizObjects("@rect(id: 1, x: 10); @rect[id: 1](x: 20); @rect[id: 1](x: 30);", Arrays.asList(
+			Arrays.asList("rect(id: 1, x: 10)"),
+			Arrays.asList("rect(id: 1, x: 20)"),
+			Arrays.asList("rect(id: 1, x: 30)")
+		));
+	}
+	
+	@Test
+	public void observeFilter() {
+		assertVizObjects("@rect(id: 1, x: 10); @rect(id: 2, x: 10); var id = 1; @rect[id: id](x: 20); id = 2;", Arrays.asList(
+			Arrays.asList("rect(id: 1, x: 10)"),
+			Arrays.asList("rect(id: 1, x: 10)", "rect(id: 2, x: 10)"),
+			Arrays.asList("rect(id: 1, x: 20)", "rect(id: 2, x: 10)"),
+			Arrays.asList("rect(id: 1, x: 10)", "rect(id: 2, x: 20)")
+		));
+	}
+	
 	private static void assertVizObjects(String program, List<List<String>> expectedObjects) {
 		assertVizObjects(program, expectedObjects, false);
 	}

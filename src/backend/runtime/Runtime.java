@@ -33,6 +33,7 @@ public class Runtime implements HasState, ValueReadObserver {
 	private List<Object> currentVizObjectKey = new ArrayList<>();
 	private Set<ValueReadObserver> valueReadObservers = new HashSet<>();
 	private boolean vizUpdatesEnabled = true;
+	private boolean vizObjectsDirty = false;
 	
 	private List<OutputLine> output = new ArrayList<>();
 	
@@ -269,24 +270,35 @@ public class Runtime implements HasState, ValueReadObserver {
 		this.vizUpdatesEnabled = vizUpdatesEnabled;
 	}
 	
+	/**
+	 * Mark viz objects dirty so they will be recreated when they are next retrieved.
+	 */
+	public void markVizObjectsDirty() {
+		this.vizObjectsDirty = true;
+	}
+	
 	public List<VizObject> getVizObjects() {
 		if(vizUpdatesEnabled) {
-			refreshVizObjects();
+			do {
+				boolean oldVizObjectsDirty = vizObjectsDirty;
+				vizObjectsDirty = false;
+				refreshVizObjects(oldVizObjectsDirty);
+			} while(vizObjectsDirty);
 		}
 		return vizObjects;
 	}
 	
-	public void refreshVizObjects() {
+	public void refreshVizObjects(boolean dirty) {
 		if(stackFrames.isEmpty() && lastStackFrame != null) {
 			// Restore last stack frame to display final visual.
 			stackFrames.add(lastStackFrame);
-			List<VizObject> vizObjects = lastStackFrame.getVizObjects();
+			List<VizObject> vizObjects = lastStackFrame.getVizObjects(dirty);
 			stackFrames.clear();
 			this.vizObjects = applyVizObjectFilters(vizObjects);
 		} else {
 			List<VizObject> vizObjects = new ArrayList<>();
 			for(StackFrame stackFrame:new ArrayList<>(stackFrames)) {
-				vizObjects.addAll(stackFrame.getVizObjects());
+				vizObjects.addAll(stackFrame.getVizObjects(dirty));
 			}
 			this.vizObjects = applyVizObjectFilters(vizObjects);
 		}
