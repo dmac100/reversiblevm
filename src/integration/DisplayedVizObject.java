@@ -4,13 +4,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import backend.runtime.HasImmutableValueProperties;
 import backend.runtime.VizObject;
+import backend.util.VizObjectUtil;
 import backend.value.DoubleValue;
 import backend.value.ImmutableValue;
 import backend.value.NullValue;
 import backend.value.StringValue;
 
-public class DisplayedVizObject {
+public class DisplayedVizObject implements HasImmutableValueProperties {
 	private final String name;
 	
 	private long updateTime;
@@ -69,7 +71,7 @@ public class DisplayedVizObject {
 	
 	public void update(VizObject newVizObject) {
 		// Check that newVizObjects contains changes from the current target values.
-		if(hasSubValues(targetValues, newVizObject.getValues())) {
+		if(VizObjectUtil.hasSubValues(targetValues, newVizObject.getValues())) {
 			return;
 		}
 		
@@ -97,21 +99,6 @@ public class DisplayedVizObject {
 		}
 	}
 	
-	/**
-	 * Returns whether all the values in subValues are in superValues.
-	 */
-	private static boolean hasSubValues(Map<String, ImmutableValue> superValues, Map<String, ImmutableValue> subValues) {
-		for(String key:subValues.keySet()) {
-			if(!superValues.containsKey(key)) {
-				return false;
-			}
-			if(!superValues.get(key).getKey().equals(subValues.get(key).getKey())) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	public void create() {
 		initialValues = new HashMap<>(currentValues);
 		targetValues = new HashMap<>(currentValues);

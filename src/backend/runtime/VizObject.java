@@ -8,7 +8,7 @@ import java.util.Set;
 import backend.value.ImmutableValue;
 import backend.value.NullValue;
 
-public class VizObject {
+public class VizObject implements HasImmutableValueProperties {
 	private final String name;
 	private final Object key;
 	private final Map<String, ImmutableValue> values = new LinkedHashMap<>();

@@ -1,10 +1,10 @@
 package integration;
 
+import static backend.util.VizObjectUtil.getDoubleOrDefault;
+
 import java.util.List;
 
 import backend.runtime.VizObject;
-import backend.value.DoubleValue;
-import backend.value.ImmutableValue;
 
 public class VizObjectControlledSettings {
 	private int instructionDelay = 1;
@@ -22,15 +22,6 @@ public class VizObjectControlledSettings {
 		}
 	}
 	
-	private double getDoubleOrDefault(VizObject vizObject, String name, double defaultValue) {
-		ImmutableValue value = vizObject.getProperty(name);
-		if(value instanceof DoubleValue) {
-			return ((DoubleValue)value).getValue();
-		} else {
-			return defaultValue;
-		}
-	}
-
 	public int getInstructionDelay() {
 		return instructionDelay;
 	}

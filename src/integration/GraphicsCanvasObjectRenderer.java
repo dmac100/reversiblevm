@@ -1,11 +1,16 @@
 package integration;
 
+import static backend.util.VizObjectUtil.ensureInRange;
+import static backend.util.VizObjectUtil.getDoubleOrDefault;
+import static backend.util.VizObjectUtil.getStringOrDefault;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Path;
 
+import backend.util.VizObjectUtil;
 import backend.value.BooleanValue;
 import backend.value.DoubleValue;
 import backend.value.ImmutableValue;
@@ -130,38 +135,5 @@ public class GraphicsCanvasObjectRenderer {
 		gc.fillPath(path);
 		
 		path.dispose();
-	}
-
-	private static int ensureInRange(int value, int min, int max) {
-		if(value < min) return min;
-		if(value > max) return max;
-		return value;
-	}
-
-	private double getDoubleOrDefault(DisplayedVizObject vizObject, String name, double defaultValue) {
-		ImmutableValue value = vizObject.getProperty(name);
-		if(value instanceof DoubleValue) {
-			return ((DoubleValue)value).getValue();
-		} else {
-			return defaultValue;
-		}
-	}
-	
-	private String getStringOrDefault(DisplayedVizObject vizObject, String name, String defaultValue) {
-		ImmutableValue value = vizObject.getProperty(name);
-		if(value instanceof StringValue) {
-			return ((StringValue)value).getValue();
-		} else {
-			return defaultValue;
-		}
-	}
-	
-	private boolean getBooleanOrDefault(DisplayedVizObject vizObject, String name, boolean defaultValue) {
-		ImmutableValue value = vizObject.getProperty(name);
-		if(value instanceof BooleanValue) {
-			return ((BooleanValue)value).getValue();
-		} else {
-			return defaultValue;
-		}
 	}
 }
