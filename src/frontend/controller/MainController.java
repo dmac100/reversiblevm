@@ -3,6 +3,7 @@ package frontend.controller;
 import integration.GraphicsCanvas;
 import integration.RuntimeController;
 import integration.RuntimeModel;
+import integration.VizObjectControlledSettings;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,6 +111,10 @@ public class MainController {
 	
 	public File getFile() {
 		return file;
+	}
+	
+	public void setVizObjectControlledSettings(VizObjectControlledSettings vizObjectControlledSettings) {
+		graphicsCanvas.setVizObjectControlledSettings(vizObjectControlledSettings);
 	}
 	
 	public void setRuntimeModel(RuntimeModel runtimeModel) {
