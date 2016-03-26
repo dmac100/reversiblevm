@@ -68,10 +68,16 @@ public class DisplayedVizObject {
 	}
 	
 	public void update(VizObject newVizObject) {
+		// Check that newVizObjects contains changes from the current target values.
+		if(hasSubValues(targetValues, newVizObject.getValues())) {
+			return;
+		}
+		
 		initialValues = new HashMap<>(currentValues);
 		targetValues.putAll(newVizObject.getValues());
 		updateTime = System.currentTimeMillis();
 		
+		// Undo delete if it's in progress.
 		if(deletePending) {
 			deleted = false;
 			targetValues.put("opacity", new DoubleValue(1));
@@ -82,12 +88,28 @@ public class DisplayedVizObject {
 		
 		setDefaultValues(targetValues);
 		
+		// Add non-numeric values to current values immediately.
 		for(String property:currentValues.keySet()) {
 			ImmutableValue value = targetValues.get(property);
 			if(!(value instanceof DoubleValue)) {
 				currentValues.put(property, value);
 			}
 		}
+	}
+	
+	/**
+	 * Returns whether all the values in subValues are in superValues.
+	 */
+	private static boolean hasSubValues(Map<String, ImmutableValue> superValues, Map<String, ImmutableValue> subValues) {
+		for(String key:subValues.keySet()) {
+			if(!superValues.containsKey(key)) {
+				return false;
+			}
+			if(!superValues.get(key).getKey().equals(subValues.get(key).getKey())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public void create() {
