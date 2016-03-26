@@ -1,5 +1,6 @@
 package backend.runtime;
 
+import static backend.runtime.EngineAsserts.assertDoubleOutput;
 import static backend.runtime.EngineAsserts.assertError;
 import static backend.runtime.EngineAsserts.assertOutput;
 
@@ -243,5 +244,209 @@ public class LibraryTest {
 	@Test
 	public void arrayValues() {
 		assertOutput("[1, 2, 3, 4]", "var a = [1, 2, 3, 4]; print(a.values());");
+	}
+
+	@Test
+	public void mathE() {
+		assertDoubleOutput("2.718281828459045", "print(Math.E);");
+	}
+	
+	@Test
+	public void mathLn2() {
+		assertDoubleOutput("0.6931471805599453", "print(Math.LN2);");
+	}
+	
+	@Test
+	public void mathLn10() {
+		assertDoubleOutput("2.302585092994046", "print(Math.LN10);");
+	}
+	
+	@Test
+	public void mathLog2e() {
+		assertDoubleOutput("1.4426950408889634", "print(Math.LOG2E);");
+	}
+	
+	@Test
+	public void mathLog10e() {
+		assertDoubleOutput("0.4342944819032518", "print(Math.LOG10E);");
+	}
+	
+	@Test
+	public void mathPi() {
+		assertDoubleOutput("3.141592653589793", "print(Math.PI);");
+	}
+	
+	@Test
+	public void mathSqrt1_2() {
+		assertDoubleOutput("0.7071067811865476", "print(Math.SQRT1_2);");
+	}
+	
+	@Test
+	public void mathSqrt2() {
+		assertDoubleOutput("1.4142135623730951", "print(Math.SQRT2);");
+	}
+	
+	@Test
+	public void mathAbs() {
+		assertDoubleOutput("2", "print(Math.abs(-2));");
+	}
+	
+	@Test
+	public void mathAcos() {
+		assertDoubleOutput("1.0471975511965979", "print(Math.acos(0.5));");
+	}
+	
+	@Test
+	public void mathAcosh() {
+		assertDoubleOutput("1.3169578969248166", "print(Math.acosh(2));");
+	}
+	
+	@Test
+	public void mathAsin() {
+		assertDoubleOutput("0.5235987755982989", "print(Math.asin(0.5));");
+	}
+	
+	@Test
+	public void mathAsinh() {
+		assertDoubleOutput("0.48121182505960347", "print(Math.asinh(0.5));");
+		assertDoubleOutput("Infinity", "print(Math.asinh(Infinity));");
+		assertDoubleOutput("-Infinity", "print(Math.asinh(-Infinity));");
+	}
+	
+	@Test
+	public void mathAtan() {
+		assertDoubleOutput("0.4636476090008061", "print(Math.atan(0.5));");
+	}
+	
+	@Test
+	public void mathAtanh() {
+		assertDoubleOutput("0.5493061443340548", "print(Math.atanh(0.5));");
+	}
+	
+	@Test
+	public void mathAtan2() {
+		assertDoubleOutput("0.4636476090008061", "print(Math.atan2(10, 20));");
+	}
+	
+	@Test
+	public void mathCbrt() {
+		assertDoubleOutput("4.641588833612778", "print(Math.cbrt(100));");
+	}
+	
+	@Test
+	public void mathCeil() {
+		assertDoubleOutput("11", "print(Math.ceil(10.5));");
+	}
+	
+	@Test
+	public void mathCos() {
+		assertDoubleOutput("0.8775825618903728", "print(Math.cos(0.5));");
+	}
+	
+	@Test
+	public void mathCosh() {
+		assertDoubleOutput("1.1276259652063807", "print(Math.cosh(0.5));");
+	}
+	
+	@Test
+	public void mathExp() {
+		assertDoubleOutput("2.718281828459045", "print(Math.exp(1));");
+	}
+	
+	@Test
+	public void mathExpm1() {
+		assertDoubleOutput("1.718281828459045", "print(Math.expm1(1));");
+	}
+	
+	@Test
+	public void mathFloor() {
+		assertDoubleOutput("10", "print(Math.floor(10.5));");
+	}
+	
+	@Test
+	public void mathHypot() {
+		assertDoubleOutput("5.385164807134504", "print(Math.hypot(2, 3, 4));");
+	}
+	
+	@Test
+	public void mathLog() {
+		assertDoubleOutput("4.605170185988092", "print(Math.log(100));");
+	}
+	
+	@Test
+	public void mathLog1p() {
+		assertDoubleOutput("4.61512051684126", "print(Math.log1p(100));");
+	}
+	
+	@Test
+	public void mathLog10() {
+		assertDoubleOutput("2", "print(Math.log10(100));");
+	}
+	
+	@Test
+	public void mathLog2() {
+		assertDoubleOutput("6.643856189774724", "print(Math.log2(100));");
+	}
+	
+	@Test
+	public void mathMax() {
+		assertDoubleOutput("8", "print(Math.max(2, 4, 8));");
+		assertDoubleOutput("-Infinity", "print(Math.max());");
+	}
+	
+	@Test
+	public void mathMin() {
+		assertDoubleOutput("2", "print(Math.min(2, 4, 8));");
+		assertDoubleOutput("Infinity", "print(Math.min());");
+	}
+	
+	@Test
+	public void mathPow() {
+		assertDoubleOutput("8", "print(Math.pow(2, 3));");
+	}
+	
+	@Test
+	public void mathRandom() {
+		assertOutput("true", "print(Math.random() < 1);");
+	}
+	
+	@Test
+	public void mathRound() {
+		assertDoubleOutput("20", "print(Math.round(20.3));");
+	}
+	
+	@Test
+	public void mathSign() {
+		assertDoubleOutput("-1", "print(Math.sign(-5));");
+	}
+	
+	@Test
+	public void mathSin() {
+		assertDoubleOutput("0.479425538604203", "print(Math.sin(0.5));");
+	}
+	
+	@Test
+	public void mathSinh() {
+		assertDoubleOutput("0.5210953054937474", "print(Math.sinh(0.5));");
+	}
+	
+	@Test
+	public void mathSqrt() {
+		assertDoubleOutput("1.4142135623730951", "print(Math.sqrt(2));");
+	}
+	
+	@Test
+	public void mathTan() {
+		assertDoubleOutput("0.5463024898437905", "print(Math.tan(0.5));");
+	}
+	
+	@Test
+	public void mathTanh() {
+		assertDoubleOutput("0.46211715726000974", "print(Math.tanh(0.5));");
+	}
+	
+	@Test
+	public void mathTrunc() {
+		assertDoubleOutput("3", "print(Math.trunc(3.5));");
 	}
 }

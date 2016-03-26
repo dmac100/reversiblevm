@@ -11,8 +11,10 @@ import backend.observer.ValueObserverList;
 import backend.observer.ValueReadObserver;
 import backend.runtime.library.ArrayProto;
 import backend.runtime.library.Global;
+import backend.runtime.library.MathStatic;
 import backend.runtime.library.ObjectProto;
 import backend.runtime.library.StringProto;
+import backend.value.DoubleValue;
 import backend.value.NativeFunctionValue;
 import backend.value.NullValue;
 import backend.value.ObjectValue;
@@ -29,16 +31,32 @@ public class GlobalScope implements Scope, HasState {
 		ObjectValue objectProto = new ObjectValue(undoStack);
 		ObjectValue stringProto = new ObjectValue(undoStack);
 		ObjectValue arrayProto = new ObjectValue(undoStack);
+		ObjectValue mathStatic = new ObjectValue(undoStack);
 		
 		addNativeFunctionsToObject(objectProto, ObjectProto.class);
 		addNativeFunctionsToObject(stringProto, StringProto.class);
 		addNativeFunctionsToObject(arrayProto, ArrayProto.class);
+		addNativeFunctionsToObject(mathStatic, MathStatic.class);
 		
 		addNativeFunctionsToMap(values, Global.class);
 		
 		values.put("ObjectProto", objectProto);
 		values.put("StringProto", stringProto);
 		values.put("ArrayProto", arrayProto);
+		values.put("Math", mathStatic);
+		
+		mathStatic.set("E", new DoubleValue(Math.E));
+		mathStatic.set("LN2", new DoubleValue(Math.log(2)));
+		mathStatic.set("LN10", new DoubleValue(Math.log(10)));
+		mathStatic.set("LOG2E", new DoubleValue(Math.log(Math.exp(1)) / Math.log(2)));
+		mathStatic.set("LOG10E", new DoubleValue(Math.log10(Math.exp(1))));
+		mathStatic.set("PI", new DoubleValue(Math.PI));
+		mathStatic.set("SQRT1_2", new DoubleValue(1 / Math.sqrt(2)));
+		mathStatic.set("SQRT2", new DoubleValue(Math.sqrt(2)));
+		
+		values.put("Infinity", new DoubleValue(Double.POSITIVE_INFINITY));
+		values.put("NaN", new DoubleValue(Double.NaN));
+		values.put("undefined", new NullValue());
 	}
 	
 	/**

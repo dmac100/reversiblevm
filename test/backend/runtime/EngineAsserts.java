@@ -24,6 +24,10 @@ public class EngineAsserts {
 		assertError(expected, Engine.compile(program));
 	}
 	
+	public static void assertDoubleOutput(String expected, String program) {
+		assertDoubleOutput(expected, Engine.compile(program));
+	}
+	
 	public static void assertStackValue(String expected, List<Instruction> instructions) {
 		Runtime runtime = new Runtime();
 		new Engine(runtime, instructions).run();
@@ -48,6 +52,15 @@ public class EngineAsserts {
 		
 		assertEquals(expected, filterError(runtime.getOutput()).get(0).getText());
 		assertTrue(filterStandard(runtime.getOutput()).isEmpty());
+	}
+	
+	public static void assertDoubleOutput(String expected, List<Instruction> instructions) {
+		Runtime runtime = new Runtime();
+		new Engine(runtime, instructions).run();
+		
+		assertEquals(Double.parseDouble(expected), Double.parseDouble(StringUtils.join(filterStandard(runtime.getOutput()), "\n")), 0.000001);
+		assertTrue(filterError(runtime.getOutput()).isEmpty());
+		assertTrue(runtime.getStack().isEmpty());
 	}
 	
 	public static List<OutputLine> filterStandard(List<OutputLine> output) {
