@@ -335,6 +335,10 @@ public class ParserOutputTest {
 		assertParseOutput("@rect[]();", Arrays.asList("STARTVIZ", "NEWVIZOBJECT: rect", "ENABLEVIZFILTER", "ENDVIZ"));
 		assertParseOutput("@rect[x: 2]();", Arrays.asList("STARTVIZ", "NEWVIZOBJECT: rect", "ENABLEVIZFILTER", "PUSH: 2", "SETVIZFILTERPROPERTY: x", "ENDVIZ"));
 		assertParseOutput("@rect[x: 2, y: 3]();", Arrays.asList("STARTVIZ", "NEWVIZOBJECT: rect", "ENABLEVIZFILTER", "PUSH: 2", "SETVIZFILTERPROPERTY: x", "PUSH: 3", "SETVIZFILTERPROPERTY: y", "ENDVIZ"));
+		
+		assertParseOutput("@for(x <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "ENDVIZ"));
+		assertParseOutput("@for(x <- a) { @rect(); }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "NEWVIZOBJECT: rect", "ENDVIZ"));
+		assertParseOutput("@for(x <- a) { @rect(); @circle(); }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "NEWVIZOBJECT: rect", "NEWVIZOBJECT: circle", "ENDVIZ"));
 	}
 	
 	@Test

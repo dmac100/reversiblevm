@@ -778,37 +778,19 @@ public class Parser extends BaseParser<Instructions> {
 					mergeBefore(),
 					Terminal(")")
 				),
-				Terminal("@"),
-				Sequence(TestNot(Terminal("for"), Terminal("(")), Identifier()),
-				push(Instructions(NewVizObjectInstruction(match().trim()))),
-				Optional(
-					Terminal("["),
-					push(Instructions(EnableVizFilterInstruction())),
-					mergeAfter(),
-					Optional(
-						VizFilterProperty(),
-						ZeroOrMore(
-							Terminal(","),
-							VizFilterProperty(),
-							mergeAfter()
-						),
-						mergeAfter()
+				FirstOf(
+					Sequence(
+						VizObject(),
+						mergeAfter(),
+						push(Instructions(Instructions(StartVizInstruction()), pop(), Instructions(EndVizInstruction())))
 					),
-					Terminal("]")
-				),
-				Terminal("("),
-				Optional(
-					VizProperty(),
-					ZeroOrMore(
-						Terminal(","),
-						VizProperty(),
-						mergeAfter()
-					),
-					mergeAfter()
-				),
-				push(Instructions(Instructions(StartVizInstruction()), pop(1), pop(), Instructions(EndVizInstruction()))),
-				Terminal(")"),
-				Optional(Terminal(";"))
+					Sequence(
+						Terminal("{"),
+						ZeroOrMore(VizObject(), mergeAfter()),
+						push(Instructions(Instructions(StartVizInstruction()), pop(), Instructions(EndVizInstruction()))),
+						Terminal("}")
+					)
+				)
 			)
 		);
 	}
@@ -827,6 +809,41 @@ public class Parser extends BaseParser<Instructions> {
 				AssignmentExpression(),
 				push(Instructions(pop(), Instructions(VizFilterInstruction())))
 			)
+		);
+	}
+	
+	public Rule VizObject() {
+		return Sequence(
+			Terminal("@"),
+			Sequence(TestNot(Terminal("for"), Terminal("(")), Identifier()),
+			push(Instructions(NewVizObjectInstruction(match().trim()))),
+			Optional(
+				Terminal("["),
+				push(Instructions(EnableVizFilterInstruction())),
+				mergeAfter(),
+				Optional(
+					VizFilterProperty(),
+					ZeroOrMore(
+						Terminal(","),
+						VizFilterProperty(),
+						mergeAfter()
+					),
+					mergeAfter()
+				),
+				Terminal("]")
+			),
+			Terminal("("),
+			Optional(
+				VizProperty(),
+				ZeroOrMore(
+					Terminal(","),
+					VizProperty(),
+					mergeAfter()
+				),
+				mergeAfter()
+			),
+			Terminal(")"),
+			Optional(Terminal(";"))
 		);
 	}
 	
