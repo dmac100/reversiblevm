@@ -208,7 +208,7 @@ public class RuntimeController {
 		try {
 			List<Instruction> instructions = Engine.compile(command, false);
 			runtime.runInstructions("> " + command.trim(), instructions);
-		} catch(CompileException e) {
+		} catch(CompileException | ExecutionException e) {
 			runtime.throwError(e.getMessage());
 		}
 	}
