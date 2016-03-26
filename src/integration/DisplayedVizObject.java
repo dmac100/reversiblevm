@@ -124,6 +124,10 @@ public class DisplayedVizObject {
 	}
 
 	public void delete() {
+		if(deletePending) {
+			return;
+		}
+		
 		initialValues = new HashMap<>(currentValues);
 		targetValues = new HashMap<>(currentValues);
 		updateTime = System.currentTimeMillis();
