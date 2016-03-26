@@ -81,6 +81,15 @@ public class StepBackwardAfterErrorTest {
 		
 		assertStepBackward("5 >= null;");
 		assertStepBackward("null >= null;");
+		
+		assertStepBackward("'a' >= 5;");
+		assertStepBackward("5 >= 'a';");
+		assertStepBackward("'a' > 5;");
+		assertStepBackward("5 > 'a';");
+		assertStepBackward("'a' <= 5;");
+		assertStepBackward("5 <= 'a';");
+		assertStepBackward("'a' < 5;");
+		assertStepBackward("5 < 'a';");
 	}
 	
 	@Test

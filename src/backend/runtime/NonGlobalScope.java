@@ -1,6 +1,7 @@
 package backend.runtime;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ import backend.value.Value;
 public class NonGlobalScope implements Scope, HasState {
 	private final Scope parentScope;
 	private final UndoStack undoStack;
-	private final Map<String, Value> values = new HashMap<>();
+	private final Map<String, Value> values = new LinkedHashMap<>();
 	private final ValueObserverList<String> valueObserverList = new ValueObserverList<>();
 
 	public NonGlobalScope(Scope parentScope, UndoStack undoStack) {

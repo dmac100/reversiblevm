@@ -2,7 +2,7 @@ package backend.runtime;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +22,7 @@ import backend.value.Value;
 
 public class GlobalScope implements Scope, HasState {
 	private final UndoStack undoStack;
-	private final Map<String, Value> values = new HashMap<>();
+	private final Map<String, Value> values = new LinkedHashMap<>();
 	private final ValueObserverList<String> valueObserverList = new ValueObserverList<>();
 	
 	public GlobalScope(UndoStack undoStack) {

@@ -189,6 +189,21 @@ public class ParseAndRunTest {
 		assertOutput("false", "print(1 < 1);");
 		assertOutput("true", "print(1 >= 1);");
 		assertOutput("true", "print(1 <= 1);");
+		
+		assertOutput("false", "print('a' > 'b');");
+		assertOutput("false", "print('b' < 'a');");
+		assertOutput("false", "print('a' >= 'b');");
+		assertOutput("false", "print('b' <= 'a');");
+		
+		assertOutput("true", "print('a' < 'b');");
+		assertOutput("true", "print('b' > 'a');");
+		assertOutput("true", "print('a' <= 'b');");
+		assertOutput("true", "print('b' >= 'a');");
+		
+		assertOutput("false", "print('a' > 'a');");
+		assertOutput("false", "print('a' < 'a');");
+		assertOutput("true", "print('a' >= 'a');");
+		assertOutput("true", "print('a' <= 'a');");
 	}
 	
 	@Test
