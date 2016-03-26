@@ -43,6 +43,7 @@ import static backend.instruction.variable.LoadInstruction.Load;
 import static backend.instruction.variable.LocalInstruction.Local;
 import static backend.instruction.variable.StoreInstruction.Store;
 import static backend.instruction.viz.EnableVizFilterInstruction.EnableVizFilterInstruction;
+import static backend.instruction.viz.EnableVizUpdatesInstruction.EnableVizUpdatesInstruction;
 import static backend.instruction.viz.EndVizInstruction.EndVizInstruction;
 import static backend.instruction.viz.NewVizObjectInstruction.NewVizObjectInstruction;
 import static backend.instruction.viz.SetVizFilterPropertyInstruction.SetVizFilterPropertyInstruction;
@@ -68,6 +69,7 @@ import org.parboiled.support.Var;
 import backend.instruction.Instruction;
 import backend.instruction.function.ReturnInstruction;
 import backend.instruction.viz.EnableVizFilterInstruction;
+import backend.instruction.viz.EnableVizUpdatesInstruction;
 
 public class Parser extends BaseParser<Instructions> {
 	public Rule Literal() {
@@ -759,51 +761,55 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule VizStatement() {
-		return Sequence(
-			push(Instructions()),
-			Optional(
-				Terminal("@for"),
-				Terminal("("),
-				VizForExpression(),
-				ZeroOrMore(
-					Terminal(","),
-					VizForExpression(),
-					mergeAfter()
-				),
-				mergeBefore(),
-				Terminal(")")
-			),
-			Terminal("@"),
-			Sequence(TestNot(Terminal("for"), Terminal("(")), Identifier()),
-			push(Instructions(NewVizObjectInstruction(match().trim()))),
-			Optional(
-				Terminal("["),
-				push(Instructions(EnableVizFilterInstruction())),
-				mergeAfter(),
+		return FirstOf(
+			Sequence(Terminal("@vizUpdatesOn"), Optional(Terminal(";")), push(Instructions(EnableVizUpdatesInstruction(true)))),
+			Sequence(Terminal("@vizUpdatesOff"), Optional(Terminal(";")), push(Instructions(EnableVizUpdatesInstruction(false)))),
+			Sequence(
+				push(Instructions()),
 				Optional(
-					VizFilterProperty(),
+					Terminal("@for"),
+					Terminal("("),
+					VizForExpression(),
 					ZeroOrMore(
 						Terminal(","),
+						VizForExpression(),
+						mergeAfter()
+					),
+					mergeBefore(),
+					Terminal(")")
+				),
+				Terminal("@"),
+				Sequence(TestNot(Terminal("for"), Terminal("(")), Identifier()),
+				push(Instructions(NewVizObjectInstruction(match().trim()))),
+				Optional(
+					Terminal("["),
+					push(Instructions(EnableVizFilterInstruction())),
+					mergeAfter(),
+					Optional(
 						VizFilterProperty(),
+						ZeroOrMore(
+							Terminal(","),
+							VizFilterProperty(),
+							mergeAfter()
+						),
+						mergeAfter()
+					),
+					Terminal("]")
+				),
+				Terminal("("),
+				Optional(
+					VizProperty(),
+					ZeroOrMore(
+						Terminal(","),
+						VizProperty(),
 						mergeAfter()
 					),
 					mergeAfter()
 				),
-				Terminal("]")
-			),
-			Terminal("("),
-			Optional(
-				VizProperty(),
-				ZeroOrMore(
-					Terminal(","),
-					VizProperty(),
-					mergeAfter()
-				),
-				mergeAfter()
-			),
-			push(Instructions(Instructions(StartVizInstruction()), pop(1), pop(), Instructions(EndVizInstruction()))),
-			Terminal(")"),
-			Optional(Terminal(";"))
+				push(Instructions(Instructions(StartVizInstruction()), pop(1), pop(), Instructions(EndVizInstruction()))),
+				Terminal(")"),
+				Optional(Terminal(";"))
+			)
 		);
 	}
 	

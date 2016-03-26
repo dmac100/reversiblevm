@@ -315,6 +315,10 @@ public class ParserOutputTest {
 	
 	@Test
 	public void VizStatement() {
+		assertParseOutput("@vizUpdatesOn;", Arrays.asList("ENABLEVIZUPDATES: true"));
+		assertParseOutput("@vizUpdatesOff;", Arrays.asList("ENABLEVIZUPDATES: false"));
+		assertParseOutput("@vizUpdatesOn; @vizUpdatesOff;", Arrays.asList("ENABLEVIZUPDATES: true", "ENABLEVIZUPDATES: false"));
+		
 		assertParseOutput("@rect();", Arrays.asList("STARTVIZ", "NEWVIZOBJECT: rect", "ENDVIZ"));
 		assertParseOutput("@rect(x: 1);", Arrays.asList("STARTVIZ", "NEWVIZOBJECT: rect", "PUSH: 1", "SETVIZPROPERTY: x", "ENDVIZ"));
 		assertParseOutput("@rect(x: 1, y: 2);", Arrays.asList("STARTVIZ", "NEWVIZOBJECT: rect", "PUSH: 1", "SETVIZPROPERTY: x", "PUSH: 2", "SETVIZPROPERTY: y", "ENDVIZ"));

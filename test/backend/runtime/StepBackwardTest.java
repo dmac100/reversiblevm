@@ -374,6 +374,9 @@ public class StepBackwardTest {
 	
 	@Test
 	public void VizStatement() {
+		assertStepBackward("print(1); @vizUpdatesOn; print(2);");
+		assertStepBackward("print(1); @vizUpdatesOff; print(2);");
+		
 		assertStepBackward("print(1); @rect(); print(2);");
 		assertStepBackward("print(1); @rect(x: 1); print(2);");
 		assertStepBackward("print(1); @for(true) @rect(x: 1); print(2);");

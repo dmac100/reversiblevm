@@ -17,7 +17,6 @@ import backend.value.ArrayValue;
 import backend.value.BooleanValue;
 import backend.value.DoubleValue;
 import backend.value.FunctionValue;
-import backend.value.ImmutableValue;
 import backend.value.ObjectValue;
 import backend.value.StringValue;
 import backend.value.Value;
@@ -29,9 +28,11 @@ public class Runtime implements HasState, ValueReadObserver {
 	private StackFrame lastStackFrame = null;
 	private List<StackFrame> stackFrames = new ArrayList<>();
 	private int nestedFunctionDefinitionCount = 0;
+	private List<VizObject> vizObjects = new ArrayList<>();
 	private List<VizObject> currentVizObjects = new ArrayList<>();
 	private List<Object> currentVizObjectKey = new ArrayList<>();
 	private Set<ValueReadObserver> valueReadObservers = new HashSet<>();
+	private boolean vizUpdatesEnabled = true;
 	
 	private List<OutputLine> output = new ArrayList<>();
 	
@@ -258,19 +259,34 @@ public class Runtime implements HasState, ValueReadObserver {
 		return stackFrames.get(0).getScope();
 	}
 	
+	public boolean getVizUpdatesEnabled() {
+		return vizUpdatesEnabled;
+	}
+	
+	public void setVizUpdatesEnabled(boolean vizUpdatesEnabled) {
+		this.vizUpdatesEnabled = vizUpdatesEnabled;
+	}
+	
 	public List<VizObject> getVizObjects() {
+		if(vizUpdatesEnabled) {
+			refreshVizObjects();
+		}
+		return vizObjects;
+	}
+	
+	public void refreshVizObjects() {
 		if(stackFrames.isEmpty() && lastStackFrame != null) {
 			// Restore last stack frame to display final visual.
 			stackFrames.add(lastStackFrame);
 			List<VizObject> vizObjects = lastStackFrame.getVizObjects();
 			stackFrames.clear();
-			return applyVizObjectFilters(vizObjects);
+			this.vizObjects = applyVizObjectFilters(vizObjects);
 		} else {
 			List<VizObject> vizObjects = new ArrayList<>();
 			for(StackFrame stackFrame:new ArrayList<>(stackFrames)) {
 				vizObjects.addAll(stackFrame.getVizObjects());
 			}
-			return applyVizObjectFilters(vizObjects);
+			this.vizObjects = applyVizObjectFilters(vizObjects);
 		}
 	}
 
@@ -443,6 +459,7 @@ public class Runtime implements HasState, ValueReadObserver {
 		s.append("  Output: " + output).append("\n");
 		s.append("  UndoStack: ").append("\n");
 		s.append("  VizObjects: ").append(getVizObjects()).append("\n");
+		s.append("  VizUpdatesEnabled: " + vizUpdatesEnabled).append("\n");
 		s.append(undoStack.getState("    "));
 		
 		return s.toString();
