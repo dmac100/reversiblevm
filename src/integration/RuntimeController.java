@@ -33,6 +33,7 @@ public class RuntimeController {
 	private boolean runningForward;
 	private boolean runningBackward;
 	private Set<Instruction> lineBreakpoints = new HashSet<>();
+	private int instructionDelay = 1;
 
 	private final MainController mainController;
 	
@@ -81,10 +82,10 @@ public class RuntimeController {
 			
 			if(runningForward) {
 				stepForwardSync();
-				sleepUninterruptibly(1, TimeUnit.MILLISECONDS);
+				sleepUninterruptibly(instructionDelay, TimeUnit.MILLISECONDS);
 			} else if(runningBackward) {
 				stepBackwardSync();
-				sleepUninterruptibly(1, TimeUnit.MILLISECONDS);
+				sleepUninterruptibly(instructionDelay, TimeUnit.MILLISECONDS);
 			} else {
 				try {
 					updateUi();
@@ -127,9 +128,13 @@ public class RuntimeController {
 		runtimeModel.setPauseEnabled(running);
 		runtimeModel.setCompileEnabled(true);
 		
+		final VizObjectControlledSettings vizObjectControlledSettings = new VizObjectControlledSettings(runtime.getVizObjects());
+		this.instructionDelay = vizObjectControlledSettings.getInstructionDelay();
+		
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
+					mainController.setVizObjectControlledSettings(vizObjectControlledSettings);
 					mainController.setRuntimeModel(runtimeModel);
 				} catch(Exception e) {
 					e.printStackTrace();

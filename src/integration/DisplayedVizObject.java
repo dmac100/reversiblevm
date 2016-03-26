@@ -146,8 +146,8 @@ public class DisplayedVizObject {
 		return updatePending;
 	}
 	
-	public void redraw() {
-		double t = Math.min(1, (System.currentTimeMillis() - updateTime) / 400.0);
+	public void redraw(int transitionDelay) {
+		double t = Math.min(1, (System.currentTimeMillis() - updateTime) / (double) transitionDelay);
 		
 		if(t >= 1) {
 			if(deletePending) {

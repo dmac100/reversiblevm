@@ -29,6 +29,7 @@ public class GraphicsCanvas {
 	private final ColorCache colorCache;
 	
 	private Map<Object, DisplayedVizObject> displayedVizObjects = new LinkedHashMap<>();
+	private int transitionDelay = 400;
 	
 	private Thread refreshLoopThread;
 	
@@ -83,6 +84,10 @@ public class GraphicsCanvas {
 		}
 	}
 	
+	public void setVizObjectControlledSettings(VizObjectControlledSettings vizObjectControlledSettings) {
+		transitionDelay = vizObjectControlledSettings.getTransitionDelay();
+	}
+	
 	public void setVizObjects(List<VizObject> newVizObjects) {
 		Map<Object, DisplayedVizObject> newDisplayedVizObjects = new LinkedHashMap<>();
 		
@@ -127,7 +132,7 @@ public class GraphicsCanvas {
 		boolean updatePending = false;
 		for(Iterator<DisplayedVizObject> iterator = displayedVizObjects.values().iterator(); iterator.hasNext();) {
 			DisplayedVizObject vizObject = iterator.next();
-			vizObject.redraw();
+			vizObject.redraw(transitionDelay);
 			if(vizObject.isDeleted()) {
 				iterator.remove();
 			} else if(vizObject.isUpdatePending()) {
