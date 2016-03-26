@@ -33,4 +33,29 @@ public class Global {
 		}
 		return new ArrayValue(list, runtime.getUndoStack());
 	}
+	
+	public static Value parseInt(Runtime runtime, Stack stack, List<Value> params) {
+		while(params.size() <= 1) params.add(new NullValue());
+		try {
+			double radix = 10;
+			if(params.size() > 2) {
+				radix = runtime.checkDoubleValue(params.get(2)).getValue();
+			}
+			int value = Integer.parseInt(params.get(1).toString(), (int) radix);
+			return new DoubleValue(value);
+		} catch(NumberFormatException e) {
+			return new DoubleValue(Double.NaN);
+		}
+	}
+	
+	public static Value parseDouble(Runtime runtime, Stack stack, List<Value> params) {
+		while(params.size() <= 1) params.add(new NullValue());
+		try {
+			double value = Double.parseDouble(params.get(1).toString());
+			if(Double.isInfinite(value)) value = Double.NaN;
+			return new DoubleValue(value);
+		} catch(NumberFormatException e) {
+			return new DoubleValue(Double.NaN);
+		}
+	}
 }

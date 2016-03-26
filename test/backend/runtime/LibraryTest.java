@@ -14,6 +14,23 @@ public class LibraryTest {
 	}
 	
 	@Test
+	public void parseInt() {
+		assertOutput("5", "print(parseInt('5'))");
+		assertOutput("-5", "print(parseInt('-5'))");
+		assertOutput("NaN", "print(parseInt('5.5'))");
+		assertOutput("NaN", "print(parseInt('-5.5'))");
+		assertOutput("10", "print(parseInt('a', 16))");
+		assertOutput("NaN", "print(parseInt('a'))");
+	}
+	
+	@Test
+	public void parseDouble() {
+		assertOutput("5.5", "print(parseDouble('5.5'))");
+		assertOutput("-5.5", "print(parseDouble('-5.5'))");
+		assertOutput("NaN", "print(parseDouble('a'))");
+	}
+	
+	@Test
 	public void stringLength() {
 		assertOutput("0", "print(''.length());");
 		assertOutput("1", "print('1'.length());");
