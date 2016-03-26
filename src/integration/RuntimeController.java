@@ -274,7 +274,8 @@ public class RuntimeController {
 			
 			while(runtime.getLineNumber() == lineNumber || runtime.getLineNumber() <= 0) {
 				if(runtime.atEnd()) {
-					break;
+					runningForward = false;
+					return;
 				}
 				engine.stepForward();
 			}
@@ -311,7 +312,8 @@ public class RuntimeController {
 			while(runtime.getCurrentStackFrame() != null && !lineBreakpoints.contains(runtime.getInstruction())) {
 				engine.stepBackward();
 				if(runtime.atStart()) {
-					break;
+					runningBackward = false;
+					return;
 				}
 			}
 		} catch(ExecutionException e) {
