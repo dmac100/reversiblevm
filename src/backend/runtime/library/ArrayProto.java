@@ -86,23 +86,6 @@ public class ArrayProto {
 		return new ArrayValue(list, runtime.getUndoStack());
 	}
 
-	public static Value sort(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
-		while(params.size() <= 0) params.add(new NullValue());
-		ArrayValue array = runtime.checkArrayValue(params.get(0));
-		for(int i = 0; i < array.length(runtime).getValue(); i++) {
-			for(int j = i + 1; j < array.length(runtime).getValue(); j++) {
-				String value1 = array.get(new DoubleValue(i), runtime).toString();
-				String value2 = array.get(new DoubleValue(j), runtime).toString();
-				if(value1.compareTo(value2) > 0) {
-					Value t = array.get(new DoubleValue(i), runtime);
-					array.set(new DoubleValue(i), array.get(new DoubleValue(j), runtime));
-					array.set(new DoubleValue(j), t);
-				}
-			}
-		}
-		return array;
-	}
-
 	public static Value pop(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 		while(params.size() <= 0) params.add(new NullValue());
 		ArrayValue array = runtime.checkArrayValue(params.get(0));

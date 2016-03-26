@@ -82,3 +82,31 @@ ArrayProto.some = function(callback) {
 	}
 	return false;
 };
+
+(function() {
+	function quicksort(a, left, right) {
+		if(left > right) return;
+		
+		var mid = right;
+		for(var i = left + 1; i <= mid; i++) {
+			if(('' + a[i]) > ('' + a[left])) {
+				var t = a[mid];
+				a[mid] = a[i];
+				a[i] = t;
+				mid--;
+				i--;
+			}
+		}
+		
+		var t = a[left];
+		a[left] = a[mid];
+		a[mid] = t;
+		
+		quicksort(a, left, mid - 1);
+		quicksort(a, mid + 1, right);
+	}
+	
+	ArrayProto.sort = function(callback) {
+		quicksort(this, 0, this.length() - 1);
+	}
+}());

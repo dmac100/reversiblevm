@@ -225,6 +225,8 @@ public class LibraryTest {
 	@Test
 	public void arraySort() {
 		assertOutput("[1, 2, 3]", "var a = [3, 1, 2]; a.sort(); print(a);");
+		assertOutput("[1, 10, 2]", "var a = [10, 1, 2]; a.sort(); print(a);");
+		//assertOutput("[1, 2, 10]", "var a = [10, 1, 2]; a.sort((x, y) => x - y); print(a);");
 	}
 
 	@Test
