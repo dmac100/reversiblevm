@@ -28,10 +28,12 @@ public class StringProto {
 	}
 	
 	public static Value concat(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
-		while(params.size() <= 1) params.add(new NullValue());
-		String string = runtime.checkStringValue(params.get(0)).getValue();
-		String other = runtime.checkStringValue(params.get(1)).getValue();
-		return new StringValue(string + other);
+		while(params.size() <= 0) params.add(new NullValue());
+		StringBuilder s = new StringBuilder();
+		for(Value value:params) {
+			s.append(runtime.checkStringValue(value));
+		}
+		return new StringValue(s.toString());
 	}
 	
 	public static Value endsWith(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {

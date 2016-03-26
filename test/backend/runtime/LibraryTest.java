@@ -27,7 +27,9 @@ public class LibraryTest {
 
 	@Test
 	public void stringConcat() {
+		assertOutput("12", "print('12'.concat());");
 		assertOutput("1234", "print('12'.concat('34'));");
+		assertOutput("12345", "print('12'.concat('34').concat('5'));");
 	}
 
 	@Test
@@ -119,7 +121,9 @@ public class LibraryTest {
 
 	@Test
 	public void arrayConcat() {
+		assertOutput("[1, 2]", "print([1, 2].concat([]));");
 		assertOutput("[1, 2, 3]", "print([1, 2].concat([3]));");
+		assertOutput("[1, 2, 3, 4]", "print([1, 2].concat([3], [4]));");
 	}
 
 	@Test

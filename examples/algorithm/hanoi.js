@@ -3,7 +3,7 @@
 discs = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [], []];
 
 function allDiscs() {
-	return discs[0].concat(discs[1]).concat(discs[2]);
+	return discs[0].concat(discs[1], discs[2]);
 }
 
 function discTower(d) {

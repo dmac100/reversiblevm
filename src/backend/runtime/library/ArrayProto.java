@@ -22,15 +22,10 @@ public class ArrayProto {
 	}
 
 	public static Value concat(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
-		while(params.size() <= 1) params.add(new NullValue());
-		ArrayValue array = runtime.checkArrayValue(params.get(0));
-		ArrayValue other = runtime.checkArrayValue(params.get(1));
+		while(params.size() <= 0) params.add(new NullValue());
 		List<Value> list = new ArrayList<>();
-		for(Value value:array.values(runtime)) {
-			list.add(value);
-		}
-		for(Value value:other.values(runtime)) {
-			list.add(value);
+		for(Value value:params) {
+			list.addAll(runtime.checkArrayValue(value).values(runtime));
 		}
 		return new ArrayValue(list, runtime.getUndoStack());
 	}
