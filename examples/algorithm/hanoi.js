@@ -1,4 +1,4 @@
-@delay(transition: 200, instruction: 25);
+@delay(transition: 0, instruction: 1);
 
 discs = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [], []];
 
@@ -11,12 +11,10 @@ function discTower(d) {
 }
 
 function discHeight(d) {
-	var height = 0;
-	discs[discTower(d)].forEach(x => height += (x > d) ? 1 : 0);
-	return height;
+	return discs[discTower(d)].reduce((height, x) => height + (x > d ? 1 : 0), 0);
 }
 
-@for(d <- discs.keys())
+@for(d <- discs.keys()) {
 	@rect(
 		x: 95 + d * 180,
 		y: 197,
@@ -25,8 +23,6 @@ function discHeight(d) {
 		fill: 'yellow',
 		strokeWidth: 1
 	);
-	
-@for(d <- discs.keys())
 	@rect(
 		x: 100 + d * 180 - 80,
 		y: 307,
@@ -35,6 +31,7 @@ function discHeight(d) {
 		fill: 'yellow',
 		strokeWidth: 1
 	);
+}
 
 @for(d <- allDiscs())
 	@rect(
