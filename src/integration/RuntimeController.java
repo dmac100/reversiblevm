@@ -18,6 +18,8 @@ import backend.runtime.Engine;
 import backend.runtime.ExecutionException;
 import backend.runtime.OutputLine;
 import backend.runtime.Runtime;
+import backend.runtime.VizObject;
+import backend.util.VizObjectUtil;
 import frontend.controller.MainController;
 
 /**
@@ -121,10 +123,8 @@ public class RuntimeController {
 		runtimeModel.setOutput(new ArrayList<>(output));
 		runtimeModel.setVizObjects(runtime.getVizObjects());
 		runtimeModel.setLineNumber(runtime.getLineNumber());
-		runtimeModel.setStepBackwardEnabled(!running && !runtime.atStart());
-		runtimeModel.setStepForwardEnabled(!running && !runtime.atEnd());
-		runtimeModel.setRunBackwardEnabled(!running && !runtime.atStart());
-		runtimeModel.setRunForwardEnabled(!running && !runtime.atEnd());
+		runtimeModel.setBackwardEnabled(!running && !runtime.atStart());
+		runtimeModel.setForwardEnabled(!running && !runtime.atEnd());
 		runtimeModel.setPauseEnabled(running);
 		runtimeModel.setCompileEnabled(true);
 		
@@ -263,6 +263,54 @@ public class RuntimeController {
 				runningBackward = false;
 			}
 		});
+	}
+	
+	/**
+	 * Steps backward to the previous visual change.
+	 */
+	public void prevVisual() {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				prevVisualSync();
+			}
+		});
+	}
+	
+	/**
+	 * Steps backward to the previous visual change without adding to the queue.
+	 */
+	private void prevVisualSync() {
+		List<VizObject> vizObjects = runtime.getVizObjects();
+		
+		while(true) {
+			stepBackwardSync();
+			if(!VizObjectUtil.equalFiltersAndValues(vizObjects, runtime.getVizObjects())) return;
+			if(runtime.atStart()) return;
+		}
+	}
+	
+	/**
+	 * Steps forward to the next visual change.
+	 */
+	public void nextVisual() {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				nextVisualSync();
+			}
+		});
+	}
+	
+	/**
+	 * Steps forward to the next visual change without adding to the queue.
+	 */
+	private void nextVisualSync() {
+		List<VizObject> vizObjects = runtime.getVizObjects();
+		
+		while(true) {
+			stepForwardSync();
+			if(!VizObjectUtil.equalFiltersAndValues(vizObjects, runtime.getVizObjects())) return;
+			if(runtime.atEnd()) return;
+		}
 	}
 	
 	/**

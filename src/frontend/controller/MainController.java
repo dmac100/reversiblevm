@@ -149,6 +149,14 @@ public class MainController {
 		runtime.stepForward();
 	}
 	
+	public void prevVisual() {
+		runtime.prevVisual();
+	}
+	
+	public void nextVisual() {
+		runtime.nextVisual();
+	}
+	
 	public void stop() {
 		runtime.pause();
 	}

@@ -54,6 +54,8 @@ public class Main {
 	private Button pauseButton;
 	private Button stepBackwardButton;
 	private Button stepForwardButton;
+	private Button nextVisualButton;
+	private Button prevVisualButton;
 	
 	private boolean graphicsPane = true;
 	private boolean consolePane = true;
@@ -370,6 +372,18 @@ public class Main {
 			}
 		});
 		
+		prevVisualButton = new Button(parent, SWT.NONE);
+		prevVisualButton.setText("Prev Visual");
+		prevVisualButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				try {
+					mainController.prevVisual();
+				} catch(Exception e) {
+					displayException(e);
+				}
+			}
+		});
+		
 		stepBackwardButton = new Button(parent, SWT.NONE);
 		stepBackwardButton.setText("Step Backward");
 		stepBackwardButton.addSelectionListener(new SelectionAdapter() {
@@ -406,6 +420,18 @@ public class Main {
 			}
 		});
 		
+		nextVisualButton = new Button(parent, SWT.NONE);
+		nextVisualButton.setText("Next Visual");
+		nextVisualButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				try {
+					mainController.nextVisual();
+				} catch(Exception e) {
+					displayException(e);
+				}
+			}
+		});
+		
 		runForwardButton = new Button(parent, SWT.NONE);
 		runForwardButton.setText("Run Forward");
 		runForwardButton.addSelectionListener(new SelectionAdapter() {
@@ -421,11 +447,13 @@ public class Main {
 
 	private void refreshToolbarEnabled(RuntimeModel compilerModel) {
 		compileButton.setEnabled(compilerModel.isCompileEnabled());
-		runForwardButton.setEnabled(compilerModel.isRunForwardEnabled());
-		runBackwardButton.setEnabled(compilerModel.isRunBackwardEnabled());
+		runForwardButton.setEnabled(compilerModel.isForwardEnabled());
+		runBackwardButton.setEnabled(compilerModel.isBackwardEnabled());
 		pauseButton.setEnabled(compilerModel.isPauseEnabled());
-		stepBackwardButton.setEnabled(compilerModel.isStepBackwardEnabled());
-		stepForwardButton.setEnabled(compilerModel.isStepForwardEnabled());
+		stepBackwardButton.setEnabled(compilerModel.isBackwardEnabled());
+		stepForwardButton.setEnabled(compilerModel.isForwardEnabled());
+		nextVisualButton.setEnabled(compilerModel.isForwardEnabled());
+		prevVisualButton.setEnabled(compilerModel.isBackwardEnabled());
 	}
 	
 	private void displayMessage(String message) {

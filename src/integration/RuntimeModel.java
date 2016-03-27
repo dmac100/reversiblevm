@@ -10,10 +10,8 @@ public class RuntimeModel {
 	private List<OutputLine> output = new ArrayList<>();
 	private List<VizObject> vizObjects = new ArrayList<>();
 	private int lineNumber = -1;
-	private boolean stepForwardEnabled = true;
-	private boolean stepBackwardEnabled = true;
-	private boolean runForwardEnabled = true;
-	private boolean runBackwardEnabled = true;
+	private boolean forwardEnabled = true;
+	private boolean backwardEnabled = true;
 	private boolean pauseEnabled = true;
 	private boolean compileEnabled = true;
 	
@@ -40,51 +38,35 @@ public class RuntimeModel {
 	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
 	}
-	
-	public boolean isStepForwardEnabled() {
-		return stepForwardEnabled;
+
+	public boolean isForwardEnabled() {
+		return forwardEnabled;
 	}
-	
-	public void setStepForwardEnabled(boolean stepForwardEnabled) {
-		this.stepForwardEnabled = stepForwardEnabled;
+
+	public void setForwardEnabled(boolean forwardEnabled) {
+		this.forwardEnabled = forwardEnabled;
 	}
-	
-	public boolean isStepBackwardEnabled() {
-		return stepBackwardEnabled;
+
+	public boolean isBackwardEnabled() {
+		return backwardEnabled;
 	}
-	
-	public void setStepBackwardEnabled(boolean stepBackwardEnabled) {
-		this.stepBackwardEnabled = stepBackwardEnabled;
+
+	public void setBackwardEnabled(boolean backwardEnabled) {
+		this.backwardEnabled = backwardEnabled;
 	}
-	
-	public boolean isRunForwardEnabled() {
-		return runForwardEnabled;
-	}
-	
-	public void setRunForwardEnabled(boolean runForwardEnabled) {
-		this.runForwardEnabled = runForwardEnabled;
-	}
-	
-	public boolean isRunBackwardEnabled() {
-		return runBackwardEnabled;
-	}
-	
-	public void setRunBackwardEnabled(boolean runBackwardEnabled) {
-		this.runBackwardEnabled = runBackwardEnabled;
-	}
-	
+
 	public boolean isPauseEnabled() {
 		return pauseEnabled;
 	}
-	
+
 	public void setPauseEnabled(boolean pauseEnabled) {
 		this.pauseEnabled = pauseEnabled;
 	}
-	
+
 	public boolean isCompileEnabled() {
 		return compileEnabled;
 	}
-	
+
 	public void setCompileEnabled(boolean compileEnabled) {
 		this.compileEnabled = compileEnabled;
 	}
