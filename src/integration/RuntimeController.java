@@ -212,10 +212,21 @@ public class RuntimeController {
 	private void runCommandSync(String command) {
 		try {
 			List<Instruction> instructions = Engine.compile(command, false);
-			runtime.runInstructions("> " + command.trim(), instructions);
+			runtime.runInstructions(formatCommand(command), instructions);
 		} catch(CompileException | ExecutionException e) {
 			runtime.throwError(e.getMessage());
 		}
+	}
+
+	/**
+	 * Returns command with a prompt symbol added before each line.
+	 */
+	private String formatCommand(String command) {
+		StringBuilder s = new StringBuilder();
+		for(String line:command.trim().split("\n")) {
+			s.append("> " + line).append("\n");
+		}
+		return s.toString().trim();
 	}
 
 	/**

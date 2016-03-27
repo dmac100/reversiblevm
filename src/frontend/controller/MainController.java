@@ -37,7 +37,7 @@ public class MainController {
 	
 	private final RuntimeController runtime = new RuntimeController(this);
 	
-	public MainController(Shell shell, final EventBus eventBus, EditorText editorText, GraphicsCanvas graphicsCanvas, ConsoleText consoleText) {
+	public MainController(Shell shell, final EventBus eventBus, final EditorText editorText, GraphicsCanvas graphicsCanvas, ConsoleText consoleText) {
 		this.shell = shell;
 		this.eventBus = eventBus;
 		
@@ -51,8 +51,13 @@ public class MainController {
 		
 		editorText.setCompileCallback(new Callback<Void>() {
 			public void onCallback(Void param) {
-				compile();
-				runForward();
+				String selectedText = editorText.getSelectedText();
+				if(selectedText.isEmpty()) {
+					compile();
+					runForward();
+				} else {
+					runtime.runCommand(selectedText);
+				}
 			}
 		});
 		
