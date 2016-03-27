@@ -95,7 +95,9 @@ public class DisplayedVizObject implements HasImmutableValueProperties {
 		
 		initialValues = new HashMap<>(currentValues);
 		targetValues.putAll(newVizObject.getValues());
-		updateTime = System.currentTimeMillis();
+		if(!updatePending) {
+			updateTime = System.currentTimeMillis();
+		}
 		
 		// Undo delete if it's in progress.
 		if(deletePending) {
