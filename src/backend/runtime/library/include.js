@@ -56,9 +56,14 @@ ArrayProto.map = function(callback) {
 };
 
 ArrayProto.reduce = function(callback, initialValue) {
-	var value = initialValue;
+	var startIndex = 0;
 	var length = this.length();
-	for(var i = 0; i < length; i++) {
+	if(arguments.length() == 1) {
+		initialValue = this[0];
+		startIndex = 1;
+	}
+	var value = initialValue;
+	for(var i = startIndex; i < length; i++) {
 		value = callback(value, this[i]);
 	}
 	return value;

@@ -198,6 +198,7 @@ public class LibraryTest {
 
 	@Test
 	public void arrayReduce() {
+		assertOutput("10", "print([1, 2, 3, 4].reduce(function(prev, x) { return prev + x; }));");
 		assertOutput("10", "print([1, 2, 3, 4].reduce(function(prev, x) { return prev + x; }, 0));");
 		assertOutput("1234", "print(['1', '2', '3', '4'].reduce(function(prev, x) { return prev.concat(x); }, ''));");
 	}
