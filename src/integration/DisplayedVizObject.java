@@ -1,5 +1,6 @@
 package integration;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,6 +61,23 @@ public class DisplayedVizObject implements HasImmutableValueProperties {
 		if(value.equals("grey")) rgb = new int[] { 150, 150, 150 };
 		if(value.equals("darkgrey")) rgb = new int[] { 50, 50, 50 };
 		if(value.equals("black")) rgb = new int[] { 0, 0, 0 };
+		if(value.matches("#[0-9a-fA-F]{3}")) {
+			rgb = new int[] {
+				Integer.parseInt(value.substring(1, 2) + value.substring(1, 2), 16),
+				Integer.parseInt(value.substring(2, 3) + value.substring(2, 3), 16),
+				Integer.parseInt(value.substring(3, 4) + value.substring(3, 4), 16),
+			};
+			System.out.println(value.substring(1, 2) + value.substring(1, 2));
+			System.out.println(value.substring(2, 3) + value.substring(2, 3));
+			System.out.println(value.substring(3, 4) + value.substring(3, 4));
+			System.out.println(Arrays.toString(rgb));
+		} else if(value.toLowerCase().matches("#[0-9a-fA-F]{6}")) {
+			rgb = new int[] {
+				Integer.parseInt(value.substring(1, 2) + value.substring(2, 3), 16),
+				Integer.parseInt(value.substring(3, 4) + value.substring(4, 5), 16),
+				Integer.parseInt(value.substring(5, 6) + value.substring(6, 7), 16),
+			};
+		}
 		values.put(prefix + "-red", new DoubleValue(rgb[0]));
 		values.put(prefix + "-green", new DoubleValue(rgb[1]));
 		values.put(prefix + "-blue", new DoubleValue(rgb[2]));
