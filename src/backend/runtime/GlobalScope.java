@@ -65,7 +65,7 @@ public class GlobalScope implements Scope, HasState {
 	}
 	
 	private void addFunctionPrototypeProperties(ObjectValue functionProto) {
-		functionProto.set("apply", new NativeFunctionValue() {
+		functionProto.set("apply", new NativeFunctionValue(undoStack) {
 			public Object getKey() {
 				return this;
 			}
@@ -96,7 +96,7 @@ public class GlobalScope implements Scope, HasState {
 			}
 		});
 		
-		functionProto.set("call", new NativeFunctionValue() {
+		functionProto.set("call", new NativeFunctionValue(undoStack) {
 			public Object getKey() {
 				return this;
 			}
@@ -127,7 +127,7 @@ public class GlobalScope implements Scope, HasState {
 	/**
 	 * Adds all methods in clz to object as native function values.
 	 */
-	private static void addNativeFunctionsToObject(ObjectValue object, Class<?> clz) {
+	private void addNativeFunctionsToObject(ObjectValue object, Class<?> clz) {
 		for(final Method method:clz.getMethods()) {
 			object.set(method.getName(), createNativeFunctionValue(method));
 		}
@@ -136,7 +136,7 @@ public class GlobalScope implements Scope, HasState {
 	/**
 	 * Adds all methods in clz to map as native function values.
 	 */
-	private static void addNativeFunctionsToMap(Map<String, Value> map, Class<?> clz) {
+	private void addNativeFunctionsToMap(Map<String, Value> map, Class<?> clz) {
 		for(final Method method:clz.getDeclaredMethods()) {
 			map.put(method.getName(), createNativeFunctionValue(method));
 		}
@@ -145,8 +145,8 @@ public class GlobalScope implements Scope, HasState {
 	/**
 	 * Creates a native function value that delegates to the given method.
 	 */
-	private static NativeFunctionValue createNativeFunctionValue(final Method method) {
-		return new NativeFunctionValue() {
+	private NativeFunctionValue createNativeFunctionValue(final Method method) {
+		return new NativeFunctionValue(undoStack) {
 			protected Value execute(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 				try {
 					return (Value) method.invoke(null, runtime, stack, params);

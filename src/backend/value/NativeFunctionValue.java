@@ -5,12 +5,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
+import backend.runtime.Runtime;
 import backend.runtime.Stack;
+import backend.runtime.UndoStack;
 
-public abstract class NativeFunctionValue extends Value {
-	public NativeFunctionValue() {
+public abstract class NativeFunctionValue extends Value implements HasPropertiesObject {
+	private final ObjectValue propertiesObject;
+	
+	public NativeFunctionValue(UndoStack undoStack) {
+		propertiesObject = new ObjectValue(undoStack);
 	}
 	
 	public String toString(Set<Value> used) {
@@ -34,5 +38,9 @@ public abstract class NativeFunctionValue extends Value {
 		}
 		Collections.reverse(params);
 		return params;
+	}
+
+	public ObjectValue getPropertiesObject() {
+		return propertiesObject;
 	}
 }

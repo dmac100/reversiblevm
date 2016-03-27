@@ -41,7 +41,8 @@ public class RunInstructionsTest {
 	
 	public static void assertOutput(String expected, List<Instruction> instructions) {
 		Runtime runtime = new Runtime();
-		runtime.addStackFrame(new FunctionValue(new GlobalScope(runtime.getUndoStack()), 0, new ArrayList<Instruction>()));
+		UndoStack undoStack = runtime.getUndoStack();
+		runtime.addStackFrame(new FunctionValue(new GlobalScope(undoStack), undoStack, 0, new ArrayList<Instruction>()));
 		
 		runtime.runInstructions("info", instructions);
 		
@@ -56,7 +57,8 @@ public class RunInstructionsTest {
 	
 	private static void assertStepBackward(List<Instruction> instructions) {
 		Runtime runtime = new Runtime();
-		runtime.addStackFrame(new FunctionValue(new GlobalScope(runtime.getUndoStack()), 0, new ArrayList<Instruction>()));
+		UndoStack undoStack = runtime.getUndoStack();
+		runtime.addStackFrame(new FunctionValue(new GlobalScope(undoStack), undoStack, 0, new ArrayList<Instruction>()));
 		runtime.runInstructions("", Engine.compile("var x = 1; print(x)"));
 		
 		String initialState = runtime.getState();

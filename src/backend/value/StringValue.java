@@ -2,7 +2,9 @@ package backend.value;
 
 import java.util.Set;
 
-public class StringValue extends Value implements ImmutableValue {
+import backend.runtime.UndoStack;
+
+public class StringValue extends Value implements ImmutableValue, HasPropertiesObject {
 	private final String value;
 	
 	public StringValue(String value) {
@@ -24,5 +26,11 @@ public class StringValue extends Value implements ImmutableValue {
 	@Override
 	public Object getKey() {
 		return value;
+	}
+
+	@Override
+	public ObjectValue getPropertiesObject() {
+		// Return a temporary object to keep this string's own value immutable.
+		return new ObjectValue(new UndoStack());
 	}
 }

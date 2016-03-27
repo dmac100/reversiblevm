@@ -6,6 +6,7 @@ import backend.runtime.Runtime;
 import backend.runtime.Stack;
 import backend.value.ArrayValue;
 import backend.value.FunctionValue;
+import backend.value.HasPropertiesObject;
 import backend.value.NativeFunctionValue;
 import backend.value.ObjectValue;
 import backend.value.StringValue;
@@ -34,26 +35,39 @@ public class GetPropertyInstruction extends Instruction {
 		Stack stack = runtime.getStack();
 		
 		Value value = stack.peekValue(0);
+		ObjectValue objectValue;
 		if(value instanceof ObjectValue) {
-			ObjectValue objectValue = runtime.checkObjectValue(stack.popValue(false, true));
-			runtime.getStack().push(objectValue.get(name, runtime), false);
+			objectValue = getObjectValue(runtime, stack, null);
 		} else if(value instanceof ArrayValue) {
-			ArrayValue arrayValue = runtime.checkArrayValue(stack.popValue(false, true));
-			ObjectValue prototype = runtime.checkObjectValue(runtime.getScope().get("ArrayProto", runtime));
-			runtime.getStack().push(prototype.get(name, runtime), false);
+			objectValue = getObjectValue(runtime, stack, "ArrayProto");
 		} else if(value instanceof StringValue) {
-			StringValue stringValue = runtime.checkStringValue(stack.popValue(false, true));
-			ObjectValue prototype = runtime.checkObjectValue(runtime.getScope().get("StringProto", runtime));
-			runtime.getStack().push(prototype.get(name, runtime), false);
+			objectValue = getObjectValue(runtime, stack, "StringProto");
 		} else if(value instanceof FunctionValue || value instanceof NativeFunctionValue) {
-			Value functionValue = stack.popValue(false, true);
-			ObjectValue prototype = runtime.checkObjectValue(runtime.getScope().get("FunctionProto", runtime));
-			runtime.getStack().push(prototype.get(name, runtime), false);
+			objectValue = getObjectValue(runtime, stack, "FunctionProto");
 		} else {
 			throw new ExecutionException("TypeError: Not an object: " + value);
 		}
+		
+		runtime.getStack().push(objectValue.get(name, runtime), false);
 	}
 	
+	/**
+	 * Returns an object value from the top of the stack, and sets its prototype to the
+	 * value of prototypeName.
+	 */
+	private static ObjectValue getObjectValue(Runtime runtime, Stack stack, String prototypeName) {
+		Value value = stack.popValue(false, true);
+		if(!(value instanceof HasPropertiesObject)) {
+			throw new ExecutionException("TypeError: Not an object: " + value);
+		}
+		ObjectValue objectValue = ((HasPropertiesObject)value).getPropertiesObject();
+		if(prototypeName != null) {
+			ObjectValue prototype = runtime.checkObjectValue(runtime.getScope().get(prototypeName, runtime));
+			objectValue.set("prototype", prototype);
+		}
+		return objectValue;
+	}
+
 	public void undo(Runtime runtime) {
 		runtime.getStack().popValue(false, false);
 		runtime.getUndoStack().undoPopValue(runtime);

@@ -37,7 +37,7 @@ public class Engine {
 		
 		addIncludeFiles(globalScope);
 		
-		runtime.addStackFrame(new FunctionValue(globalScope, 0, instructions));
+		runtime.addStackFrame(new FunctionValue(globalScope, runtime.getUndoStack(), 0, instructions));
 		
 		runtime.getUndoStack().clear();
 	}
@@ -47,7 +47,7 @@ public class Engine {
 			instruction.setLineNumber((short) 0);
 		}
 		
-		runtime.addStackFrame(new FunctionValue(globalScope, 0, includeInstructions));
+		runtime.addStackFrame(new FunctionValue(globalScope, runtime.getUndoStack(), 0, includeInstructions));
 		run();
 	}
 

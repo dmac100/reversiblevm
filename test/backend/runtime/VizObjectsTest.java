@@ -321,7 +321,7 @@ public class VizObjectsTest {
 		Runtime runtime = new Runtime();
 		List<Instruction> instructions = Engine.compile(vizObjectInstructions);
 		instructions = instructions.subList(1, instructions.size() - 1);
-		runtime.addStackFrame(new FunctionValue(new GlobalScope(runtime.getUndoStack()), 0, new ArrayList<Instruction>()));
+		runtime.addStackFrame(new FunctionValue(new GlobalScope(runtime.getUndoStack()), runtime.getUndoStack(), 0, new ArrayList<Instruction>()));
 		
 		// Add some dummy values to the undo stack so that it's not empty.
 		runtime.getUndoStack().saveUndoPoint(0);

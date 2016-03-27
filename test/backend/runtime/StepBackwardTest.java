@@ -3,7 +3,6 @@ package backend.runtime;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -62,6 +61,8 @@ public class StepBackwardTest {
 		
 		assertStepBackward("var a = []; a[0] = a; print(a);");
 		assertStepBackward("a = [[0]]; a[1] = a[0]; print(a);");
+		
+		assertStepBackward("var a = []; a.b = 2; print(a.b);");
 	}
 	
 	@Test
@@ -428,6 +429,8 @@ public class StepBackwardTest {
 		assertStepBackward("function f(x, y) { print(x, y); }; f(1, 2, 3);");
 		
 		assertStepBackward("function f() { var x = 5; } function g() { return f(); } g();");
+		
+		assertStepBackward("function a() {}; a.b = 2; print(a.b);");
 	}
 	
 	@Test

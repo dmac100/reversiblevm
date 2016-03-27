@@ -23,7 +23,7 @@ public class UndoStackTest {
 	@Before
 	public void before() {
 		GlobalScope globalScope = new GlobalScope(runtime.getUndoStack());
-		function = new FunctionValue(globalScope, 0, instructions);
+		function = new FunctionValue(globalScope, runtime.getUndoStack(), 0, instructions);
 		
 		undoStack = runtime.getUndoStack();
 		

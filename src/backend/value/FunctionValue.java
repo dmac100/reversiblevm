@@ -1,25 +1,25 @@
 package backend.value;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import backend.instruction.Instruction;
 import backend.runtime.HasState;
 import backend.runtime.Scope;
-import backend.runtime.VizObject;
-import backend.runtime.VizObjectInstructions;
+import backend.runtime.UndoStack;
 
-public class FunctionValue extends Value implements HasState {
+public class FunctionValue extends Value implements HasState, HasPropertiesObject {
 	private final List<Instruction> instructions;
 	private final int paramCount;
+	private final ObjectValue propertiesObject;
 	
 	private Scope parentScope;
 	
-	public FunctionValue(Scope parentScope, int paramCount, List<Instruction> instructions) {
+	public FunctionValue(Scope parentScope, UndoStack undoStack, int paramCount, List<Instruction> instructions) {
 		this.parentScope = parentScope;
 		this.paramCount = paramCount;
 		this.instructions = instructions;
+		this.propertiesObject = new ObjectValue(undoStack);
 	}
 	
 	public Scope getParentScope() {
@@ -56,5 +56,9 @@ public class FunctionValue extends Value implements HasState {
 	@Override
 	public Object getKey() {
 		return this;
+	}
+
+	public ObjectValue getPropertiesObject() {
+		return propertiesObject;
 	}
 }

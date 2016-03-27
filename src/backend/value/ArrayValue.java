@@ -11,18 +11,20 @@ import backend.runtime.ExecutionException;
 import backend.runtime.HasState;
 import backend.runtime.UndoStack;
 
-public class ArrayValue extends Value implements HasState {
+public class ArrayValue extends Value implements HasState, HasPropertiesObject {
 	private final UndoStack undoStack;
-	private List<Value> values = new ArrayList<>();
+	private List<Value> values;
 	private final ValueObserverList<String> valueObserverList = new ValueObserverList<>();
+	private final ObjectValue propertiesObject;
 	
 	public ArrayValue(UndoStack undoStack) {
-		this.undoStack = undoStack;
+		this(new ArrayList<Value>(), undoStack);
 	}
 	
 	public ArrayValue(List<Value> values, UndoStack undoStack) {
 		this.values = values;
 		this.undoStack = undoStack;
+		this.propertiesObject = new ObjectValue(undoStack);
 	}
 	
 	public Value get(DoubleValue indexValue, ValueReadObserver valueReadObserver) throws ExecutionException {
@@ -170,5 +172,9 @@ public class ArrayValue extends Value implements HasState {
 	@Override
 	public Object getKey() {
 		return this;
+	}
+
+	public ObjectValue getPropertiesObject() {
+		return propertiesObject;
 	}
 }

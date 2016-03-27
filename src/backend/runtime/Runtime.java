@@ -51,7 +51,7 @@ public class Runtime implements HasState, ValueReadObserver {
 		info(infoMessage);
 		
 		// Add new function with same scope as current function with instructions to execute.
-		FunctionValue function = new FunctionValue(parentStackFrame.getScope(), 0, instructions);
+		FunctionValue function = new FunctionValue(parentStackFrame.getScope(), undoStack, 0, instructions);
 		StackFrame stackFrame = new StackFrame(function, parentStackFrame.getScope(), undoStack);
 		addStackFrame(stackFrame, true);
 		
@@ -91,7 +91,7 @@ public class Runtime implements HasState, ValueReadObserver {
 	 */
 	public void runAndUndoInstructions(List<Instruction> instructions) {
 		undoStack.saveUndoPoint(getCurrentStackFrame().getInstructionCounter());
-		addStackFrame(new FunctionValue(getScope(), 0, instructions));
+		addStackFrame(new FunctionValue(getScope(), undoStack, 0, instructions));
 		
 		int stackFrameCount = stackFrames.size();
 		
@@ -135,7 +135,7 @@ public class Runtime implements HasState, ValueReadObserver {
 			List<Instruction> instructions = function.getInstructions();
 			
 			popStackFrame();
-			addStackFrame(new FunctionValue(getScope(), 0, new ArrayList<Instruction>()));
+			addStackFrame(new FunctionValue(getScope(), undoStack, 0, new ArrayList<Instruction>()));
 			getScope().create(name);
 			
 			for(Value value:array.values(this)) {

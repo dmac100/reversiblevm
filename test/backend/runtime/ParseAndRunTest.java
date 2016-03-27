@@ -57,6 +57,8 @@ public class ParseAndRunTest {
 		
 		assertOutput("[[CYCLIC]]", "var a = []; a[0] = a; print(a);");
 		assertOutput("[[0], [0]]", "a = [[0]]; a[1] = a[0]; print(a);");
+		
+		assertOutput("2", "var a = []; a.b = 2; print(a.b);");
 	}
 	
 	@Test
@@ -456,6 +458,8 @@ public class ParseAndRunTest {
 		assertOutput("1", "function f() { print(arguments[0]); }; f(1);");
 		assertOutput("2", "function f() { print(arguments[1]); }; f(1, 2);");
 		assertOutput("2", "function f() { print(arguments.length()); }; f(1, 2);");
+		
+		assertOutput("2", "function a() {}; a.b = 2; print(a.b);");
 	}
 	
 	@Test

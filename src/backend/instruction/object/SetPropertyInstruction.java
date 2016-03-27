@@ -1,10 +1,10 @@
 package backend.instruction.object;
 
 import backend.instruction.Instruction;
-import backend.instruction.operator.ShiftLeftInstruction;
-import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
+import backend.runtime.Runtime;
 import backend.runtime.Stack;
+import backend.value.HasPropertiesObject;
 import backend.value.ObjectValue;
 import backend.value.Value;
 
@@ -25,9 +25,11 @@ public class SetPropertyInstruction extends Instruction {
 	
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
-		runtime.checkObjectValue(stack.peekValue(1));
+		if(!(stack.peekValue(1) instanceof HasPropertiesObject)) {
+			throw new ExecutionException("TypeError: Not an object: " + stack.peekValue(1));
+		}
 		Value value = runtime.getStack().popValue(false, true);
-		ObjectValue object = runtime.checkObjectValue(stack.popValue(false, true));
+		ObjectValue object = ((HasPropertiesObject)stack.popValue(false, true)).getPropertiesObject();
 		object.set(name, value);
 	}
 	

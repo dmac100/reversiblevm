@@ -13,7 +13,7 @@ import backend.runtime.ExecutionException;
 import backend.runtime.HasState;
 import backend.runtime.UndoStack;
 
-public class ObjectValue extends Value implements HasState {
+public class ObjectValue extends Value implements HasState, HasPropertiesObject {
 	private final SortedMap<String, Value> values = new TreeMap<>();
 	private final UndoStack undoStack;
 	private final ValueObserverList<String> valueObserverList = new ValueObserverList<>();
@@ -122,6 +122,11 @@ public class ObjectValue extends Value implements HasState {
 	
 	@Override
 	public Object getKey() {
+		return this;
+	}
+
+	@Override
+	public ObjectValue getPropertiesObject() {
 		return this;
 	}
 }

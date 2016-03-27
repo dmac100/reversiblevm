@@ -39,7 +39,7 @@ public class StartFunctionInstruction extends Instruction {
 			runtime.getCurrentStackFrame().setInstructionCounter(cachedInstructionCounter);
 		}
 		
-		FunctionValue newFunction = new FunctionValue(runtime.getScope(), paramCount, cachedInstructions);
+		FunctionValue newFunction = new FunctionValue(runtime.getScope(), runtime.getUndoStack(), paramCount, cachedInstructions);
 		runtime.getStack().push(newFunction, true);
 	}
 	
