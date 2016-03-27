@@ -447,6 +447,11 @@ public class ParseAndRunTest {
 		
 		assertOutput("1 null", "function f(x, y) { print(x, y); }; f(1);");
 		assertOutput("1 2", "function f(x, y) { print(x, y); }; f(1, 2, 3);");
+		
+		assertOutput("null", "function f() { }; f(1); print(arguments);");
+		assertOutput("1", "function f() { print(arguments[0]); }; f(1);");
+		assertOutput("2", "function f() { print(arguments[1]); }; f(1, 2);");
+		assertOutput("2", "function f() { print(arguments.length()); }; f(1, 2);");
 	}
 	
 	@Test
