@@ -10,11 +10,6 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Path;
 
-import backend.util.VizObjectUtil;
-import backend.value.BooleanValue;
-import backend.value.DoubleValue;
-import backend.value.ImmutableValue;
-import backend.value.StringValue;
 import frontend.ui.ColorCache;
 
 public class GraphicsCanvasObjectRenderer {
@@ -27,7 +22,7 @@ public class GraphicsCanvasObjectRenderer {
 	/**
 	 * Draws a single visual object onto the graphics context.
 	 */
-	public void paint(GC gc, DisplayedVizObject vizObject) {
+	public void paint(GC gc, Bounds bounds, DisplayedVizObject vizObject) {
 		String name = vizObject.getName();
 		
 		int x = (int) getDoubleOrDefault(vizObject, "x", 0);
@@ -84,6 +79,8 @@ public class GraphicsCanvasObjectRenderer {
 			if(strokeWidth > 0) {
 				gc.drawRoundRectangle(x, y, width, height, arcWidth, arcHeight);
 			}
+			
+			bounds.extendBounds(x, y, x + width, y + height);
 		} else if(name.equals("ellipse")) {
 			if(!getStringOrDefault(vizObject, "fill", "").equals("none")) {
 				gc.fillOval(cx - arcWidth, cy - arcHeight, arcWidth * 2, arcHeight * 2);
@@ -91,6 +88,8 @@ public class GraphicsCanvasObjectRenderer {
 			if(strokeWidth > 0) {
 				gc.drawOval(cx - arcWidth, cy - arcHeight, arcWidth * 2, arcHeight * 2);
 			}
+			
+			bounds.extendBounds(x - arcWidth, y + arcHeight, x + arcWidth, y + arcHeight);
 		} else if(name.equals("circle")) {
 			if(!getStringOrDefault(vizObject, "fill", "").equals("none")) {
 				gc.fillOval(cx - r, cy - r, r * 2, r * 2);
@@ -98,6 +97,8 @@ public class GraphicsCanvasObjectRenderer {
 			if(strokeWidth > 0) {
 				gc.drawOval(cx - r, cy - r, r * 2, r * 2);
 			}
+			
+			bounds.extendBounds(cx - r, cy - r, cx + r, cy + r);
 		} else if(name.equals("line")) {
 			if(arrowLength > 0) {
 				gc.setBackground(colorCache.getColor(strokeRed, strokeGreen, strokeBlue));
@@ -105,6 +106,8 @@ public class GraphicsCanvasObjectRenderer {
 			} else {
 				gc.drawLine(x1, y1, x2, y2);
 			}
+			
+			bounds.extendBounds(Math.min(x1, x2), Math.min(y1, y2), Math.max(x1, x2), Math.max(y1, y2));
 		} else if(name.equals("text")) {
 			int style = SWT.NORMAL;
 			if(fontStyle.toLowerCase().contains("bold")) style |= SWT.BOLD;
@@ -113,6 +116,8 @@ public class GraphicsCanvasObjectRenderer {
 			gc.setFont(font);
 			gc.drawText(text, x, y, true);
 			font.dispose();
+			
+			bounds.extendBounds(x, y, x + 10, y + 10);
 		}
 		
 		gc.setLineStyle(SWT.LINE_SOLID);

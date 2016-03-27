@@ -32,8 +32,9 @@ public class GraphicsCanvas {
 	private int transitionDelay = 400;
 	
 	private Thread refreshLoopThread;
-	
 	private final Object refreshLock = new Object();
+	
+	private Bounds bounds;
 	
 	public GraphicsCanvas(final EventBus eventBus, Composite parent) {
 		canvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
@@ -149,7 +150,7 @@ public class GraphicsCanvas {
 		int canvasWidth = canvas.getBounds().width;
 		int canvasHeight = canvas.getBounds().height;
 		int canvasMargin = 5;
-
+		
 		// Draw background of canvas.
 		gc.setBackground(colorCache.getColor(255, 255, 255));
 		gc.fillRoundRectangle(canvasMargin, canvasMargin, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2, 3, 3);
@@ -159,13 +160,25 @@ public class GraphicsCanvas {
 		
 		Transform transform = new Transform(display);
 		transform.translate(canvasMargin, canvasMargin);
+		if(bounds != null) {
+			float scaleX = (float) (canvasWidth - canvasMargin * 2) / (bounds.getMaxX() - bounds.getMinX());
+			float scaleY = (float) (canvasHeight - canvasMargin * 2) / (bounds.getMaxY() - bounds.getMinY());
+			float scale = Math.min(scaleX, scaleY);
+			transform.translate(-bounds.getMinX() * scale, -bounds.getMinY() * scale);
+			transform.scale(scale, scale);
+		}
 		gc.setTransform(transform);
 		
 		// Paint the visual objects.
 		GraphicsCanvasObjectRenderer renderer = new GraphicsCanvasObjectRenderer(colorCache);
+		Bounds newBounds = new Bounds(0, 0, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2);
 		for(DisplayedVizObject vizObject:displayedVizObjects.values()) {
-			renderer.paint(gc, vizObject);
+			renderer.paint(gc, newBounds, vizObject);
 		}
+		if(!newBounds.equals(bounds)) {
+			canvas.redraw();
+		}
+		this.bounds = newBounds;
 		
 		transform.dispose();
 		gc.setTransform(null);
