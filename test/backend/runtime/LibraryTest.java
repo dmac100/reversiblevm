@@ -24,6 +24,23 @@ public class LibraryTest {
 	}
 	
 	@Test
+	public void functionApply() {
+		assertError("TypeError: Not an array: null", "print.apply()");
+		assertError("TypeError: Not an array: null", "print.apply('a')");
+		assertOutput("1", "print.apply(null, [1])");
+		assertOutput("1 2", "print.apply(null, [1, 2])");
+	}
+	
+	@Test
+	public void functionCall() {
+		assertOutput("", "print.call()");
+		assertOutput("", "print.call(null)");
+		assertOutput("1", "print.call(null, 1)");
+		assertOutput("1 2", "print.call(null, 1, 2)");
+		assertOutput("a", "(function() { print(this); }).call('a')");
+	}
+	
+	@Test
 	public void parseDouble() {
 		assertOutput("5.5", "print(parseDouble('5.5'))");
 		assertOutput("-5.5", "print(parseDouble('-5.5'))");

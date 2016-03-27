@@ -1,11 +1,12 @@
 package backend.instruction.object;
 
 import backend.instruction.Instruction;
-import backend.instruction.operator.GreaterThanEqualInstruction;
-import backend.runtime.Runtime;
 import backend.runtime.ExecutionException;
+import backend.runtime.Runtime;
 import backend.runtime.Stack;
 import backend.value.ArrayValue;
+import backend.value.FunctionValue;
+import backend.value.NativeFunctionValue;
 import backend.value.ObjectValue;
 import backend.value.StringValue;
 import backend.value.Value;
@@ -38,10 +39,16 @@ public class GetPropertyInstruction extends Instruction {
 			runtime.getStack().push(objectValue.get(name, runtime), false);
 		} else if(value instanceof ArrayValue) {
 			ArrayValue arrayValue = runtime.checkArrayValue(stack.popValue(false, true));
-			runtime.getStack().push(runtime.checkObjectValue(runtime.getScope().get("ArrayProto", runtime)).get(name, runtime), false);
+			ObjectValue prototype = runtime.checkObjectValue(runtime.getScope().get("ArrayProto", runtime));
+			runtime.getStack().push(prototype.get(name, runtime), false);
 		} else if(value instanceof StringValue) {
 			StringValue stringValue = runtime.checkStringValue(stack.popValue(false, true));
-			runtime.getStack().push(runtime.checkObjectValue(runtime.getScope().get("StringProto", runtime)).get(name, runtime), false);
+			ObjectValue prototype = runtime.checkObjectValue(runtime.getScope().get("StringProto", runtime));
+			runtime.getStack().push(prototype.get(name, runtime), false);
+		} else if(value instanceof FunctionValue || value instanceof NativeFunctionValue) {
+			Value functionValue = stack.popValue(false, true);
+			ObjectValue prototype = runtime.checkObjectValue(runtime.getScope().get("FunctionProto", runtime));
+			runtime.getStack().push(prototype.get(name, runtime), false);
 		} else {
 			throw new ExecutionException("TypeError: Not an object: " + value);
 		}

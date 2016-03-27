@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import backend.instruction.function.CallInstruction;
 import backend.observer.ValueObserverList;
 import backend.observer.ValueReadObserver;
 import backend.runtime.library.ArrayProto;
@@ -14,6 +15,7 @@ import backend.runtime.library.Global;
 import backend.runtime.library.MathStatic;
 import backend.runtime.library.ObjectProto;
 import backend.runtime.library.StringProto;
+import backend.value.ArrayValue;
 import backend.value.DoubleValue;
 import backend.value.NativeFunctionValue;
 import backend.value.NullValue;
@@ -31,18 +33,21 @@ public class GlobalScope implements Scope, HasState {
 		ObjectValue objectProto = new ObjectValue(undoStack);
 		ObjectValue stringProto = new ObjectValue(undoStack);
 		ObjectValue arrayProto = new ObjectValue(undoStack);
+		ObjectValue functionProto = new ObjectValue(undoStack);
 		ObjectValue mathStatic = new ObjectValue(undoStack);
 		
 		addNativeFunctionsToObject(objectProto, ObjectProto.class);
 		addNativeFunctionsToObject(stringProto, StringProto.class);
 		addNativeFunctionsToObject(arrayProto, ArrayProto.class);
 		addNativeFunctionsToObject(mathStatic, MathStatic.class);
+		addFunctionPrototypeProperties(functionProto);
 		
 		addNativeFunctionsToMap(values, Global.class);
 		
 		values.put("ObjectProto", objectProto);
 		values.put("StringProto", stringProto);
 		values.put("ArrayProto", arrayProto);
+		values.put("FunctionProto", functionProto);
 		values.put("Math", mathStatic);
 		
 		mathStatic.set("E", new DoubleValue(Math.E));
@@ -59,6 +64,66 @@ public class GlobalScope implements Scope, HasState {
 		values.put("undefined", new NullValue());
 	}
 	
+	private void addFunctionPrototypeProperties(ObjectValue functionProto) {
+		functionProto.set("apply", new NativeFunctionValue() {
+			public Object getKey() {
+				return this;
+			}
+			
+			public void execute(Runtime runtime) throws ExecutionException {
+				Stack stack = runtime.getStack();
+				List<Value> params = getParams(runtime, stack);
+				while(params.size() <= 2) params.add(new NullValue());
+				
+				// Read [function, this, [params...]] from stack and push [this, params, paramsLength, function].
+				Value functionValue = params.get(0);
+				Value thisValue = params.get(1);
+				ArrayValue paramsValue = runtime.checkArrayValue(params.get(2));
+				
+				stack.push(thisValue, true);
+				for(int i = 0; i < (int) paramsValue.length(runtime).getValue(); i++) {
+					stack.push(paramsValue.get(new DoubleValue(i), runtime), true);
+				}
+				stack.push(new DoubleValue(paramsValue.length(runtime).getValue() + 1), true);
+				stack.push(functionValue, true);
+				
+				// Execute the function.
+				new CallInstruction().execute(runtime);
+			}
+			
+			protected Value execute(Runtime runtime, Stack stack, List<Value> params) {
+				throw new IllegalStateException();
+			}
+		});
+		
+		functionProto.set("call", new NativeFunctionValue() {
+			public Object getKey() {
+				return this;
+			}
+			
+			public void execute(Runtime runtime) throws ExecutionException {
+				Stack stack = runtime.getStack();
+				List<Value> params = getParams(runtime, stack);
+				while(params.size() <= 0) params.add(new NullValue());
+				
+				// Read [function, this, params...] from stack and push [this, params, paramsLength, function].
+				Value functionValue = params.get(0);
+				for(int i = 1; i < params.size(); i++) {
+					stack.push(params.get(i), true);
+				}
+				stack.push(new DoubleValue(params.size() - 1), true);
+				stack.push(functionValue, true);
+				
+				// Execute the function.
+				new CallInstruction().execute(runtime);
+			}
+			
+			protected Value execute(Runtime runtime, Stack stack, List<Value> params) {
+				throw new IllegalStateException();
+			}
+		});
+	}
+
 	/**
 	 * Adds all methods in clz to object as native function values.
 	 */
