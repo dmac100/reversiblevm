@@ -127,8 +127,10 @@ public class ParseAndRunTest {
 		assertError("TypeError: Not a double: false", "print(+false);");
 		assertOutput("5", "print(+5);");
 		assertOutput("-5", "print(-5);");
+		assertOutput("5", "print(- -5);");
 		assertOutput("-6", "print(~5);");
 		assertOutput("false", "print(!true);");
+		assertOutput("true", "print(!!true);");
 		assertOutput("null", "print(void 5);");
 		
 		assertOutput("2", "x = 1; ++x; print(x);");
@@ -150,6 +152,7 @@ public class ParseAndRunTest {
 	@Test
 	public void MultiplicativeExpression() {
 		assertOutput("6", "print(2 * 3);");
+		assertOutput("2", "print(8 / 2 / 2);");
 		assertOutput("2", "print(10 / 5);");
 		assertOutput("3", "print(8 % 5);");
 	}
@@ -158,6 +161,7 @@ public class ParseAndRunTest {
 	public void AdditiveExpression() {
 		assertOutput("5", "print(2 + 3);");
 		assertOutput("2", "print(5 - 3);");
+		assertOutput("1", "print(6 - 4 - 1);");
 		
 		assertOutput("23", "print('2' + 3);");
 		assertOutput("23", "print(2 + '3');");

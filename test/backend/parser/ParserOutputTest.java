@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Test;
 import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
@@ -137,6 +138,7 @@ public class ParserOutputTest {
 	public void MultiplicativeExpression() {
 		assertParseOutput("1 * 2;", Arrays.asList("PUSH: 1", "PUSH: 2", "MULTIPLY", "POP"));
 		assertParseOutput("1 / 2;", Arrays.asList("PUSH: 1", "PUSH: 2", "DIVIDE", "POP"));
+		assertParseOutput("8 / 2 / 2;", Arrays.asList("PUSH: 8", "PUSH: 2", "DIVIDE", "PUSH: 2", "DIVIDE", "POP"));
 		assertParseOutput("1 % 2;", Arrays.asList("PUSH: 1", "PUSH: 2", "MODULO", "POP"));
 	}
 	
@@ -144,6 +146,7 @@ public class ParserOutputTest {
 	public void AdditiveExpression() {
 		assertParseOutput("1 + 2;", Arrays.asList("PUSH: 1", "PUSH: 2", "ADD", "POP"));
 		assertParseOutput("1 - 2;", Arrays.asList("PUSH: 1", "PUSH: 2", "MINUS", "POP"));
+		assertParseOutput("4 - 2 - 1;", Arrays.asList("PUSH: 4", "PUSH: 2", "MINUS", "PUSH: 1", "MINUS", "POP"));
 	}
 	
 	@Test

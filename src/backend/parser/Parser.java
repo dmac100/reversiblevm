@@ -337,50 +337,50 @@ public class Parser extends BaseParser<Instructions> {
 	
 	public Rule MultiplicativeExpression() {
 		return Sequence(UnaryExpression(),
-			Optional(FirstOf(
+			ZeroOrMore(FirstOf(
 				Sequence(Terminal("*"), push(Instructions(Multiply()))),
 				Sequence(Terminal("/"), push(Instructions(Divide()))),
 				Sequence(Terminal("%"), push(Instructions(Modulo())))
-			), MultiplicativeExpression(), push(Instructions(pop(2), pop(), pop())))
+			), UnaryExpression(), push(Instructions(pop(2), pop(), pop())))
 		);
 	}
 	
 	public Rule AdditiveExpression() {
 		return Sequence(MultiplicativeExpression(),
-			Optional(FirstOf(
+			ZeroOrMore(FirstOf(
 				Sequence(Terminal("+"), push(Instructions(Add()))),
 				Sequence(Terminal("-"), push(Instructions(Minus())))
-			), AdditiveExpression(), push(Instructions(pop(2), pop(), pop())))
+			), MultiplicativeExpression(), push(Instructions(pop(2), pop(), pop())))
 		);
 	}
 	
 	public Rule ShiftExpression() {
 		return Sequence(AdditiveExpression(),
-			Optional(FirstOf(
+			ZeroOrMore(FirstOf(
 				Sequence(Terminal("<<"), push(Instructions(ShiftLeft()))),
 				Sequence(Terminal(">>>"), push(Instructions(UnsignedShiftRight()))),
 				Sequence(Terminal(">>"), push(Instructions(ShiftRight())))
-			), ShiftExpression(), push(Instructions(pop(2), pop(), pop())))
+			), AdditiveExpression(), push(Instructions(pop(2), pop(), pop())))
 		);
 	}
 	
 	public Rule RelationalExpression() {
 		return Sequence(ShiftExpression(),
-			Optional(FirstOf(
+			ZeroOrMore(FirstOf(
 				Sequence(Terminal("<="), push(Instructions(LessThanEqual()))),
 				Sequence(Terminal(">="), push(Instructions(GreaterThanEqual()))),
 				Sequence(Terminal("<"), push(Instructions(LessThan()))),
 				Sequence(Terminal(">"), push(Instructions(GreaterThan())))
-			), RelationalExpression(), push(Instructions(pop(2), pop(), pop())))
+			), ShiftExpression(), push(Instructions(pop(2), pop(), pop())))
 		);
 	}
 	
 	public Rule EqualityExpression() {
 		return Sequence(RelationalExpression(),
-			Optional(FirstOf(
+			ZeroOrMore(FirstOf(
 				Sequence(Terminal("=="), push(Instructions(Equal()))),
 				Sequence(Terminal("!="), push(Instructions(Equal(), Not())))
-			), EqualityExpression(), push(Instructions(pop(2), pop(), pop())))
+			), RelationalExpression(), push(Instructions(pop(2), pop(), pop())))
 		);
 	}
 	
