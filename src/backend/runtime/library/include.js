@@ -89,12 +89,12 @@ ArrayProto.some = function(callback) {
 };
 
 (function() {
-	function quicksort(a, left, right) {
+	function quicksort(a, left, right, comparator) {
 		if(left > right) return;
 		
 		var mid = right;
 		for(var i = left + 1; i <= mid; i++) {
-			if(('' + a[i]) > ('' + a[left])) {
+			if(comparator(a[i], a[left]) > 0) {
 				var t = a[mid];
 				a[mid] = a[i];
 				a[i] = t;
@@ -107,11 +107,15 @@ ArrayProto.some = function(callback) {
 		a[left] = a[mid];
 		a[mid] = t;
 		
-		quicksort(a, left, mid - 1);
-		quicksort(a, mid + 1, right);
+		quicksort(a, left, mid - 1, comparator);
+		quicksort(a, mid + 1, right, comparator);
 	}
 	
-	ArrayProto.sort = function(callback) {
-		quicksort(this, 0, this.length() - 1);
+	ArrayProto.sort = function(comparator) {
+		if(arguments.length() == 0) {
+			comparator = (x, y) => ('' + x > '' + y ? 1 : -1);
+		}
+		
+		quicksort(this, 0, this.length() - 1, comparator);
 	}
 }());
