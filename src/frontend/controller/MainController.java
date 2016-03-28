@@ -8,6 +8,7 @@ import integration.VizObjectControlledSettings;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -65,6 +66,12 @@ public class MainController {
 			public void onCallback(Void param) {
 				modified = true;
 				eventBus.post(new ModifiedEvent(modified));
+			}
+		});
+		
+		editorText.setBreakpointChangeCallback(new Callback<Set<Integer>>() {
+			public void onCallback(Set<Integer> breakpoints) {
+				runtime.setUserBreakpoints(breakpoints);
 			}
 		});
 		

@@ -3,12 +3,16 @@ package frontend.ui;
 import integration.BrushJs;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.Bullet;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
+import org.eclipse.swt.custom.PaintObjectEvent;
+import org.eclipse.swt.custom.PaintObjectListener;
 import org.eclipse.swt.custom.ST;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -19,14 +23,18 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GlyphMetrics;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -50,7 +58,9 @@ public class EditorText {
 	private final StyledTextCompletion completion;
 	private final EditFunctions editFunctions;
 	
+	private final Set<Integer> lineBreakpoints = new HashSet<>();
 	private Callback<Void> compileCallback;
+	private Callback<Set<Integer>> breakpointChangeCallback;
 	
 	private final Theme theme = new ThemeSublime();
 	private StyleRange[] syntaxHighlightingRanges = new StyleRange[0];
@@ -201,6 +211,50 @@ public class EditorText {
 						find();
 					}
 				}
+			}
+		});
+		
+		styledText.addMouseListener(new MouseAdapter() {
+			public void mouseDoubleClick(MouseEvent event) {
+				if(event.x < 25) {
+					int line = styledText.getLineIndex(event.y) + 1;
+					if(lineBreakpoints.contains(line)) {
+						lineBreakpoints.remove(line);
+					} else {
+						lineBreakpoints.add(line);
+					}
+					refreshLineStyles();
+					if(breakpointChangeCallback != null) {
+						breakpointChangeCallback.onCallback(lineBreakpoints);
+					}
+				}
+			}
+		});
+		
+		styledText.addPaintObjectListener(new PaintObjectListener() {
+			public void paintObject(PaintObjectEvent event) {
+				if(event.bullet == null) return;
+				
+				Display display = event.display;
+				StyleRange style = event.style;
+				Font font = (style.font == null) ? styledText.getFont() : style.font;
+				
+				// Draw line number, and bullet if it's a breakpoint.
+				TextLayout layout = new TextLayout(display);
+				layout.setAlignment(SWT.RIGHT);
+				layout.setAscent(event.ascent);
+				layout.setDescent(event.descent);
+				layout.setWidth(style.metrics.width);
+				layout.setFont(font);
+				int line = styledText.getLineIndex(event.y) + 1;
+				if(lineBreakpoints.contains(line)) {
+					layout.setText("\u2022" + line);
+				} else {
+					layout.setText(" " + line);
+				}
+				event.gc.setForeground(style.foreground);
+				layout.draw(event.gc, event.x - 8, event.y);
+				layout.dispose();
 			}
 		});
 		
@@ -438,7 +492,7 @@ public class EditorText {
 		StyleRange style = new StyleRange();
 		style.metrics = new GlyphMetrics(0, 0, lineCountWidth * 8 + 5);
 		style.foreground = colorCache.getColor(70, 80, 90);
-		Bullet bullet = new Bullet(ST.BULLET_NUMBER, style);
+		Bullet bullet = new Bullet(ST.BULLET_CUSTOM, style);
 		styledText.setLineBullet(0, maxLine, null);
 		styledText.setLineBullet(0, maxLine, bullet);
 		
@@ -576,6 +630,10 @@ public class EditorText {
 	
 	public void setCompileCallback(Callback<Void> callback) {
 		this.compileCallback = callback;
+	}
+	
+	public void setBreakpointChangeCallback(Callback<Set<Integer>> callback) {
+		this.breakpointChangeCallback = callback;
 	}
 	
 	public void setModifiedCallback(final Callback<Void> callback) {

@@ -35,6 +35,7 @@ public class RuntimeController {
 	private boolean runningForward;
 	private boolean runningBackward;
 	private Set<Instruction> lineBreakpoints = new HashSet<>();
+	private Set<Integer> userBreakpoints = new HashSet<>();
 	private int instructionDelay = 1;
 
 	private final MainController mainController;
@@ -147,6 +148,14 @@ public class RuntimeController {
 		runnableQueue.add(new Runnable() {
 			public void run() {
 				runtime.throwError(error);
+			}
+		});
+	}
+	
+	public void setUserBreakpoints(final Set<Integer> breakpoints) {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				RuntimeController.this.userBreakpoints = new HashSet<>(breakpoints);
 			}
 		});
 	}
@@ -339,6 +348,10 @@ public class RuntimeController {
 				engine.stepForward();
 			}
 			
+			if(userBreakpoints.contains(runtime.getLineNumber())) {
+				runningForward = false;
+			}
+			
 			lineBreakpoints.add(runtime.getInstruction());
 		} catch(ExecutionException e) {
 			runtime.throwError(e.getMessage());
@@ -374,6 +387,10 @@ public class RuntimeController {
 					runningBackward = false;
 					return;
 				}
+			}
+			
+			if(userBreakpoints.contains(runtime.getLineNumber())) {
+				runningBackward = false;
 			}
 		} catch(ExecutionException e) {
 			runtime.throwError(e.getMessage());
