@@ -32,6 +32,7 @@ import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.GlyphMetrics;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.TextLayout;
@@ -233,32 +234,52 @@ public class EditorText {
 		
 		styledText.addPaintObjectListener(new PaintObjectListener() {
 			public void paintObject(PaintObjectEvent event) {
-				if(event.bullet == null) return;
-				
-				Display display = event.display;
-				StyleRange style = event.style;
-				Font font = (style.font == null) ? styledText.getFont() : style.font;
-				
-				// Draw line number, and bullet if it's a breakpoint.
-				TextLayout layout = new TextLayout(display);
-				layout.setAlignment(SWT.RIGHT);
-				layout.setAscent(event.ascent);
-				layout.setDescent(event.descent);
-				layout.setWidth(style.metrics.width);
-				layout.setFont(font);
-				int line = styledText.getLineIndex(event.y) + 1;
-				if(lineBreakpoints.contains(line)) {
-					layout.setText("\u2022" + line);
-				} else {
-					layout.setText(" " + line);
+				if(event.bullet != null) {
+					int line = styledText.getLineIndex(event.y) + 1;
+					if(lineBreakpoints.contains(line)) {
+						event.bullet.text = "\u2022" + line;
+					} else {
+						event.bullet.text = " " + line;
+					}
+					
+					drawBullet(event.bullet, ST.BULLET_TEXT, event.gc, event.x, event.y, event.bulletIndex, event.ascent, event.descent);
 				}
-				event.gc.setForeground(style.foreground);
-				layout.draw(event.gc, event.x - 8, event.y);
-				layout.dispose();
 			}
 		});
 		
 		styledText.setFocus();
+	}
+	
+	/**
+	 * drawBullet adapted from SWT's StyledTextRenderer.java to take in the bullet type as a parameter.
+	 */
+	private void drawBullet(Bullet bullet, int type, GC gc, int paintX, int paintY, int index, int lineAscent, int lineDescent) {
+		StyleRange style = bullet.style;
+		GlyphMetrics metrics = style.metrics;
+		Color color = style.foreground;
+		if (color != null) gc.setForeground(color);
+		Font font = style.font;
+		if (font != null) gc.setFont(font);
+		String string = "";
+		switch (type) {
+			case ST.BULLET_DOT: string = "\u2022"; break;
+			case ST.BULLET_NUMBER: string = String.valueOf(index + 1); break;
+			case ST.BULLET_LETTER_LOWER: string = String.valueOf((char) (index % 26 + 97)); break;
+			case ST.BULLET_LETTER_UPPER: string = String.valueOf((char) (index % 26 + 65)); break;
+		}
+		if ((type & ST.BULLET_TEXT) != 0) string += bullet.text;
+		Display display = styledText.getDisplay();
+		TextLayout layout = new TextLayout(display);
+		layout.setText(string);
+		layout.setAscent(lineAscent);
+		layout.setDescent(lineDescent);
+		style = (StyleRange)style.clone();
+		style.metrics = null;
+		if (style.font == null) style.font = styledText.getFont();
+		layout.setStyle(style, 0, string.length());
+		int x = paintX + Math.max(0, metrics.width - layout.getBounds().width - 8);
+		layout.draw(gc, x, paintY);
+		layout.dispose();
 	}
 	
 	public void setDebugLineNumber(int lineNumber) {
@@ -490,7 +511,7 @@ public class EditorText {
 		
 		// Update line numbers.
 		StyleRange style = new StyleRange();
-		style.metrics = new GlyphMetrics(0, 0, lineCountWidth * 8 + 5);
+		style.metrics = new GlyphMetrics(0, 0, (lineCountWidth + 1) * 8 + 5);
 		style.foreground = colorCache.getColor(70, 80, 90);
 		Bullet bullet = new Bullet(ST.BULLET_CUSTOM, style);
 		styledText.setLineBullet(0, maxLine, null);
