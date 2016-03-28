@@ -67,6 +67,8 @@ public class GraphicsCanvasObjectRenderer {
 		if(strokeStyle.equals("dashdot")) gc.setLineStyle(SWT.LINE_DASHDOT);
 		if(strokeStyle.equals("dashdotdot")) gc.setLineStyle(SWT.LINE_DASHDOTDOT);
 		
+		int sw = strokeWidth / 2;
+		
 		if(name.equals("rect")) {
 			if(!vizObject.hasProperty("rx")) arcWidth = arcHeight;
 			if(!vizObject.hasProperty("ry")) arcHeight = arcWidth;
@@ -80,7 +82,7 @@ public class GraphicsCanvasObjectRenderer {
 				gc.drawRoundRectangle(x, y, width, height, arcWidth, arcHeight);
 			}
 			
-			bounds.extendBounds(x, y, x + width, y + height);
+			bounds.extendBounds(x - sw, y - sw, x + width + sw, y + height + sw);
 		} else if(name.equals("ellipse")) {
 			if(!getStringOrDefault(vizObject, "fill", "").equals("none")) {
 				gc.fillOval(cx - arcWidth, cy - arcHeight, arcWidth * 2, arcHeight * 2);
@@ -89,7 +91,7 @@ public class GraphicsCanvasObjectRenderer {
 				gc.drawOval(cx - arcWidth, cy - arcHeight, arcWidth * 2, arcHeight * 2);
 			}
 			
-			bounds.extendBounds(x - arcWidth, y + arcHeight, x + arcWidth, y + arcHeight);
+			bounds.extendBounds(x - arcWidth - sw, y - arcHeight - sw, x + arcWidth + sw, y + arcHeight + sw);
 		} else if(name.equals("circle")) {
 			if(!getStringOrDefault(vizObject, "fill", "").equals("none")) {
 				gc.fillOval(cx - r, cy - r, r * 2, r * 2);
@@ -98,7 +100,7 @@ public class GraphicsCanvasObjectRenderer {
 				gc.drawOval(cx - r, cy - r, r * 2, r * 2);
 			}
 			
-			bounds.extendBounds(cx - r, cy - r, cx + r, cy + r);
+			bounds.extendBounds(cx - r - sw, cy - r - sw, cx + r + sw, cy + r + sw);
 		} else if(name.equals("line")) {
 			if(arrowLength > 0) {
 				gc.setBackground(colorCache.getColor(strokeRed, strokeGreen, strokeBlue));
@@ -107,7 +109,7 @@ public class GraphicsCanvasObjectRenderer {
 				gc.drawLine(x1, y1, x2, y2);
 			}
 			
-			bounds.extendBounds(Math.min(x1, x2), Math.min(y1, y2), Math.max(x1, x2), Math.max(y1, y2));
+			bounds.extendBounds(Math.min(x1, x2) - sw, Math.min(y1, y2) - sw, Math.max(x1, x2) + sw, Math.max(y1, y2) + sw);
 		} else if(name.equals("text")) {
 			int style = SWT.NORMAL;
 			if(fontStyle.toLowerCase().contains("bold")) style |= SWT.BOLD;
