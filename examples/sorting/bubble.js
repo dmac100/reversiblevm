@@ -1,4 +1,4 @@
-@delay(transition: 50, instruction: 8);
+@delay(transition: 50, instruction: 2);
 
 a = [7, 3, 1, 8, 4, 6, 2, 6, 2, 3, 8, 1, 10, 7, 3, 6, 2, 3, 8, 1];
 a = a.map(x => { value: x });
@@ -9,7 +9,7 @@ a = a.map(x => { value: x });
 		y: 15 * a.indexOf(item) + 20,
 		width: 20 * item.value,
 		height: 8,
-		fill: item.value > 5 ? 'green' : 'red',
+		fill: a.indexOf(item) < x ? 'green' : 'red',
 		strokeWidth: 1,
 		stroke: '#333'
 	);
