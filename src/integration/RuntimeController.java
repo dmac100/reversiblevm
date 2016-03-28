@@ -37,6 +37,8 @@ public class RuntimeController {
 	private Set<Instruction> lineBreakpoints = new HashSet<>();
 	private Set<Integer> userBreakpoints = new HashSet<>();
 	private int instructionDelay = 1;
+	private int maxLinesExecutedCount = 0;
+	private int linesExecutedCount = 0;
 
 	private final MainController mainController;
 	
@@ -128,6 +130,8 @@ public class RuntimeController {
 		runtimeModel.setForwardEnabled(!running && !runtime.atEnd());
 		runtimeModel.setPauseEnabled(running);
 		runtimeModel.setCompileEnabled(true);
+		runtimeModel.setLinesExecutedCount(linesExecutedCount);
+		runtimeModel.setMaxLinesExecutedCount(maxLinesExecutedCount);
 		
 		final VizObjectControlledSettings vizObjectControlledSettings = new VizObjectControlledSettings(runtime.getVizObjects());
 		this.instructionDelay = vizObjectControlledSettings.getInstructionDelay();
@@ -190,6 +194,8 @@ public class RuntimeController {
 		engine = new Engine(runtime, new ArrayList<Instruction>());
 		runningForward = false;
 		runningBackward = false;
+		linesExecutedCount = 0;
+		maxLinesExecutedCount = 0;
 		lineBreakpoints.clear();
 			
 		try {
@@ -342,11 +348,18 @@ public class RuntimeController {
 			
 			while(runtime.getLineNumber() == lineNumber || runtime.getLineNumber() <= 0) {
 				if(runtime.atEnd()) {
+					linesExecutedCount++;
+					maxLinesExecutedCount = Math.max(maxLinesExecutedCount, linesExecutedCount);
+					updateUi();
+					
 					runningForward = false;
 					return;
 				}
 				engine.stepForward();
 			}
+			
+			linesExecutedCount++;
+			maxLinesExecutedCount = Math.max(maxLinesExecutedCount, linesExecutedCount);
 			
 			if(userBreakpoints.contains(runtime.getLineNumber())) {
 				runningForward = false;
@@ -379,15 +392,19 @@ public class RuntimeController {
 	 */
 	private void stepBackwardSync() {
 		try {
-			engine.stepBackward();
-			
-			while(runtime.getCurrentStackFrame() != null && !lineBreakpoints.contains(runtime.getInstruction())) {
+			int lineNumber = runtime.getLineNumber();
+			linesExecutedCount--;
+			do {
 				engine.stepBackward();
-				if(runtime.atStart()) {
-					runningBackward = false;
-					return;
+			
+				while(runtime.getCurrentStackFrame() != null && !lineBreakpoints.contains(runtime.getInstruction())) {
+					engine.stepBackward();
+					if(runtime.atStart()) {
+						runningBackward = false;
+						return;
+					}
 				}
-			}
+			} while(lineNumber == runtime.getLineNumber());
 			
 			if(userBreakpoints.contains(runtime.getLineNumber())) {
 				runningBackward = false;
@@ -400,5 +417,17 @@ public class RuntimeController {
 		if(runtime.atStart()) {
 			runningBackward = false;
 		}
+	}
+	
+	public void setExecutionPoint(int executionPoint) {
+		while(linesExecutedCount > executionPoint) {
+			stepBackwardSync();
+		}
+		
+		while(linesExecutedCount < executionPoint) {
+			stepForwardSync();
+		}
+		
+		updateUi();
 	}
 }

@@ -18,7 +18,7 @@ import backend.runtime.Engine;
 
 import com.google.common.eventbus.EventBus;
 
-import frontend.event.CompilerModelChangedEvent;
+import frontend.event.RuntimeModelChangedEvent;
 import frontend.event.ModifiedEvent;
 import frontend.ui.Callback;
 import frontend.ui.ConsoleText;
@@ -133,7 +133,7 @@ public class MainController {
 		editorText.setDebugLineNumber(runtimeModel.getLineNumber());
 		consoleText.setOutput(runtimeModel.getOutput());
 		graphicsCanvas.setVizObjects(runtimeModel.getVizObjects());
-		eventBus.post(new CompilerModelChangedEvent(runtimeModel));
+		eventBus.post(new RuntimeModelChangedEvent(runtimeModel));
 	}
 	
 	public void compile() {
@@ -166,6 +166,10 @@ public class MainController {
 	
 	public void stop() {
 		runtime.pause();
+	}
+	
+	public void setExecutionPoint(int selection) {
+		runtime.setExecutionPoint(selection);
 	}
 
 	public void undo() {

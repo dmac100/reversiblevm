@@ -31,14 +31,15 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Slider;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import frontend.controller.MainController;
-import frontend.event.CompilerModelChangedEvent;
 import frontend.event.EnabledChangedEvent;
 import frontend.event.ModifiedEvent;
+import frontend.event.RuntimeModelChangedEvent;
 
 public class Main {
 	private final EventBus eventBus = new EventBus();
@@ -56,6 +57,8 @@ public class Main {
 	private Button stepForwardButton;
 	private Button nextVisualButton;
 	private Button prevVisualButton;
+	
+	private Slider executionPointSlider;
 	
 	private boolean graphicsPane = true;
 	private boolean consolePane = true;
@@ -109,7 +112,7 @@ public class Main {
 		refreshTitle();
 		setGraphicsPaneVisible(graphicsPane);
 		
-		refreshToolbarEnabled(new RuntimeModel());
+		refreshToolbar(new RuntimeModel());
 		
 		eventBus.register(new Object() {
 			@Subscribe @SuppressWarnings("unused")
@@ -118,8 +121,8 @@ public class Main {
 			}
 			
 			@Subscribe @SuppressWarnings("unused")
-			public void onCompilerModelChanged(CompilerModelChangedEvent event) {
-				refreshToolbarEnabled(event.getCompilerModel());
+			public void onCompilerModelChanged(RuntimeModelChangedEvent event) {
+				refreshToolbar(event.getRuntimeModel());
 			}
 			
 			@Subscribe @SuppressWarnings("unused")
@@ -345,10 +348,18 @@ public class Main {
 	}
 
 	private void createToolBar(Composite parent) {
-		parent.setLayout(new FillLayout());
+		GridLayout gridLayout = new GridLayout(1, false);
+		parent.setLayout(gridLayout);
 		parent.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL));
+		gridLayout.verticalSpacing = 2;
+		gridLayout.marginWidth = 1;
+		gridLayout.marginHeight = 1;
 		
-		compileButton = new Button(parent, SWT.NONE);
+		Composite topPanel = new Composite(parent, SWT.NONE);
+		topPanel.setLayout(new FillLayout());
+		topPanel.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL));
+		
+		compileButton = new Button(topPanel, SWT.NONE);
 		compileButton.setText("Compile");
 		compileButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -360,7 +371,7 @@ public class Main {
 			}
 		});
 		
-		runBackwardButton = new Button(parent, SWT.NONE);
+		runBackwardButton = new Button(topPanel, SWT.NONE);
 		runBackwardButton.setText("Run Backward");
 		runBackwardButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -372,7 +383,7 @@ public class Main {
 			}
 		});
 		
-		prevVisualButton = new Button(parent, SWT.NONE);
+		prevVisualButton = new Button(topPanel, SWT.NONE);
 		prevVisualButton.setText("Prev Visual");
 		prevVisualButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -384,7 +395,7 @@ public class Main {
 			}
 		});
 		
-		stepBackwardButton = new Button(parent, SWT.NONE);
+		stepBackwardButton = new Button(topPanel, SWT.NONE);
 		stepBackwardButton.setText("Step Backward");
 		stepBackwardButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -396,7 +407,7 @@ public class Main {
 			}
 		});
 		
-		pauseButton = new Button(parent, SWT.NONE);
+		pauseButton = new Button(topPanel, SWT.NONE);
 		pauseButton.setText("Pause");
 		pauseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -408,7 +419,7 @@ public class Main {
 			}
 		});
 		
-		stepForwardButton = new Button(parent, SWT.NONE);
+		stepForwardButton = new Button(topPanel, SWT.NONE);
 		stepForwardButton.setText("Step Forward");
 		stepForwardButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -420,7 +431,7 @@ public class Main {
 			}
 		});
 		
-		nextVisualButton = new Button(parent, SWT.NONE);
+		nextVisualButton = new Button(topPanel, SWT.NONE);
 		nextVisualButton.setText("Next Visual");
 		nextVisualButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -432,7 +443,7 @@ public class Main {
 			}
 		});
 		
-		runForwardButton = new Button(parent, SWT.NONE);
+		runForwardButton = new Button(topPanel, SWT.NONE);
 		runForwardButton.setText("Run Forward");
 		runForwardButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -443,17 +454,43 @@ public class Main {
 				}
 			}
 		});
+		
+		Composite bottomPanel = new Composite(parent, SWT.NONE);
+	    bottomPanel.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, true));
+	    
+		executionPointSlider = new Slider(bottomPanel, SWT.HORIZONTAL);
+		executionPointSlider.setBounds(1, 0, 400, 15);
+		executionPointSlider.setEnabled(false);
+		executionPointSlider.setMaximum(1);
+		executionPointSlider.setThumb(1);
+		executionPointSlider.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				mainController.setExecutionPoint(executionPointSlider.getSelection());
+			}
+		});
 	}
 
-	private void refreshToolbarEnabled(RuntimeModel compilerModel) {
-		compileButton.setEnabled(compilerModel.isCompileEnabled());
-		runForwardButton.setEnabled(compilerModel.isForwardEnabled());
-		runBackwardButton.setEnabled(compilerModel.isBackwardEnabled());
-		pauseButton.setEnabled(compilerModel.isPauseEnabled());
-		stepBackwardButton.setEnabled(compilerModel.isBackwardEnabled());
-		stepForwardButton.setEnabled(compilerModel.isForwardEnabled());
-		nextVisualButton.setEnabled(compilerModel.isForwardEnabled());
-		prevVisualButton.setEnabled(compilerModel.isBackwardEnabled());
+	private void refreshToolbar(RuntimeModel runtimeModel) {
+		compileButton.setEnabled(runtimeModel.isCompileEnabled());
+		runForwardButton.setEnabled(runtimeModel.isForwardEnabled());
+		runBackwardButton.setEnabled(runtimeModel.isBackwardEnabled());
+		pauseButton.setEnabled(runtimeModel.isPauseEnabled());
+		stepBackwardButton.setEnabled(runtimeModel.isBackwardEnabled());
+		stepForwardButton.setEnabled(runtimeModel.isForwardEnabled());
+		nextVisualButton.setEnabled(runtimeModel.isForwardEnabled());
+		prevVisualButton.setEnabled(runtimeModel.isBackwardEnabled());
+		
+		if(runtimeModel.getMaxLinesExecutedCount() > 0) {
+			executionPointSlider.setEnabled(true);
+			if(runtimeModel.getMaxLinesExecutedCount() + 1 != executionPointSlider.getMaximum()) {
+				executionPointSlider.setMaximum(runtimeModel.getMaxLinesExecutedCount() + 1);
+			}
+			if(executionPointSlider.getSelection() != runtimeModel.getLinesExecutedCount()) {
+				executionPointSlider.setSelection(runtimeModel.getLinesExecutedCount());
+			}
+		} else {
+			executionPointSlider.setEnabled(false);
+		}
 	}
 	
 	private void displayMessage(String message) {

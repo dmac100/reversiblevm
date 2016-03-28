@@ -14,6 +14,8 @@ public class RuntimeModel {
 	private boolean backwardEnabled = true;
 	private boolean pauseEnabled = true;
 	private boolean compileEnabled = true;
+	private int linesExecutedCount = 0;
+	private int maxLinesExecutedCount = 0;
 	
 	public List<OutputLine> getOutput() {
 		return output;
@@ -69,5 +71,21 @@ public class RuntimeModel {
 
 	public void setCompileEnabled(boolean compileEnabled) {
 		this.compileEnabled = compileEnabled;
+	}
+	
+	public int getLinesExecutedCount() {
+		return linesExecutedCount;
+	}
+
+	public void setLinesExecutedCount(int linesExecutedCount) {
+		this.linesExecutedCount = linesExecutedCount;
+	}
+
+	public int getMaxLinesExecutedCount() {
+		return maxLinesExecutedCount;
+	}
+
+	public void setMaxLinesExecutedCount(int maxLinesExecutedCount) {
+		this.maxLinesExecutedCount = maxLinesExecutedCount;
 	}
 }
