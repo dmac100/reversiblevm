@@ -588,7 +588,7 @@ public class Parser extends BaseParser<Instructions> {
 		
 		return Sequence(
 			lineNumber.set((short) position().line),
-			columnNumber.set((short) position().line),
+			columnNumber.set((short) position().column),
 			FirstOf(
 				Block(),
 				VariableStatement(),
