@@ -67,10 +67,6 @@ public class DisplayedVizObject implements HasImmutableValueProperties {
 				Integer.parseInt(value.substring(2, 3) + value.substring(2, 3), 16),
 				Integer.parseInt(value.substring(3, 4) + value.substring(3, 4), 16),
 			};
-			System.out.println(value.substring(1, 2) + value.substring(1, 2));
-			System.out.println(value.substring(2, 3) + value.substring(2, 3));
-			System.out.println(value.substring(3, 4) + value.substring(3, 4));
-			System.out.println(Arrays.toString(rgb));
 		} else if(value.toLowerCase().matches("#[0-9a-fA-F]{6}")) {
 			rgb = new int[] {
 				Integer.parseInt(value.substring(1, 2) + value.substring(2, 3), 16),
