@@ -149,14 +149,14 @@ public class GraphicsCanvas {
 	private void paint(Display display, GC gc) {
 		int canvasWidth = canvas.getBounds().width;
 		int canvasHeight = canvas.getBounds().height;
-		int canvasMargin = 5;
+		int canvasMargin = 6;
 		
 		// Draw background of canvas.
 		gc.setBackground(colorCache.getColor(255, 255, 255));
-		gc.fillRoundRectangle(canvasMargin, canvasMargin, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2, 3, 3);
+		gc.fillRoundRectangle(canvasMargin / 2, canvasMargin / 2, canvasWidth - canvasMargin, canvasHeight - canvasMargin, 3, 3);
 		
 		// Clip to within the margin of the canvas.
-		gc.setClipping(canvasMargin + 1, canvasMargin + 1, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2);
+		gc.setClipping(canvasMargin, canvasMargin, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2);
 		
 		Transform transform = new Transform(display);
 		transform.translate(canvasMargin, canvasMargin);
@@ -186,7 +186,7 @@ public class GraphicsCanvas {
 		// Draw border around canvas.
 		gc.setClipping(0, 0, canvasWidth, canvasHeight);
 		gc.setForeground(colorCache.getColor(150, 150, 150));
-		gc.drawRoundRectangle(canvasMargin + 1, canvasMargin + 1, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2, 3, 3);
+		gc.drawRoundRectangle(canvasMargin / 2, canvasMargin / 2, canvasWidth - canvasMargin, canvasHeight - canvasMargin, 3, 3);
 	}
 
 	public Control getControl() {
