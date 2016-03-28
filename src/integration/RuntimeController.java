@@ -419,15 +419,19 @@ public class RuntimeController {
 		}
 	}
 	
-	public void setExecutionPoint(int executionPoint) {
-		while(linesExecutedCount > executionPoint) {
-			stepBackwardSync();
-		}
-		
-		while(linesExecutedCount < executionPoint) {
-			stepForwardSync();
-		}
-		
-		updateUi();
+	public void setExecutionPoint(final int executionPoint) {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				while(linesExecutedCount > executionPoint) {
+					stepBackwardSync();
+				}
+				
+				while(linesExecutedCount < executionPoint) {
+					stepForwardSync();
+				}
+				
+				updateUi();
+			}
+		});
 	}
 }

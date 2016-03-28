@@ -20,6 +20,9 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -59,6 +62,7 @@ public class Main {
 	private Button prevVisualButton;
 	
 	private Slider executionPointSlider;
+	private boolean executionPointSliderDragInProgress;
 	
 	private boolean graphicsPane = true;
 	private boolean consolePane = true;
@@ -468,6 +472,16 @@ public class Main {
 				mainController.setExecutionPoint(executionPointSlider.getSelection());
 			}
 		});
+		
+		executionPointSlider.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent event) {
+				executionPointSliderDragInProgress = true;
+			}
+
+			public void mouseUp(MouseEvent event) {
+				executionPointSliderDragInProgress = false;
+			}
+		});
 	}
 
 	private void refreshToolbar(RuntimeModel runtimeModel) {
@@ -485,7 +499,7 @@ public class Main {
 			if(runtimeModel.getMaxLinesExecutedCount() + 1 != executionPointSlider.getMaximum()) {
 				executionPointSlider.setMaximum(runtimeModel.getMaxLinesExecutedCount() + 1);
 			}
-			if(executionPointSlider.getSelection() != runtimeModel.getLinesExecutedCount()) {
+			if(executionPointSlider.getSelection() != runtimeModel.getLinesExecutedCount() && !executionPointSliderDragInProgress) {
 				executionPointSlider.setSelection(runtimeModel.getLinesExecutedCount());
 			}
 		} else {
