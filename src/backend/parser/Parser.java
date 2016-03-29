@@ -305,7 +305,6 @@ public class Parser extends BaseParser<Instructions> {
 		Var<AssignmentInstructions> assignment = new Var<>();
 		
 		return FirstOf(
-			Sequence(Terminal("delete"), UnaryExpression()),
 			Sequence(Terminal("void"), UnaryExpression(), push(Instructions(pop(), Instructions(Pop()), Instructions(Push(NullValue()))))),
 			Sequence(Terminal("++"), UnaryExpression(), assignment.set(new AssignmentInstructions(pop())), push(Instructions(
 				Instructions(assignment.get().getPrefix()),

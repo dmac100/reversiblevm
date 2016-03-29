@@ -121,7 +121,6 @@ public class ParserTypeTest {
 	@Test
 	public void UnaryExpression() {
 		assertParseType("a++", parser.UnaryExpression());
-		assertParseType("delete a", parser.UnaryExpression());
 		assertParseType("void a", parser.UnaryExpression());
 		assertParseType("++a", parser.UnaryExpression());
 		assertParseType("--a", parser.UnaryExpression());
