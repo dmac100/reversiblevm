@@ -31,6 +31,9 @@ public class GetPropertyInstruction extends Instruction {
 		return name;
 	}
 	
+	/**
+	 * Changes stack from [object] to [object.name].
+	 */
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		

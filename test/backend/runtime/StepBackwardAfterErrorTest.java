@@ -162,6 +162,8 @@ public class StepBackwardAfterErrorTest {
 		assertStepBackward("x[null] = 5;");
 		assertStepBackward("x = null; y = x.prop;");
 		assertStepBackward("x = null; x.prop = 5;");
+		assertStepBackward("x = null; x['prop'];");
+		assertStepBackward("x = null; x['prop'] = 5;");
 	}
 	
 	@Test

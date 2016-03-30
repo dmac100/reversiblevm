@@ -59,6 +59,7 @@ public class ParseAndRunTest {
 		assertOutput("[[0], [0]]", "a = [[0]]; a[1] = a[0]; print(a);");
 		
 		assertOutput("2", "var a = []; a.b = 2; print(a.b);");
+		assertOutput("2", "var a = []; a['b'] = 2; print(a['b']);");
 	}
 	
 	@Test

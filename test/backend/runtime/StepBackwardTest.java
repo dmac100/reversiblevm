@@ -1,5 +1,6 @@
 package backend.runtime;
 
+import static backend.runtime.EngineAsserts.assertOutput;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class StepBackwardTest {
 		assertStepBackward("a = [[0]]; a[1] = a[0]; print(a);");
 		
 		assertStepBackward("var a = []; a.b = 2; print(a.b);");
+		assertStepBackward("var a = []; a['b'] = 2; print(a['b']);");
 	}
 	
 	@Test

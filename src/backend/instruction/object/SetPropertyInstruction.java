@@ -23,6 +23,9 @@ public class SetPropertyInstruction extends Instruction {
 		return new SetPropertyInstruction(name);
 	}
 	
+	/**
+	 * Changes stack from [value, object] to [] and sets object.name to value.
+	 */
 	public void execute(Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		if(!(stack.peekValue(1) instanceof HasPropertiesObject)) {
