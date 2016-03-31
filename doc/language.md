@@ -113,7 +113,15 @@ Visual Objects
 
 Visual objects are declared using special statements beginning with the `@` symbol. These objects have a comma separated list of properties which can be defined
 in terms of variables and functions within the program. When these values are changed in the program, then the objects are updated automatically, and the graphical
-view is redrawn.
+view is redrawn. Except for `@vizUpdatesOff` and `@vizUpdatesOn`, objects are scoped to the current function. When the function ends, then the object is removed.
+
+**Filters**
+
+Existing objects can be filters and modified like:
+
+	@rect[x:50](x:100);
+	
+which would change all the objects with an `x` property equal to 50 to have an `x` property of 100.
 
 **Control Objects**
 
