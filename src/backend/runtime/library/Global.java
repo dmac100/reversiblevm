@@ -34,6 +34,31 @@ public class Global {
 		return new ArrayValue(list, runtime.getUndoStack());
 	}
 	
+	public static Value newArray(Runtime runtime, Stack stack, List<Value> params) {
+		while(params.size() <= 0) params.add(new NullValue());
+		for(int i = 1; i < params.size(); i++) {
+			runtime.checkDoubleValue(params.get(i));
+		}
+		if(params.size() == 1) {
+			return new ArrayValue(runtime.getUndoStack());
+		}
+		return newArray(runtime, params.subList(1, params.size()));
+	}
+	
+	private static Value newArray(Runtime runtime, List<Value> params) {
+		if(params.isEmpty()) {
+			return new NullValue();
+		}
+		ArrayValue array = new ArrayValue(runtime.getUndoStack());
+		int size = (int) runtime.checkDoubleValue(params.get(0)).getValue();
+		List<Value> values = new ArrayList<>();
+		for(int i = 0; i < size; i++) {
+			values.add(newArray(runtime, params.subList(1, params.size())));
+		}
+		array.setValues(values);
+		return array;
+	}
+	
 	public static Value parseInt(Runtime runtime, Stack stack, List<Value> params) {
 		while(params.size() <= 1) params.add(new NullValue());
 		try {

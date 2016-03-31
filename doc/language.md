@@ -203,6 +203,8 @@ Global
 
 **range()** - `print(range(3))` => `[0, 1, 2]`
 
+**newArray()** - `print(newArray(3, 2))` => `[[null, null], [null, null], [null, null]]`
+
 **parseInt()** - `print(parseInt('5'))` => `5`
 
 **parseDouble()** - `print(parseDouble('5.5'));` => `5.5`

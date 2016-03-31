@@ -14,6 +14,13 @@ public class LibraryTest {
 	}
 	
 	@Test
+	public void newArray() {
+		assertOutput("[]", "print(newArray());");
+		assertOutput("[null, null, null]", "print(newArray(3));");
+		assertOutput("[[null, null], [null, null], [null, null]]", "print(newArray(3, 2));");
+	}
+	
+	@Test
 	public void parseInt() {
 		assertOutput("5", "print(parseInt('5'))");
 		assertOutput("-5", "print(parseInt('-5'))");
