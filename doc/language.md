@@ -196,12 +196,13 @@ changed, then the transition will be animated in the graphical viewer.
 
 **@text(...)**
 
-- **x**: the leftmost position of the text.
-- **y**: the topmost position of the text.
+- **x**: the horizontal position of the text.
+- **y**: the vertical position of the text.
 - **text**: the content of the text.
 - **fontSize**: the size of the font.
 - **fontName**: the name of the font.
 - **fontStyle**: bold, italic, or boldItalic
+- **textAlign**: the alignment of the text like 'topLeft', 'middleCenter', 'bottomRight'.
 
 Library
 =======

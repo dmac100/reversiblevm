@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.TextLayout;
 
 import frontend.ui.ColorCache;
 
@@ -49,10 +50,13 @@ public class GraphicsCanvasObjectRenderer {
 		String strokeStyle = getStringOrDefault(vizObject, "strokeStyle", "solid");
 		int arrowLength = (int) getDoubleOrDefault(vizObject, "arrowLength", 0);
 		int arrowAngle = (int) getDoubleOrDefault(vizObject, "arrowAngle", 40);
+		int startOffset = (int) getDoubleOrDefault(vizObject, "startOffset", 0);
+		int endOffset = (int) getDoubleOrDefault(vizObject, "endOffset", 0);
 		String text = getStringOrDefault(vizObject, "text", "");
 		int fontSize = (int) getDoubleOrDefault(vizObject, "fontSize", 12);
 		String fontName = getStringOrDefault(vizObject, "fontName", "Arial");
 		String fontStyle = getStringOrDefault(vizObject, "fontStyle", "normal");
+		String textAlign = getStringOrDefault(vizObject, "textAlign", "left");
 		
 		arrowAngle = ensureInRange(arrowAngle, 0, 90);
 		
@@ -102,9 +106,6 @@ public class GraphicsCanvasObjectRenderer {
 			
 			bounds.extendBounds(cx - r - sw, cy - r - sw, cx + r + sw, cy + r + sw);
 		} else if(name.equals("line")) {
-			int startOffset = (int) getDoubleOrDefault(vizObject, "startOffset", 0);
-			int endOffset = (int) getDoubleOrDefault(vizObject, "endOffset", 0);
-			
 			if(startOffset > 0 || endOffset > 0) {
 				double theta = Math.atan2(y2 - y1, x2 - x1);
 				x1 += startOffset * Math.cos(theta);
@@ -126,6 +127,24 @@ public class GraphicsCanvasObjectRenderer {
 			if(fontStyle.toLowerCase().contains("bold")) style |= SWT.BOLD;
 			if(fontStyle.toLowerCase().contains("italic")) style |= SWT.ITALIC;
 			Font font = new Font(gc.getDevice(), new FontData(fontName, fontSize, style));
+
+			if(!textAlign.equals("left")) {
+				TextLayout textLayout = new TextLayout(gc.getDevice());
+				textLayout.setFont(font);
+				textLayout.setText(text);
+				if(textAlign.toLowerCase().contains("center")) {
+					x -= textLayout.getBounds().width / 2;
+				} else if(textAlign.toLowerCase().contains("right")) {
+					x -= textLayout.getBounds().width;
+				}
+				if(textAlign.toLowerCase().contains("middle")) {
+					y -= textLayout.getBounds().height / 2;
+				} else if(textAlign.toLowerCase().contains("bottom")) {
+					y -= textLayout.getBounds().height;
+				}
+				textLayout.dispose();
+			}
+			
 			gc.setFont(font);
 			gc.drawText(text, x, y, true);
 			font.dispose();
