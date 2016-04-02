@@ -156,7 +156,7 @@ changed, then the transition will be animated in the graphical viewer.
 
 **Common Properties**
 
-- **fill**: the color the object is filled with like '#f00', '#ff0000', or one of: 'red', 'green', 'blue', 'yellow', 'magenta', 'cyan', 'white', 'lightgrey', 'grey', 'darkgrey', 'black'.
+- **fill**: the color the object is filled with like '#f00', '#ff0000', or one of: 'none', 'red', 'green', 'blue', 'yellow', 'magenta', 'cyan', 'white', 'lightgrey', 'grey', 'darkgrey', 'black'.
 - **stroke**: the color of the stroke around the object.
 - **strokeWidth**: the width of the stroke around the object.
 - **strokeStyle**: the style of the stroke around the object as one of: 'solid', 'dot', 'dash', 'dashdot', 'dashdotdot'.
