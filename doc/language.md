@@ -191,6 +191,8 @@ changed, then the transition will be animated in the graphical viewer.
 - **y2**: the vertical position of the ending point of the line.
 - **arrowLength**: the length of the arrow at the end of the line.
 - **arrowAngle**: the angle of the arrow heads at the end of the line.
+- **startOffset**: the position from the start of the line to start drawing the line.
+- **endOffset**: the position from the end of the line to stop drawing the line.
 
 **@text(...)**
 

@@ -102,6 +102,17 @@ public class GraphicsCanvasObjectRenderer {
 			
 			bounds.extendBounds(cx - r - sw, cy - r - sw, cx + r + sw, cy + r + sw);
 		} else if(name.equals("line")) {
+			int startOffset = (int) getDoubleOrDefault(vizObject, "startOffset", 0);
+			int endOffset = (int) getDoubleOrDefault(vizObject, "endOffset", 0);
+			
+			if(startOffset > 0 || endOffset > 0) {
+				double theta = Math.atan2(y2 - y1, x2 - x1);
+				x1 += startOffset * Math.cos(theta);
+				y1 += startOffset * Math.sin(theta);
+				x2 -= endOffset * Math.cos(theta);
+				y2 -= endOffset * Math.sin(theta);
+			}
+			
 			if(arrowLength > 0) {
 				gc.setBackground(colorCache.getColor(strokeRed, strokeGreen, strokeBlue));
 				drawArrow(gc, x1, y1, x2, y2, arrowLength, Math.toRadians(arrowAngle));
