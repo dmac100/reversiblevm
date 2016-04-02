@@ -1,7 +1,7 @@
 package integration;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -34,6 +34,7 @@ public class DisplayedVizObject implements HasImmutableValueProperties {
 	private static void setDefaultValues(Map<String, ImmutableValue> values) {
 		setDefaultColorValues(values, "fill", "red");
 		setDefaultColorValues(values, "stroke", "darkgrey");
+		values.put("opacity", new DoubleValue(1));
 	}
 	
 	private static void setDefaultColorValues(Map<String, ImmutableValue> values, String prefix, String defaultValue) {
@@ -84,13 +85,16 @@ public class DisplayedVizObject implements HasImmutableValueProperties {
 	}
 	
 	public void update(VizObject newVizObject) {
+		Map<String, ImmutableValue> newVizObjectValues = new LinkedHashMap<>(newVizObject.getValues());
+		setDefaultValues(newVizObjectValues);
+		
 		// Check that newVizObjects contains changes from the current target values.
-		if(VizObjectUtil.hasSubValues(targetValues, newVizObject.getValues())) {
+		if(VizObjectUtil.equalValues(targetValues, newVizObjectValues)) {
 			return;
 		}
 		
-		initialValues = new HashMap<>(currentValues);
-		targetValues.putAll(newVizObject.getValues());
+		initialValues = currentValues;
+		targetValues = newVizObjectValues;
 		if(!updatePending) {
 			updateTime = System.currentTimeMillis();
 		}
@@ -104,13 +108,18 @@ public class DisplayedVizObject implements HasImmutableValueProperties {
 		deletePending = false;
 		updatePending = true;
 		
-		setDefaultValues(targetValues);
-		
 		// Add non-numeric values to current values immediately.
 		for(String property:currentValues.keySet()) {
 			ImmutableValue value = targetValues.get(property);
 			if(!(value instanceof DoubleValue)) {
 				currentValues.put(property, value);
+			}
+		}
+
+		// Remove deleted properties from current values.
+		for(String property:new HashSet<>(currentValues.keySet())) {
+			if(!targetValues.containsKey(property)) {
+				currentValues.remove(property);
 			}
 		}
 	}
