@@ -53,7 +53,7 @@ public class MainController {
 		editorText.setCompileCallback(new Callback<Void>() {
 			public void onCallback(Void param) {
 				String selectedText = editorText.getSelectedText();
-				if(selectedText.isEmpty()) {
+				if(selectedText.trim().isEmpty()) {
 					compile();
 					runForward();
 				} else {
