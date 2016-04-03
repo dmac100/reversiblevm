@@ -171,7 +171,7 @@ public class Runtime implements HasState, ValueReadObserver {
 			undoStack.addInstructionUndo();
 		} catch(ExecutionException e) {
 			undoStack.undo(this);
-			throw e;
+			throw new ExecutionException(e.getMessage() + " (at line " + instruction.getLineNumber() + ")", e);
 		}
 		
 		frame.setInstructionCounter(frame.getInstructionCounter() + 1);
