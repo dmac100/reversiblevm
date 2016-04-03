@@ -15,6 +15,7 @@ import backend.value.Value;
 public class UndoStack {
 	private final int RUNINSTRUCTION = 1;
 	private final int POPSTACKFRAME = 2;
+	private final int MARKVIZOBJECTSDIRTY = 4;
 	private final static Runnable UNDOPOINT = null;
 	
 	private final short DOUBLETYPE = 0;
@@ -60,6 +61,12 @@ public class UndoStack {
 		if(!undoEnabled) return;
 		
 		flagStack.push(flagStack.pop() | RUNINSTRUCTION);
+	}
+	
+	public void addMarkVizObjectsDirtyUndo() {
+		if(!undoEnabled) return;
+		
+		flagStack.push(flagStack.pop() | MARKVIZOBJECTSDIRTY);
 	}
 	
 	public void addPopValueUndo(Value value) {
@@ -128,6 +135,10 @@ public class UndoStack {
 			
 			if((flag & RUNINSTRUCTION) > 0) {
 				undoInstruction(runtime);
+			}
+			
+			if((flag & MARKVIZOBJECTSDIRTY) > 0) {
+				runtime.clearVizObjectsDirty();
 			}
 		}
 	}

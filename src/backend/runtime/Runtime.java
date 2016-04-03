@@ -251,6 +251,7 @@ public class Runtime implements HasState, ValueReadObserver {
 		if(stackFrames.isEmpty()) {
 			lastStackFrame = stackFrame;
 		}
+		markVizObjectsDirty();
 		return stackFrame;
 	}
 	
@@ -274,7 +275,17 @@ public class Runtime implements HasState, ValueReadObserver {
 	 * Mark viz objects dirty so they will be recreated when they are next retrieved.
 	 */
 	public void markVizObjectsDirty() {
-		this.vizObjectsDirty = true;
+		if(!vizObjectsDirty) {
+			vizObjectsDirty = true;
+			undoStack.addMarkVizObjectsDirtyUndo();
+		}
+	}
+	
+	/**
+	 * Clear the viz objects dirty state, undoing any markVizObjectsDirty call.
+	 */
+	public void clearVizObjectsDirty() {
+		vizObjectsDirty = false;
 	}
 	
 	public List<VizObject> getVizObjects() {

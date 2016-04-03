@@ -223,6 +223,11 @@ public class VizObjectsTest {
 			Arrays.asList("rect(id: 1)", "circle(id: 2)"),
 			Arrays.asList("rect(id: 1, x: 20)", "circle(id: 2)")
 		));
+		assertVizObjects("@rect(id: 1); function f() { @rect[](id: 2); } f(); var x = 2;", Arrays.asList(
+			Arrays.asList("rect(id: 1)"),
+			Arrays.asList("rect(id: 2)"),
+			Arrays.asList("rect(id: 1)")
+		));
 	}
 	
 	@Test
