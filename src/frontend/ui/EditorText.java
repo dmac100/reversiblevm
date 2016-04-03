@@ -3,7 +3,7 @@ package frontend.ui;
 import integration.BrushJs;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -59,9 +59,8 @@ public class EditorText {
 	private final StyledTextCompletion completion;
 	private final EditFunctions editFunctions;
 	
-	private final Set<Integer> lineBreakpoints = new HashSet<>();
+	private final int BREAKPOINT = 1;
 	private Callback<Void> compileCallback;
-	private Callback<Set<Integer>> breakpointChangeCallback;
 	
 	private final Theme theme = new ThemeSublime();
 	private StyleRange[] syntaxHighlightingRanges = new StyleRange[0];
@@ -218,16 +217,16 @@ public class EditorText {
 		styledText.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent event) {
 				if(event.x < 25) {
+					Set<Integer> breakpoints = getBreakpoints();
+					
 					int line = styledText.getLineIndex(event.y) + 1;
-					if(lineBreakpoints.contains(line)) {
-						lineBreakpoints.remove(line);
+					if(breakpoints.contains(line)) {
+						breakpoints.remove(line);
 					} else {
-						lineBreakpoints.add(line);
+						breakpoints.add(line);
 					}
-					refreshLineStyles();
-					if(breakpointChangeCallback != null) {
-						breakpointChangeCallback.onCallback(lineBreakpoints);
-					}
+					
+					updateBreakpoints(breakpoints);
 				}
 			}
 		});
@@ -236,7 +235,7 @@ public class EditorText {
 			public void paintObject(PaintObjectEvent event) {
 				if(event.bullet != null) {
 					int line = styledText.getLineIndex(event.y) + 1;
-					if(lineBreakpoints.contains(line)) {
+					if(event.style.data == (Integer) BREAKPOINT) {
 						event.bullet.text = "\u2022" + line;
 					} else {
 						event.bullet.text = " " + line;
@@ -280,6 +279,21 @@ public class EditorText {
 		int x = paintX + Math.max(0, metrics.width - layout.getBounds().width - 8);
 		layout.draw(gc, x, paintY);
 		layout.dispose();
+	}
+	
+	/**
+	 * Returns a set of the line numbers that have breakpoints set on them.
+	 */
+	public Set<Integer> getBreakpoints() {
+		Set<Integer> breakpoints = new LinkedHashSet<>();
+		for(int i = 0; i < styledText.getLineCount(); i++) {
+			if(styledText.getLineBullet(i) != null) {
+				if(styledText.getLineBullet(i).style.data == (Integer) BREAKPOINT) {
+					breakpoints.add(i + 1);
+				}
+			}
+		}
+		return breakpoints;
 	}
 	
 	public void setDebugLineNumber(int lineNumber) {
@@ -505,17 +519,8 @@ public class EditorText {
 	 */
 	private void refreshLineStyles() {
 		int line = styledText.getLineAtOffset(styledText.getCaretOffset());
-		int maxLine = styledText.getLineCount();
 		
-		int lineCountWidth = Math.max(String.valueOf(maxLine).length(), 3);
-		
-		// Update line numbers.
-		StyleRange style = new StyleRange();
-		style.metrics = new GlyphMetrics(0, 0, (lineCountWidth + 1) * 8 + 5);
-		style.foreground = colorCache.getColor(70, 80, 90);
-		Bullet bullet = new Bullet(ST.BULLET_CUSTOM, style);
-		styledText.setLineBullet(0, maxLine, null);
-		styledText.setLineBullet(0, maxLine, bullet);
+		updateBreakpoints(getBreakpoints());
 		
 		// Update current and debug line highlight.
 		int lineCount = styledText.getContent().getLineCount();
@@ -523,6 +528,30 @@ public class EditorText {
 		styledText.setLineBackground(line, 1, colorCache.getColor(47, 48, 42));
 		if(debugLineNumber > 0 && debugLineNumber <= lineCount) {
 			styledText.setLineBackground(debugLineNumber - 1, 1, colorCache.getColor(55, 55, 35));
+		}
+	}
+	
+	private void updateBreakpoints(Set<Integer> breakpoints) {
+		int maxLine = styledText.getLineCount();
+		int lineCountWidth = Math.max(String.valueOf(maxLine).length(), 3);
+		
+		StyleRange normalStyle = new StyleRange();
+		normalStyle.metrics = new GlyphMetrics(0, 0, (lineCountWidth + 1) * 8 + 5);
+		normalStyle.foreground = colorCache.getColor(70, 80, 90);
+		
+		StyleRange breakpointStyle = new StyleRange();
+		breakpointStyle.metrics = new GlyphMetrics(0, 0, (lineCountWidth + 1) * 8 + 5);
+		breakpointStyle.foreground = colorCache.getColor(70, 80, 90);
+		breakpointStyle.data = BREAKPOINT;
+		
+		// Update line numbers.
+		styledText.setLineBullet(0, maxLine, null);
+		styledText.setLineBullet(0, maxLine, new Bullet(ST.BULLET_CUSTOM, normalStyle));
+		
+		// Update breakpoints.
+		for(Integer line:breakpoints) {
+			styledText.setLineBullet(line - 1, 1, null);
+			styledText.setLineBullet(line - 1, 1, new Bullet(ST.BULLET_CUSTOM, breakpointStyle));
 		}
 	}
 	
@@ -651,10 +680,6 @@ public class EditorText {
 	
 	public void setCompileCallback(Callback<Void> callback) {
 		this.compileCallback = callback;
-	}
-	
-	public void setBreakpointChangeCallback(Callback<Set<Integer>> callback) {
-		this.breakpointChangeCallback = callback;
 	}
 	
 	public void setModifiedCallback(final Callback<Void> callback) {

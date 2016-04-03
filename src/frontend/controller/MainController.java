@@ -66,12 +66,7 @@ public class MainController {
 			public void onCallback(Void param) {
 				modified = true;
 				eventBus.post(new ModifiedEvent(modified));
-			}
-		});
-		
-		editorText.setBreakpointChangeCallback(new Callback<Set<Integer>>() {
-			public void onCallback(Set<Integer> breakpoints) {
-				runtime.setUserBreakpoints(breakpoints);
+				runtime.setUserBreakpoints(editorText.getBreakpoints());
 			}
 		});
 		
