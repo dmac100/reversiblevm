@@ -30,6 +30,7 @@ public class GraphicsCanvas {
 	
 	private Map<Object, DisplayedVizObject> displayedVizObjects = new LinkedHashMap<>();
 	private int transitionDelay = 400;
+	private String boundsFit = "extend";
 	
 	private Thread refreshLoopThread;
 	private final Object refreshLock = new Object();
@@ -87,6 +88,7 @@ public class GraphicsCanvas {
 	
 	public void setVizObjectControlledSettings(VizObjectControlledSettings vizObjectControlledSettings) {
 		transitionDelay = vizObjectControlledSettings.getTransitionDelay();
+		boundsFit = vizObjectControlledSettings.getBoundsFit();
 	}
 	
 	public void setVizObjects(List<VizObject> newVizObjects) {
@@ -161,17 +163,38 @@ public class GraphicsCanvas {
 		Transform transform = new Transform(display);
 		transform.translate(canvasMargin, canvasMargin);
 		if(bounds != null) {
-			float scaleX = (float) (canvasWidth - canvasMargin * 2) / (bounds.getMaxX() - bounds.getMinX());
-			float scaleY = (float) (canvasHeight - canvasMargin * 2) / (bounds.getMaxY() - bounds.getMinY());
-			float scale = Math.min(scaleX, scaleY);
-			transform.translate(-bounds.getMinX() * scale, -bounds.getMinY() * scale);
-			transform.scale(scale, scale);
+			float boundsWidth = bounds.getMaxX() - bounds.getMinX();
+			float boundsHeight = bounds.getMaxY() - bounds.getMinY();
+			float canvasBoundsWidth = (canvasWidth - canvasMargin * 2);
+			float canvasBoundsHeight = (canvasHeight - canvasMargin * 2);
+			if(boundsFit.equals("extend")) {
+				float scaleX = canvasBoundsWidth / boundsWidth;
+				float scaleY = canvasBoundsHeight / boundsHeight;
+				float scale = Math.min(scaleX, scaleY);
+				transform.translate(-bounds.getMinX() * scale, -bounds.getMinY() * scale);
+				transform.scale(scale, scale);
+			} else if(boundsFit.equals("full")) {
+				float scaleX = canvasBoundsWidth / boundsWidth;
+				float scaleY = canvasBoundsHeight / boundsHeight;
+				float scale = Math.min(scaleX, scaleY) * 0.95f;
+				transform.translate(-bounds.getMinX() * scale, -bounds.getMinY() * scale);
+				transform.translate(
+					(boundsWidth * scale) * (scaleX / scale) / 2 - (boundsWidth / 2 * scale),
+					(boundsHeight * scale) * (scaleY / scale) / 2 - (boundsHeight / 2 * scale)
+				);
+				transform.scale(scale, scale);
+			}
 		}
 		gc.setTransform(transform);
 		
 		// Paint the visual objects.
 		GraphicsCanvasObjectRenderer renderer = new GraphicsCanvasObjectRenderer(colorCache);
-		Bounds newBounds = new Bounds(0, 0, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2);
+		Bounds newBounds;
+		if(boundsFit.equals("full")) {
+			newBounds = new Bounds(Integer.MAX_VALUE, Integer.MAX_VALUE, -Integer.MAX_VALUE, -Integer.MAX_VALUE);
+		} else {
+			newBounds = new Bounds(canvasMargin, canvasMargin, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2);
+		}
 		for(DisplayedVizObject vizObject:displayedVizObjects.values()) {
 			renderer.paint(gc, newBounds, vizObject);
 		}

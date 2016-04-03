@@ -134,6 +134,11 @@ which would change all the objects with an `x` property equal to 50 to have an `
 - **instruction**: the number of milliseconds to wait between instructions when running the program.
 - **transition**: the number of mulliseconds that an object transition will last for.
 
+**@bounds()**
+
+- **fit**: changes the bounds of the graphics canvas. 'none' for no fitting, 'extends' to increase the bounds of the canvas as necessary, 'full' to fully fit the
+bounds of the canvas to the displayed objects.
+
 **Iteration Objects**
 
 **@for(...)** 
