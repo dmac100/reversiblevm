@@ -1,5 +1,6 @@
 package backend.value;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import backend.runtime.UndoStack;
@@ -21,6 +22,10 @@ public class StringValue extends Value implements ImmutableValue, HasPropertiesO
 	
 	public String toString(Set<Value> used) {
 		return String.valueOf(value);
+	}
+	
+	public String inspect(Set<Value> used) {
+		return "'" + toString(used) + "'";
 	}
 	
 	@Override

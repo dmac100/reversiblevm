@@ -109,7 +109,7 @@ public class VizObject implements HasImmutableValueProperties {
 			if(s.length() > 0) {
 				s.append(", ");
 			}
-			s.append(key).append(": ").append(map.get(key));
+			s.append(key).append(": ").append(map.get(key).inspect());
 		}
 		return s.toString();
 	}

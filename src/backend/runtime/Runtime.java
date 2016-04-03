@@ -79,7 +79,7 @@ public class Runtime implements HasState, ValueReadObserver {
 			});
 		}
 		
-		info(stack.getLastPoppedValue().toString());
+		info(stack.getLastPoppedValue().inspect());
 		
 		// Restore lastStackFrame in case it's been changed.
 		lastStackFrame = parentStackFrame;
