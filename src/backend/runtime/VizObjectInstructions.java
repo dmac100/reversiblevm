@@ -79,8 +79,8 @@ public class VizObjectInstructions implements ValueChangeObserver {
 
 	public List<VizObject> getVizObjects() {
 		if(dirty) {
-			updateObjects();
 			dirty = false;
+			updateObjects();
 		}
 		return vizObjects;
 	}

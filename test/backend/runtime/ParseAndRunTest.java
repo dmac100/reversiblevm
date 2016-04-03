@@ -127,7 +127,7 @@ public class ParseAndRunTest {
 	
 	@Test
 	public void UnaryExpression() {
-		assertError("TypeError: Not a double: false", "print(+false);");
+		assertError("TypeError: Not a double: false (at line 1)", "print(+false);");
 		assertOutput("5", "print(+5);");
 		assertOutput("-5", "print(-5);");
 		assertOutput("5", "print(- -5);");
@@ -169,7 +169,7 @@ public class ParseAndRunTest {
 		assertOutput("23", "print('2' + 3);");
 		assertOutput("23", "print(2 + '3');");
 		assertOutput("23", "print('2' + '3');");
-		assertError("TypeError: Not a double: false", "print(2 + false);");
+		assertError("TypeError: Not a double: false (at line 1)", "print(2 + false);");
 	}
 	
 	@Test

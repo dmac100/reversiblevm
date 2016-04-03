@@ -9,7 +9,7 @@ import org.junit.Test;
 public class LibraryTest {
 	@Test
 	public void range() {
-		assertError("TypeError: Not a double: null", "print(range());");
+		assertError("TypeError: Not a double: null (at line 1)", "print(range());");
 		assertOutput("[0, 1, 2]", "print(range(3));");
 	}
 	
@@ -32,8 +32,8 @@ public class LibraryTest {
 	
 	@Test
 	public void functionApply() {
-		assertError("TypeError: Not an array: null", "print.apply()");
-		assertError("TypeError: Not an array: null", "print.apply('a')");
+		assertError("TypeError: Not an array: null (at line 1)", "print.apply()");
+		assertError("TypeError: Not an array: null (at line 1)", "print.apply('a')");
 		assertOutput("1", "print.apply(null, [1])");
 		assertOutput("1 2", "print.apply(null, [1, 2])");
 	}

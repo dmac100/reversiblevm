@@ -300,18 +300,25 @@ public class Runtime implements HasState, ValueReadObserver {
 	}
 	
 	public void refreshVizObjects(boolean dirty) {
-		if(stackFrames.isEmpty() && lastStackFrame != null) {
-			// Restore last stack frame to display final visual.
-			stackFrames.add(lastStackFrame);
-			List<VizObject> vizObjects = lastStackFrame.getVizObjects(dirty);
-			stackFrames.clear();
-			this.vizObjects = applyVizObjectFilters(vizObjects);
-		} else {
-			List<VizObject> vizObjects = new ArrayList<>();
-			for(StackFrame stackFrame:new ArrayList<>(stackFrames)) {
-				vizObjects.addAll(stackFrame.getVizObjects(dirty));
+		try {
+			if(stackFrames.isEmpty() && lastStackFrame != null) {
+				// Restore last stack frame to display final visual.
+				stackFrames.add(lastStackFrame);
+				try {
+					List<VizObject> vizObjects = lastStackFrame.getVizObjects(dirty);
+					this.vizObjects = applyVizObjectFilters(vizObjects);
+				} finally {
+					stackFrames.clear();
+				}
+			} else {
+				List<VizObject> vizObjects = new ArrayList<>();
+				for(StackFrame stackFrame:new ArrayList<>(stackFrames)) {
+					vizObjects.addAll(stackFrame.getVizObjects(dirty));
+				}
+				this.vizObjects = applyVizObjectFilters(vizObjects);
 			}
-			this.vizObjects = applyVizObjectFilters(vizObjects);
+		} catch(ExecutionException e) {
+			throwError(e.getMessage());
 		}
 	}
 

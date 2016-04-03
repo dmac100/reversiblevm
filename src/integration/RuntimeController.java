@@ -120,11 +120,13 @@ public class RuntimeController {
 		
 		int bufferSize = 1000;
 		List<OutputLine> output = runtime.getOutput();
-		output = output.subList(Math.max(0, output.size() - bufferSize), output.size());
+		output = new ArrayList<>(output.subList(Math.max(0, output.size() - bufferSize), output.size()));
+		
+		List<VizObject> vizObjects = runtime.getVizObjects();
 		
 		final RuntimeModel runtimeModel = new RuntimeModel();
 		runtimeModel.setOutput(new ArrayList<>(output));
-		runtimeModel.setVizObjects(runtime.getVizObjects());
+		runtimeModel.setVizObjects(vizObjects);
 		runtimeModel.setLineNumber(runtime.getLineNumber());
 		runtimeModel.setBackwardEnabled(!running && !runtime.atStart());
 		runtimeModel.setForwardEnabled(!running && !runtime.atEnd());
@@ -133,7 +135,7 @@ public class RuntimeController {
 		runtimeModel.setLinesExecutedCount(linesExecutedCount);
 		runtimeModel.setMaxLinesExecutedCount(maxLinesExecutedCount);
 		
-		final VizObjectControlledSettings vizObjectControlledSettings = new VizObjectControlledSettings(runtime.getVizObjects());
+		final VizObjectControlledSettings vizObjectControlledSettings = new VizObjectControlledSettings(vizObjects);
 		this.instructionDelay = vizObjectControlledSettings.getInstructionDelay();
 		
 		Display.getDefault().asyncExec(new Runnable() {

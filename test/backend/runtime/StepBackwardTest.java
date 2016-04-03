@@ -500,7 +500,12 @@ public class StepBackwardTest {
 	}
 
 	private static void assertStepBackward(String program, int length) {
-		Runtime runtime = new Runtime();
+		Runtime runtime = new Runtime() {
+			public void throwError(String error) {
+				// Disable throwing errors.
+			}
+		};
+		
 		List<Instruction> instructions = Engine.compile(program);
 		
 		Engine engine = new Engine(runtime, instructions);
