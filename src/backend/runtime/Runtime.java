@@ -526,6 +526,10 @@ public class Runtime implements HasState, ValueReadObserver {
 	 * Returns the value of the variable at lineNumber and columnNumber, or null if there is none.
 	 */
 	public Value getValueAt(int lineNumber, int columnNumber) {
+		if(stackFrames.isEmpty()) {
+			return lastStackFrame.getValueAt(lineNumber, columnNumber);
+		}
+		
 		for(int i = stackFrames.size() - 1; i >= 0; i--) {
 			Value value = stackFrames.get(i).getValueAt(lineNumber, columnNumber);
 			if(value != null) {
