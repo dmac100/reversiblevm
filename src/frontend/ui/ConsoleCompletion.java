@@ -7,11 +7,15 @@ import com.google.common.collect.Lists;
 public class ConsoleCompletion {
 	private String completionPrefix = "";
 	private String lastCompletion = "";
-	private LinkedHashSet<String> words = new LinkedHashSet<String>();
+	private LinkedHashSet<String> words = new LinkedHashSet<>();
 
-	public void setHistory(List<String> history) {
+	public void setHistory(String prefix, List<String> history) {
 		int skip = Math.max(0, history.size() - 1000);
+
+		LinkedHashSet<String> prefixSet = new LinkedHashSet<>();
+		LinkedHashSet<String> suffixSet = new LinkedHashSet<>();
 		
+		// Add recent words in history to suffixSet.
 		for(String s:history) {
 			if(skip > 0) {
 				skip--;
@@ -19,9 +23,20 @@ public class ConsoleCompletion {
 			}
 			
 			for(String w:s.split("\\W+")) {
-				words.add(w);
+				suffixSet.add(w);
 			}
 		}
+		
+		// Add prefix words not in suffixSet to prefixSet.
+		for(String w:prefix.split("\\W+")) {
+			if(!suffixSet.contains(w)) {
+				prefixSet.add(w);
+			}
+		}
+		
+		words.clear();
+		words.addAll(prefixSet);
+		words.addAll(suffixSet);
 	}
 
 	public String getCompletion(String text) {

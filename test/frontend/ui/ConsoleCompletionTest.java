@@ -10,7 +10,7 @@ public class ConsoleCompletionTest {
 	@Test
 	public void getCompletion_noConsoleCompletion() {
 		ConsoleCompletion completion = new ConsoleCompletion();
-		completion.setHistory(Arrays.asList(
+		completion.setHistory("", Arrays.asList(
 			"dc",
 			"da",
 			"db"
@@ -22,7 +22,7 @@ public class ConsoleCompletionTest {
 	@Test
 	public void getCompletion() {
 		ConsoleCompletion completion = new ConsoleCompletion();
-		completion.setHistory(Arrays.asList(
+		completion.setHistory("", Arrays.asList(
 			"ac",
 			"aa",
 			"bb"
@@ -36,7 +36,7 @@ public class ConsoleCompletionTest {
 	@Test
 	public void getCompletion_ignoreCase() {
 		ConsoleCompletion completion = new ConsoleCompletion();
-		completion.setHistory(Arrays.asList(
+		completion.setHistory("", Arrays.asList(
 			"ac",
 			"Aa",
 			"bb"
@@ -48,7 +48,7 @@ public class ConsoleCompletionTest {
 	@Test
 	public void getCompletion_historyWords() {
 		ConsoleCompletion completion = new ConsoleCompletion();
-		completion.setHistory(Arrays.asList(
+		completion.setHistory("", Arrays.asList(
 			"ab ac",
 			"bd be",
 			"aab bbb"
@@ -62,7 +62,7 @@ public class ConsoleCompletionTest {
 	@Test
 	public void getCompletion_completionWords() {
 		ConsoleCompletion completion = new ConsoleCompletion();
-		completion.setHistory(Arrays.asList(
+		completion.setHistory("", Arrays.asList(
 			"ab ac",
 			"bd be",
 			"aab bbb"
@@ -71,5 +71,20 @@ public class ConsoleCompletionTest {
 		assertEquals("dd ac", completion.getCompletion("dd aab"));
 		assertEquals("dd ab", completion.getCompletion("dd ac"));
 		assertEquals("dd a", completion.getCompletion("dd ab"));
+	}
+	
+	@Test
+	public void getCompletion_prefix() {
+		ConsoleCompletion completion = new ConsoleCompletion();
+		completion.setHistory("ad aa", Arrays.asList(
+			"ac",
+			"aa",
+			"bb"
+		));
+		assertEquals("aa", completion.getCompletion("a"));
+		assertEquals("ac", completion.getCompletion("aa"));
+		assertEquals("ad", completion.getCompletion("ac"));
+		assertEquals("a", completion.getCompletion("ad"));
+		assertEquals("aa", completion.getCompletion("a"));
 	}
 }

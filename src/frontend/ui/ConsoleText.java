@@ -34,6 +34,7 @@ public class ConsoleText {
 	private List<String> history = new ArrayList<String>();
 	private int historyPosition = 0;
 	private String currentCommand = "";
+	private String historyPrefix = "";
 	
 	private Callback<String> runCommandCallback;
 	
@@ -105,6 +106,10 @@ public class ConsoleText {
 		text.addDisposeListener(colorCache);
 	}
 	
+	public void setHistoryPrefix(String prefix) {
+		this.historyPrefix = prefix;
+	}
+	
 	private void historyUp() {
 		if(historyPosition == history.size()) {
 			currentCommand = commandText.getText();
@@ -132,7 +137,7 @@ public class ConsoleText {
 	
 	private void insertCompletion() {
 		if(commandText.getCaretPosition() == commandText.getText().length()) {
-			completion.setHistory(history);
+			completion.setHistory(historyPrefix, history);
 			commandText.setText(completion.getCompletion(commandText.getText()));
 			commandText.setSelection(commandText.getText().length());
 		}

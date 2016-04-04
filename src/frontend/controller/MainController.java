@@ -40,7 +40,7 @@ public class MainController {
 	
 	private final RuntimeController runtime = new RuntimeController(this);
 	
-	public MainController(Shell shell, final EventBus eventBus, final EditorText editorText, GraphicsCanvas graphicsCanvas, ConsoleText consoleText) {
+	public MainController(Shell shell, final EventBus eventBus, final EditorText editorText, GraphicsCanvas graphicsCanvas, final ConsoleText consoleText) {
 		this.shell = shell;
 		this.eventBus = eventBus;
 		
@@ -51,6 +51,8 @@ public class MainController {
 		runtime.startQueueThread();
 		
 		loadDefaultText();
+		
+		consoleText.setHistoryPrefix(editorText.getText());
 		
 		editorText.setCompileCallback(new Callback<Void>() {
 			public void onCallback(Void param) {
@@ -69,6 +71,7 @@ public class MainController {
 				modified = true;
 				eventBus.post(new ModifiedEvent(modified));
 				runtime.setUserBreakpoints(editorText.getBreakpoints());
+				consoleText.setHistoryPrefix(editorText.getText());
 			}
 		});
 		
