@@ -1,11 +1,15 @@
 package backend.instruction.variable;
 
 import backend.instruction.Instruction;
-import backend.instruction.jump.LabeledJumpIfTrueInstruction;
+import backend.observer.ValueChangeObservable;
+import backend.observer.ValueReadObserver;
 import backend.runtime.Runtime;
 import backend.runtime.Scope;
 import backend.runtime.Stack;
 import backend.value.Identifier;
+import backend.value.Value;
+
+import com.google.common.base.Supplier;
 
 public class StoreInstruction extends Instruction {
 	private final Identifier identifier;
@@ -30,10 +34,19 @@ public class StoreInstruction extends Instruction {
 		return new StoreInstruction(identifier);
 	}
 	
-	public void execute(Runtime runtime) {
-		Stack stack = runtime.getStack();
-		Scope scope = runtime.getScope();
+	public void execute(final Runtime runtime) {
+		final Stack stack = runtime.getStack();
+		final Scope scope = runtime.getScope();
 		scope.set(identifier.getName(), stack.popValue(false, true));
+		
+		runtime.getCurrentStackFrame().setIdentifierValue(identifier, new Supplier<Value>() {
+			public Value get() {
+				return scope.get(identifier.getName(), new ValueReadObserver() {
+					public void onValueRead(ValueChangeObservable valueChangeObservable) {
+					}
+				});
+			}
+		});
 	}
 	
 	public void undo(Runtime runtime) {

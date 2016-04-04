@@ -1,6 +1,10 @@
 package backend.instruction.object;
 
+import com.google.common.base.Supplier;
+
 import backend.instruction.Instruction;
+import backend.observer.ValueChangeObservable;
+import backend.observer.ValueReadObserver;
 import backend.runtime.ExecutionException;
 import backend.runtime.Runtime;
 import backend.runtime.Stack;
@@ -39,11 +43,11 @@ public class GetPropertyInstruction extends Instruction {
 	/**
 	 * Changes stack from [object] to [object.name].
 	 */
-	public void execute(Runtime runtime) throws ExecutionException {
-		Stack stack = runtime.getStack();
+	public void execute(final Runtime runtime) throws ExecutionException {
+		final Stack stack = runtime.getStack();
 		
-		Value value = stack.peekValue(0);
-		ObjectValue objectValue;
+		final Value value = stack.peekValue(0);
+		final ObjectValue objectValue;
 		if(value instanceof ObjectValue) {
 			objectValue = getObjectValue(runtime, stack, null);
 		} else if(value instanceof ArrayValue) {
@@ -57,6 +61,15 @@ public class GetPropertyInstruction extends Instruction {
 		}
 		
 		runtime.getStack().push(objectValue.get(identifier.getName(), runtime), false);
+		
+		runtime.getCurrentStackFrame().setIdentifierValue(identifier, new Supplier<Value>() {
+			public Value get() {
+				return objectValue.get(identifier.getName(), new ValueReadObserver() {
+					public void onValueRead(ValueChangeObservable valueChangeObservable) {
+					}
+				});
+			}
+		});
 	}
 	
 	/**

@@ -2,20 +2,26 @@ package backend.runtime;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Supplier;
+
 import backend.instruction.viz.StartVizInstruction;
 import backend.value.FunctionValue;
+import backend.value.Identifier;
+import backend.value.Value;
 
 public class StackFrame implements HasState {
 	private final FunctionValue function;
 	private final Scope scope;
 	private int instructionCounter = 0;
 	private final Map<StartVizInstruction, VizObjectInstructions> vizObjectInstructionsList = new LinkedHashMap<>();
+	private final Map<Identifier, Supplier<Value>> valuesByIdentifier = new HashMap<>();
 
 	public StackFrame(FunctionValue function, Scope scope, UndoStack undoStack) {
 		this.function = function;
@@ -75,6 +81,10 @@ public class StackFrame implements HasState {
 			objects.addAll(vizObjectInstructions.getVizObjects());
 		}
 		return objects;
+	}
+	
+	public void setIdentifierValue(Identifier identifier, Supplier<Value> valueSupplier) {
+		valuesByIdentifier.put(identifier, valueSupplier);
 	}
 
 	public String getState(String prefix, Set<Object> used) {

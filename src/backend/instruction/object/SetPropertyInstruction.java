@@ -1,6 +1,10 @@
 package backend.instruction.object;
 
+import com.google.common.base.Supplier;
+
 import backend.instruction.Instruction;
+import backend.observer.ValueChangeObservable;
+import backend.observer.ValueReadObserver;
 import backend.runtime.ExecutionException;
 import backend.runtime.Runtime;
 import backend.runtime.Stack;
@@ -31,14 +35,23 @@ public class SetPropertyInstruction extends Instruction {
 	/**
 	 * Changes stack from [value, object] to [] and sets object.name to value.
 	 */
-	public void execute(Runtime runtime) throws ExecutionException {
+	public void execute(final Runtime runtime) throws ExecutionException {
 		Stack stack = runtime.getStack();
 		if(!(stack.peekValue(1) instanceof HasPropertiesObject)) {
 			throw new ExecutionException("TypeError: Not an object: " + stack.peekValue(1));
 		}
 		Value value = runtime.getStack().popValue(false, true);
-		ObjectValue object = ((HasPropertiesObject)stack.popValue(false, true)).getPropertiesObject();
+		final ObjectValue object = ((HasPropertiesObject)stack.popValue(false, true)).getPropertiesObject();
 		object.set(identifier.getName(), value);
+		
+		runtime.getCurrentStackFrame().setIdentifierValue(identifier, new Supplier<Value>() {
+			public Value get() {
+				return object.get(identifier.getName(), new ValueReadObserver() {
+					public void onValueRead(ValueChangeObservable valueChangeObservable) {
+					}
+				});
+			}
+		});
 	}
 	
 	public void undo(Runtime runtime) {
