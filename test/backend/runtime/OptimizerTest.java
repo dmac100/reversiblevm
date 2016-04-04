@@ -15,13 +15,14 @@ import java.util.List;
 import org.junit.Test;
 
 import backend.instruction.Instruction;
+import backend.value.Identifier;
 
 public class OptimizerTest {
 	@Test
 	public void test() {
 		List<Instruction> instructions = new Optimizer().optimize(Arrays.asList(
 			Push(NullValue()),
-			Load("f"),
+			Load(new Identifier("f")),
 			Push(Value(3)),
 			Swap(),
 			Push(Value(4)),

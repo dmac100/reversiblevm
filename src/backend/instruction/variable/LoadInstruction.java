@@ -4,30 +4,35 @@ import backend.instruction.Instruction;
 import backend.runtime.Runtime;
 import backend.runtime.Scope;
 import backend.runtime.Stack;
+import backend.value.Identifier;
 
 public class LoadInstruction extends Instruction {
-	private final String name;
+	private final Identifier identifier;
 
-	public LoadInstruction(String name) {
-		this.name = name;
+	public LoadInstruction(Identifier identifier) {
+		this.identifier = identifier;
 	}
 	
 	public Instruction copy() {
-		return new LoadInstruction(name);
+		return new LoadInstruction(identifier);
 	}
 	
 	public String getName() {
-		return name;
+		return identifier.getName();
 	}
 	
-	public static Instruction Load(String value) {
-		return new LoadInstruction(value);
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+	
+	public static Instruction Load(Identifier identifier) {
+		return new LoadInstruction(identifier);
 	}
 	
 	public void execute(Runtime runtime) {
 		Stack stack = runtime.getStack();
 		Scope scope = runtime.getScope();
-		stack.push(scope.get(name, runtime), false);
+		stack.push(scope.get(identifier.getName(), runtime), false);
 	}
 	
 	public void undo(Runtime runtime) {
@@ -35,6 +40,6 @@ public class LoadInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return super.toString() + "LOAD: " + name;
+		return super.toString() + "LOAD: " + identifier.getName();
 	}
 }

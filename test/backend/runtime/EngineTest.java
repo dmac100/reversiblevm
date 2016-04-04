@@ -27,6 +27,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import backend.value.Identifier;
+
 public class EngineTest {
 	@Test
 	public void printHello() {
@@ -34,7 +36,7 @@ public class EngineTest {
 			Push(NullValue()),
 			Push(Value("Hello World!")),
 			Push(Value(2)),
-			Load("print"),
+			Load(new Identifier("print")),
 			Call(),
 			Pop()
 		));
@@ -96,11 +98,11 @@ public class EngineTest {
 	public void variables() {
 		assertStackValue("3", Arrays.asList(
 			Push(Value(1)),
-			Store("x"),
+			Store(new Identifier("x")),
 			Push(Value(2)),
-			Store("y"),
-			Load("x"),
-			Load("y"),
+			Store(new Identifier("y")),
+			Load(new Identifier("x")),
+			Load(new Identifier("y")),
 			Add()
 		));
 	}
@@ -110,16 +112,16 @@ public class EngineTest {
 		assertStackValue("3", Arrays.asList(
 			StartFunction(1),
 			Pop(),
-			Local("x"),
-			Store("x"),
-			Load("x"),
+			Local(new Identifier("x")),
+			Store(new Identifier("x")),
+			Load(new Identifier("x")),
 			Push(Value(1)),
 			Add(),
 			EndFunction(),
-			Store("f"),
+			Store(new Identifier("f")),
 			Push(Value(2)),
 			Push(Value(1)),
-			Load("f"),
+			Load(new Identifier("f")),
 			Call()
 		));
 	}
@@ -128,20 +130,20 @@ public class EngineTest {
 	public void functionScope() {
 		assertStackValue("5", Arrays.asList(
 			Push(Value(5)),
-			Store("x"),
+			Store(new Identifier("x")),
 			StartFunction(0),
 			Pop(),
 			Push(Value(10)),
-			Local("x"),
-			Store("x"),
+			Local(new Identifier("x")),
+			Store(new Identifier("x")),
 			Push(NullValue()),
 			EndFunction(),
-			Store("f"),
+			Store(new Identifier("f")),
 			Push(Value(0)),
-			Load("f"),
+			Load(new Identifier("f")),
 			Call(),
 			Pop(),
-			Load("x")
+			Load(new Identifier("x"))
 		));
 	}
 	
@@ -152,13 +154,13 @@ public class EngineTest {
 			Push(NullValue()),
 			Push(Value(5)),
 			Push(Value(2)),
-			Load("print"),
+			Load(new Identifier("print")),
 			Call(),
 			Pop(),
 			Push(NullValue()),
 			Push(Value(6)),
 			Push(Value(2)),
-			Load("print"),
+			Load(new Identifier("print")),
 			Call(),
 			Pop()
 		));
@@ -172,7 +174,7 @@ public class EngineTest {
 			Push(NullValue()),
 			Push(Value(5)),
 			Push(Value(2)),
-			Load("print"),
+			Load(new Identifier("print")),
 			Call(),
 			Pop(),
 			Push(Value(false)),
@@ -180,7 +182,7 @@ public class EngineTest {
 			Push(NullValue()),
 			Push(Value(6)),
 			Push(Value(2)),
-			Load("print"),
+			Load(new Identifier("print")),
 			Call(),
 			Pop()
 		));

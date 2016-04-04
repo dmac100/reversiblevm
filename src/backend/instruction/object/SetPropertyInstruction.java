@@ -5,22 +5,27 @@ import backend.runtime.ExecutionException;
 import backend.runtime.Runtime;
 import backend.runtime.Stack;
 import backend.value.HasPropertiesObject;
+import backend.value.Identifier;
 import backend.value.ObjectValue;
 import backend.value.Value;
 
 public class SetPropertyInstruction extends Instruction {
-	private final String name;
+	private final Identifier identifier;
 	
-	public SetPropertyInstruction(String name) {
-		this.name = name;
+	public SetPropertyInstruction(Identifier identifier) {
+		this.identifier = identifier;
 	}
 	
-	public static Instruction SetProperty(String name) {
-		return new SetPropertyInstruction(name);
+	public static Instruction SetProperty(Identifier identifier) {
+		return new SetPropertyInstruction(identifier);
+	}
+	
+	public Identifier getIdentifier() {
+		return identifier;
 	}
 	
 	public Instruction copy() {
-		return new SetPropertyInstruction(name);
+		return new SetPropertyInstruction(identifier);
 	}
 	
 	/**
@@ -33,7 +38,7 @@ public class SetPropertyInstruction extends Instruction {
 		}
 		Value value = runtime.getStack().popValue(false, true);
 		ObjectValue object = ((HasPropertiesObject)stack.popValue(false, true)).getPropertiesObject();
-		object.set(name, value);
+		object.set(identifier.getName(), value);
 	}
 	
 	public void undo(Runtime runtime) {
@@ -42,6 +47,6 @@ public class SetPropertyInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return super.toString() + "SETPROPERTY: " + name;
+		return super.toString() + "SETPROPERTY: " + identifier.getName();
 	}
 }

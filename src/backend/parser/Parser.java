@@ -68,8 +68,7 @@ import org.parboiled.support.Var;
 
 import backend.instruction.Instruction;
 import backend.instruction.function.ReturnInstruction;
-import backend.instruction.viz.EnableVizFilterInstruction;
-import backend.instruction.viz.EnableVizUpdatesInstruction;
+import backend.value.Identifier;
 
 public class Parser extends BaseParser<Instructions> {
 	public Rule Literal() {
@@ -119,7 +118,7 @@ public class Parser extends BaseParser<Instructions> {
 	public Rule PrimaryExpression() {
 		return FirstOf(
 			Literal(),
-			Sequence(Identifier(), push(Instructions(Load(match().trim())))),
+			Sequence(Identifier(), push(Instructions(Load(createIdentifier())))),
 			ArrayLiteral(),
 			ObjectLiteral(),
 			Sequence(Terminal("("), Expression(), Terminal(")"))
@@ -164,7 +163,7 @@ public class Parser extends BaseParser<Instructions> {
 	
 	public Rule PropertyNameAndValueList() {
 		return Sequence(
-			Identifier(), push(Instructions(SetProperty(match().trim()))),
+			Identifier(), push(Instructions(SetProperty(createIdentifier()))),
 			Terminal(":"),
 			AssignmentExpression(),
 			push(Instructions(Instructions(Dup()), pop(), pop())),
@@ -186,7 +185,7 @@ public class Parser extends BaseParser<Instructions> {
 			Sequence(
 				Terminal("."),
 				Identifier(),
-				push(Instructions(pop(), Instructions(GetProperty(match().trim()))))
+				push(Instructions(pop(), Instructions(GetProperty(createIdentifier()))))
 			)
 		)));
 	}
@@ -228,7 +227,7 @@ public class Parser extends BaseParser<Instructions> {
 				Sequence(
 					Terminal("."),
 					Identifier(),
-					push(Instructions(pop(), Instructions(GetProperty(match().trim()))))
+					push(Instructions(pop(), Instructions(GetProperty(createIdentifier()))))
 				)
 			))
 		);
@@ -632,17 +631,17 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule VariableDeclaration() {
-		Var<String> name = new Var<>();
+		Var<Identifier> identifier = new Var<>();
 		return Sequence(
 			Identifier(),
-			name.set(match().trim()),
-			push(Instructions(Local(name.get()))),
+			identifier.set(createIdentifier()),
+			push(Instructions(Local(identifier.get()))),
 			Optional(
 				Initialiser(),
 				push(Instructions(
 					pop(),
 					pop(),
-					Instructions(Store(name.get()))
+					Instructions(Store(identifier.get()))
 				))
 			)
 		);
@@ -872,8 +871,8 @@ public class Parser extends BaseParser<Instructions> {
 			Sequence(
 				Identifier(),
 				push(Instructions(
-					Instructions(Local(match().trim())),
-					Instructions(Store(match().trim()))
+					Instructions(Local(createIdentifier())),
+					Instructions(Store(createIdentifier()))
 				))
 			),
 			Terminal("("),
@@ -915,10 +914,13 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule FormalParameterList() {
+		Var<Identifier> identifier = new Var<>();
+		
 		return Sequence(
+			identifier.set(new Identifier("this", position().line, position().column)),
 			push(Instructions(
-				Instructions(Local("this")),
-				Instructions(Store("this"))
+				Instructions(Local(identifier.get())),
+				Instructions(Store(identifier.get()))
 			)),
 			Optional(
 				FormalParameter(), mergeBefore(),
@@ -934,8 +936,8 @@ public class Parser extends BaseParser<Instructions> {
 			Identifier(),
 			push(
 				Instructions(
-					Instructions(Local(match().trim())),
-					Instructions(Store(match().trim()))
+					Instructions(Local(createIdentifier())),
+					Instructions(Store(createIdentifier()))
 				)
 			)
 		);
@@ -1000,6 +1002,13 @@ public class Parser extends BaseParser<Instructions> {
 		}
 		
 		return new Instructions(newInstructions);
+	}
+	
+	public Identifier createIdentifier() {
+		String name = match().trim();
+		int lineNumber = position().line;
+		int columnNumber = position().column;
+		return new Identifier(name, lineNumber, columnNumber);
 	}
 	
 	public boolean mergeBefore() {

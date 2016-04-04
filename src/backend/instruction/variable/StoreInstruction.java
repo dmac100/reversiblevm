@@ -5,30 +5,35 @@ import backend.instruction.jump.LabeledJumpIfTrueInstruction;
 import backend.runtime.Runtime;
 import backend.runtime.Scope;
 import backend.runtime.Stack;
+import backend.value.Identifier;
 
 public class StoreInstruction extends Instruction {
-	private final String name;
+	private final Identifier identifier;
 
-	public StoreInstruction(String name) {
-		this.name = name;
+	public StoreInstruction(Identifier identifier) {
+		this.identifier = identifier;
 	}
 	
 	public Instruction copy() {
-		return new StoreInstruction(name);
+		return new StoreInstruction(identifier);
 	}
 	
 	public String getName() {
-		return name;
+		return identifier.getName();
 	}
 	
-	public static Instruction Store(String value) {
-		return new StoreInstruction(value);
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+	
+	public static Instruction Store(Identifier identifier) {
+		return new StoreInstruction(identifier);
 	}
 	
 	public void execute(Runtime runtime) {
 		Stack stack = runtime.getStack();
 		Scope scope = runtime.getScope();
-		scope.set(name, stack.popValue(false, true));
+		scope.set(identifier.getName(), stack.popValue(false, true));
 	}
 	
 	public void undo(Runtime runtime) {
@@ -36,6 +41,6 @@ public class StoreInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return super.toString() + "STORE: " + name;
+		return super.toString() + "STORE: " + identifier.getName();
 	}
 }

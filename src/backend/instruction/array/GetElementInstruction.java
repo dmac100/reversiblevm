@@ -8,6 +8,7 @@ import backend.runtime.Stack;
 import backend.value.ArrayValue;
 import backend.value.DoubleValue;
 import backend.value.HasPropertiesObject;
+import backend.value.Identifier;
 import backend.value.StringValue;
 
 public class GetElementInstruction extends Instruction {
@@ -35,7 +36,7 @@ public class GetElementInstruction extends Instruction {
 				throw new ExecutionException("TypeError: Not an object: " + stack.peekValue(1));
 			}
 			runtime.getStack().popValue(false, true);
-			GetPropertyInstruction getPropertyInstruction = new GetPropertyInstruction(name.getValue());
+			GetPropertyInstruction getPropertyInstruction = new GetPropertyInstruction(new Identifier(name.getValue()));
 			getPropertyInstruction.execute(runtime);
 			return;
 		}

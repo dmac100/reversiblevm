@@ -78,9 +78,9 @@ public class AssignmentInstructions {
 	 */
 	private static Instruction convertToWrite(Instruction instruction) {
 		if(instruction instanceof LoadInstruction) {
-			return new StoreInstruction(((LoadInstruction)instruction).getName());
+			return new StoreInstruction(((LoadInstruction)instruction).getIdentifier());
 		} else if(instruction instanceof GetPropertyInstruction) {
-			return new SetPropertyInstruction(((GetPropertyInstruction)instruction).getName());
+			return new SetPropertyInstruction(((GetPropertyInstruction)instruction).getIdentifier());
 		} else if(instruction instanceof GetElementInstruction) {
 			return new SetElementInstruction();
 		}

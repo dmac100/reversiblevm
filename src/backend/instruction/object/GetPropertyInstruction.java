@@ -7,28 +7,33 @@ import backend.runtime.Stack;
 import backend.value.ArrayValue;
 import backend.value.FunctionValue;
 import backend.value.HasPropertiesObject;
+import backend.value.Identifier;
 import backend.value.NativeFunctionValue;
 import backend.value.ObjectValue;
 import backend.value.StringValue;
 import backend.value.Value;
 
 public class GetPropertyInstruction extends Instruction {
-	private final String name;
+	private final Identifier identifier;
 	
-	public GetPropertyInstruction(String name) {
-		this.name = name;
+	public GetPropertyInstruction(Identifier identifier) {
+		this.identifier = identifier;
 	}
 	
-	public static Instruction GetProperty(String name) {
-		return new GetPropertyInstruction(name);
+	public static Instruction GetProperty(Identifier identifier) {
+		return new GetPropertyInstruction(identifier);
 	}
 	
 	public Instruction copy() {
-		return new GetPropertyInstruction(name);
+		return new GetPropertyInstruction(identifier);
 	}
 	
 	public String getName() {
-		return name;
+		return identifier.getName();
+	}
+	
+	public Identifier getIdentifier() {
+		return identifier;
 	}
 	
 	/**
@@ -51,7 +56,7 @@ public class GetPropertyInstruction extends Instruction {
 			throw new ExecutionException("TypeError: Not an object: " + value);
 		}
 		
-		runtime.getStack().push(objectValue.get(name, runtime), false);
+		runtime.getStack().push(objectValue.get(identifier.getName(), runtime), false);
 	}
 	
 	/**
@@ -77,6 +82,6 @@ public class GetPropertyInstruction extends Instruction {
 	}
 	
 	public String toString() {
-		return super.toString() + "GETPROPERTY: " + name;
+		return super.toString() + "GETPROPERTY: " + identifier.getName();
 	}
 }
