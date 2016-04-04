@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Supplier;
-
 import backend.instruction.viz.StartVizInstruction;
 import backend.value.FunctionValue;
 import backend.value.Identifier;
 import backend.value.Value;
+
+import com.google.common.base.Supplier;
 
 public class StackFrame implements HasState {
 	private final FunctionValue function;
@@ -86,7 +86,24 @@ public class StackFrame implements HasState {
 	public void setIdentifierValue(Identifier identifier, Supplier<Value> valueSupplier) {
 		valuesByIdentifier.put(identifier, valueSupplier);
 	}
-
+	
+	public void clearIdentifierValues() {
+		valuesByIdentifier.clear();
+	}
+	
+	public Value getValueAt(int lineNumber, int columnNumber) {
+		for(Identifier identifier:valuesByIdentifier.keySet()) {
+			if(identifier.getLineNumber() == lineNumber) {
+				int columnStart = identifier.getColumnNumber();
+				int columnEnd = identifier.getColumnNumber() + identifier.getName().length();
+				if(columnNumber >= columnStart && columnNumber <= columnEnd) {
+					return valuesByIdentifier.get(identifier).get();
+				}
+			}
+		}
+		return null;
+	}
+	
 	public String getState(String prefix, Set<Object> used) {
 		StringBuilder s = new StringBuilder();
 		s.append(prefix + "InstructionCounter: " + getInstructionCounter()).append("\n");

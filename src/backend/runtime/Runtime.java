@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Supplier;
+
 import backend.instruction.Instruction;
 import backend.instruction.viz.StartVizInstruction;
 import backend.instruction.viz.VizFilterInstruction;
@@ -518,5 +520,24 @@ public class Runtime implements HasState, ValueReadObserver {
 		List<Instruction> instructions = stackFrame.getFunction().getInstructions();
 		if(stackFrame.getInstructionCounter() >= instructions.size()) return null;
 		return instructions.get(stackFrame.getInstructionCounter());
+	}
+
+	/**
+	 * Returns the value of the variable at lineNumber and columnNumber, or null if there is none.
+	 */
+	public Value getValueAt(int lineNumber, int columnNumber) {
+		for(int i = stackFrames.size() - 1; i >= 0; i--) {
+			Value value = stackFrames.get(i).getValueAt(lineNumber, columnNumber);
+			if(value != null) {
+				return value;
+			}
+		}
+		return null;
+	}
+	
+	public void clearIdentifierValues() {
+		for(StackFrame stackFrame:stackFrames) {
+			stackFrame.clearIdentifierValues();
+		}
 	}
 }

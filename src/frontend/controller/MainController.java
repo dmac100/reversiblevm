@@ -8,21 +8,23 @@ import integration.VizObjectControlledSettings;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolTip;
 
 import backend.runtime.Engine;
 
 import com.google.common.eventbus.EventBus;
 
-import frontend.event.RuntimeModelChangedEvent;
 import frontend.event.ModifiedEvent;
+import frontend.event.RuntimeModelChangedEvent;
 import frontend.ui.Callback;
 import frontend.ui.ConsoleText;
 import frontend.ui.EditorText;
+import frontend.ui.HoverListener;
 
 public class MainController {
 	private final Shell shell;
@@ -67,6 +69,12 @@ public class MainController {
 				modified = true;
 				eventBus.post(new ModifiedEvent(modified));
 				runtime.setUserBreakpoints(editorText.getBreakpoints());
+			}
+		});
+		
+		editorText.setHoverListener(new HoverListener() {
+			public void onHover(int lineNumber, int columnNumber) {
+				runtime.hover(lineNumber, columnNumber);
 			}
 		});
 		
@@ -129,6 +137,10 @@ public class MainController {
 		consoleText.setOutput(runtimeModel.getOutput());
 		graphicsCanvas.setVizObjects(runtimeModel.getVizObjects());
 		eventBus.post(new RuntimeModelChangedEvent(runtimeModel));
+	}
+	
+	public void setEditorHover(String value) {
+		editorText.setHoverValue(value);
 	}
 	
 	public void compile() {

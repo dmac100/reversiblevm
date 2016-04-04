@@ -20,6 +20,7 @@ import backend.runtime.OutputLine;
 import backend.runtime.Runtime;
 import backend.runtime.VizObject;
 import backend.util.VizObjectUtil;
+import backend.value.Value;
 import frontend.controller.MainController;
 
 /**
@@ -433,6 +434,21 @@ public class RuntimeController {
 				}
 				
 				updateUi();
+			}
+		});
+	}
+
+	public void hover(final int lineNumber, final int characterNumber) {
+		runnableQueue.add(new Runnable() {
+			public void run() {
+				final Value value = runtime.getValueAt(lineNumber, characterNumber);
+				if(value != null) {
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							mainController.setEditorHover(value.inspect());
+						}
+					});
+				}
 			}
 		});
 	}

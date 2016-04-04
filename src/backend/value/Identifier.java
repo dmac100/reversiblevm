@@ -26,4 +26,8 @@ public class Identifier {
 	public int getColumnNumber() {
 		return columnNumber;
 	}
+	
+	public String toString() {
+		return name + ":" + lineNumber + ":" + columnNumber;
+	}
 }

@@ -25,6 +25,9 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
@@ -40,6 +43,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolTip;
 
 import syntaxhighlight.ParseResult;
 import syntaxhighlight.Style;
@@ -65,6 +69,7 @@ public class EditorText {
 	private final Theme theme = new ThemeSublime();
 	private StyleRange[] syntaxHighlightingRanges = new StyleRange[0];
 	
+	private ToolTip tooltip;
 	private int debugLineNumber = -1;
 	
 	public EditorText(final EventBus eventBus, Shell shell, Composite parent) {
@@ -246,6 +251,15 @@ public class EditorText {
 			}
 		});
 		
+		styledText.addMouseMoveListener(new MouseMoveListener() {
+			public void mouseMove(MouseEvent event) {
+				if(tooltip != null) {
+					tooltip.dispose();
+					tooltip = null;
+				}
+			}
+		});
+
 		styledText.setFocus();
 	}
 	
@@ -688,6 +702,29 @@ public class EditorText {
 				callback.onCallback(null);
 			}
 		});
+	}
+	
+	public void setHoverListener(final HoverListener hoverListener) {
+		styledText.addMouseTrackListener(new MouseTrackAdapter() {
+			public void mouseHover(MouseEvent event) {
+				try {
+					int offset = styledText.getOffsetAtLocation(new Point(event.x, event.y));
+					int lineNumber = styledText.getLineAtOffset(offset) + 1;
+					int columnNumber = offset - styledText.getOffsetAtLine(lineNumber - 1) + 1;
+					hoverListener.onHover(lineNumber, columnNumber);
+				} catch(IllegalArgumentException e) {
+				}
+			}
+		});
+	}
+	
+	public void setHoverValue(String value) {
+		if(tooltip != null) {
+			tooltip.dispose();
+		}
+		tooltip = new ToolTip(shell, SWT.BALLOON);
+		tooltip.setMessage(value);
+		tooltip.setVisible(true);
 	}
 
 	public Control getControl() {

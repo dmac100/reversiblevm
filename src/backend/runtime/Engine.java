@@ -40,6 +40,7 @@ public class Engine {
 		runtime.addStackFrame(new FunctionValue(globalScope, runtime.getUndoStack(), 0, instructions));
 		
 		runtime.getUndoStack().clear();
+		runtime.clearIdentifierValues();
 	}
 	
 	private void addIncludeFiles(GlobalScope globalScope) {

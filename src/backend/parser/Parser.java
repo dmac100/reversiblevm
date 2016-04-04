@@ -866,13 +866,15 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule FunctionDeclaration() {
+		Var<Identifier> identifier = new Var<>();
 		return Sequence(
 			Terminal("function"),
 			Sequence(
 				Identifier(),
+				identifier.set(createIdentifier()),
 				push(Instructions(
-					Instructions(Local(createIdentifier())),
-					Instructions(Store(createIdentifier()))
+					Instructions(Local(identifier.get())),
+					Instructions(Store(identifier.get()))
 				))
 			),
 			Terminal("("),
@@ -914,13 +916,10 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule FormalParameterList() {
-		Var<Identifier> identifier = new Var<>();
-		
 		return Sequence(
-			identifier.set(new Identifier("this", position().line, position().column)),
 			push(Instructions(
-				Instructions(Local(identifier.get())),
-				Instructions(Store(identifier.get()))
+				Instructions(Local(new Identifier("this"))),
+				Instructions(Store(new Identifier("this")))
 			)),
 			Optional(
 				FormalParameter(), mergeBefore(),
@@ -932,12 +931,14 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule FormalParameter() {
+		Var<Identifier> identifier = new Var<>();
 		return Sequence(
 			Identifier(),
+			identifier.set(createIdentifier()),
 			push(
 				Instructions(
-					Instructions(Local(createIdentifier())),
-					Instructions(Store(createIdentifier()))
+					Instructions(Local(identifier.get())),
+					Instructions(Store(identifier.get()))
 				)
 			)
 		);
@@ -1007,7 +1008,7 @@ public class Parser extends BaseParser<Instructions> {
 	public Identifier createIdentifier() {
 		String name = match().trim();
 		int lineNumber = position().line;
-		int columnNumber = position().column;
+		int columnNumber = position().column - matchLength();
 		return new Identifier(name, lineNumber, columnNumber);
 	}
 	
