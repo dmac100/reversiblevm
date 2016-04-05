@@ -44,12 +44,13 @@ public class SetPropertyInstruction extends Instruction {
 		final ObjectValue object = ((HasPropertiesObject)stack.popValue(false, true)).getPropertiesObject();
 		object.set(identifier.getName(), value);
 		
-		runtime.getCurrentStackFrame().setIdentifierValue(identifier, new Supplier<Value>() {
-			public Value get() {
-				return object.get(identifier.getName(), new ValueReadObserver() {
+		runtime.getCurrentStackFrame().setIdentifierValue(identifier, new Supplier<String>() {
+			public String get() {
+				Value value = object.get(identifier.getName(), new ValueReadObserver() {
 					public void onValueRead(ValueChangeObservable valueChangeObservable) {
 					}
 				});
+				return value.inspect();
 			}
 		});
 	}

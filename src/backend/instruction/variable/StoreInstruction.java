@@ -39,12 +39,13 @@ public class StoreInstruction extends Instruction {
 		final Scope scope = runtime.getScope();
 		scope.set(identifier.getName(), stack.popValue(false, true));
 		
-		runtime.getCurrentStackFrame().setIdentifierValue(identifier, new Supplier<Value>() {
-			public Value get() {
-				return scope.get(identifier.getName(), new ValueReadObserver() {
+		runtime.getCurrentStackFrame().setIdentifierValue(identifier, new Supplier<String>() {
+			public String get() {
+				Value value = scope.get(identifier.getName(), new ValueReadObserver() {
 					public void onValueRead(ValueChangeObservable valueChangeObservable) {
 					}
 				});
+				return value.inspect();
 			}
 		});
 	}

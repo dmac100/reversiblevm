@@ -21,7 +21,7 @@ public class StackFrame implements HasState {
 	private final Scope scope;
 	private int instructionCounter = 0;
 	private final Map<StartVizInstruction, VizObjectInstructions> vizObjectInstructionsList = new LinkedHashMap<>();
-	private final Map<Identifier, Supplier<Value>> valuesByIdentifier = new HashMap<>();
+	private final Map<Identifier, Supplier<String>> valuesByIdentifier = new HashMap<>();
 
 	public StackFrame(FunctionValue function, Scope scope, UndoStack undoStack) {
 		this.function = function;
@@ -83,7 +83,7 @@ public class StackFrame implements HasState {
 		return objects;
 	}
 	
-	public void setIdentifierValue(Identifier identifier, Supplier<Value> valueSupplier) {
+	public void setIdentifierValue(Identifier identifier, Supplier<String> valueSupplier) {
 		valuesByIdentifier.put(identifier, valueSupplier);
 	}
 	
@@ -91,7 +91,7 @@ public class StackFrame implements HasState {
 		valuesByIdentifier.clear();
 	}
 	
-	public Value getValueAt(int lineNumber, int columnNumber) {
+	public String getValueAt(int lineNumber, int columnNumber) {
 		for(Identifier identifier:valuesByIdentifier.keySet()) {
 			if(identifier.getLineNumber() == lineNumber) {
 				int columnStart = identifier.getColumnNumber();

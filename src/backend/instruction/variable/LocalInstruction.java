@@ -29,12 +29,13 @@ public class LocalInstruction extends Instruction {
 		final Scope scope = runtime.getScope();
 		scope.create(identifier.getName());
 		
-		runtime.getCurrentStackFrame().setIdentifierValue(identifier, new Supplier<Value>() {
-			public Value get() {
-				return scope.get(identifier.getName(), new ValueReadObserver() {
+		runtime.getCurrentStackFrame().setIdentifierValue(identifier, new Supplier<String>() {
+			public String get() {
+				Value value = scope.get(identifier.getName(), new ValueReadObserver() {
 					public void onValueRead(ValueChangeObservable valueChangeObservable) {
 					}
 				});
+				return value.inspect();
 			}
 		});
 	}

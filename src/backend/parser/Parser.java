@@ -759,10 +759,15 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule VizStatement() {
+		Var<Identifier> identifier = new Var<>();
 		return FirstOf(
 			Sequence(Terminal("@vizUpdatesOn"), Optional(Terminal(";")), push(Instructions(EnableVizUpdatesInstruction(true)))),
 			Sequence(Terminal("@vizUpdatesOff"), Optional(Terminal(";")), push(Instructions(EnableVizUpdatesInstruction(false)))),
 			Sequence(
+				Test(Sequence(
+					ZeroOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), CharRange('0', '9'), "$", "_", "@")),
+					identifier.set(createIdentifier())
+				)),
 				push(Instructions()),
 				Optional(
 					Terminal("@for"),
@@ -780,12 +785,12 @@ public class Parser extends BaseParser<Instructions> {
 					Sequence(
 						VizObject(),
 						mergeAfter(),
-						push(Instructions(Instructions(StartVizInstruction()), pop(), Instructions(EndVizInstruction())))
+						push(Instructions(Instructions(StartVizInstruction(identifier.get())), pop(), Instructions(EndVizInstruction())))
 					),
 					Sequence(
 						Terminal("{"),
 						ZeroOrMore(VizObject(), mergeAfter()),
-						push(Instructions(Instructions(StartVizInstruction()), pop(), Instructions(EndVizInstruction()))),
+						push(Instructions(Instructions(StartVizInstruction(identifier.get())), pop(), Instructions(EndVizInstruction()))),
 						Terminal("}")
 					)
 				)

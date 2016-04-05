@@ -441,11 +441,11 @@ public class RuntimeController {
 	public void hover(final int lineNumber, final int characterNumber) {
 		runnableQueue.add(new Runnable() {
 			public void run() {
-				final Value value = runtime.getValueAt(lineNumber, characterNumber);
+				final String value = runtime.getValueAt(lineNumber, characterNumber);
 				if(value != null) {
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							mainController.setEditorHover(value.inspect());
+							mainController.setEditorHover(value);
 						}
 					});
 				}

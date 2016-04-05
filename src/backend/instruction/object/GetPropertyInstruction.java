@@ -62,12 +62,13 @@ public class GetPropertyInstruction extends Instruction {
 		
 		runtime.getStack().push(objectValue.get(identifier.getName(), runtime), false);
 		
-		runtime.getCurrentStackFrame().setIdentifierValue(identifier, new Supplier<Value>() {
-			public Value get() {
-				return objectValue.get(identifier.getName(), new ValueReadObserver() {
+		runtime.getCurrentStackFrame().setIdentifierValue(identifier, new Supplier<String>() {
+			public String get() {
+				Value value = objectValue.get(identifier.getName(), new ValueReadObserver() {
 					public void onValueRead(ValueChangeObservable valueChangeObservable) {
 					}
 				});
+				return value.inspect();
 			}
 		});
 	}
