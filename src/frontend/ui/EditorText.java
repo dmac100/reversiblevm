@@ -723,6 +723,7 @@ public class EditorText {
 			tooltip.dispose();
 		}
 		tooltip = new ToolTip(shell, SWT.BALLOON);
+		tooltip.setAutoHide(false);
 		tooltip.setMessage(value);
 		tooltip.setVisible(true);
 	}
