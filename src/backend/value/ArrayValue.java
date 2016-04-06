@@ -154,6 +154,27 @@ public class ArrayValue extends Value implements HasState, HasPropertiesObject {
 		return "[" + s.toString() + "]";
 	}
 	
+	@Override
+	public String inspect(String indent, Set<Value> used) {
+		if(used.contains(this)) return indent + "[CYCLIC]";
+		used.add(this);
+		
+		StringBuilder s = new StringBuilder();
+		s.append(indent).append("[").append("\n");
+		for(int i = 0; i < values.size(); i++) {
+			s.append(values.get(i).inspect(indent + "    ", used));
+			if(i < values.size() - 1) {
+				s.append(",");
+			}
+			s.append("\n");
+		}
+		s.append(indent).append("]");
+		
+		used.remove(this);
+		
+		return s.toString();
+	}
+	
 	public String getState(String prefix, Set<Object> used) {
 		if(used.contains(this)) return prefix + "[CYCLIC]";
 		used.add(this);

@@ -11,11 +11,11 @@ public abstract class Value implements HasState {
 	}
 	
 	public String inspect() {
-		return inspect(new HashSet<Value>());
+		return inspect("", new HashSet<Value>());
 	}
 	
-	public String inspect(Set<Value> used) {
-		return toString(used);
+	public String inspect(String prefix, Set<Value> used) {
+		return prefix + toString(used);
 	}
 	
 	/**

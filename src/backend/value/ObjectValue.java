@@ -102,6 +102,36 @@ public class ObjectValue extends Value implements HasState, HasPropertiesObject 
 		
 		return "{" + s.toString() + "}";
 	}
+
+	@Override
+	public String inspect(String indent, Set<Value> used) {
+		if(used.contains(this)) return indent + "[CYCLIC]";
+		used.add(this);
+		
+		List<String> keys = new ArrayList<>();
+		for(String key:values.keySet()) {
+			if(!key.equals("prototype")) {
+				keys.add(key);
+			}
+		}
+		
+		StringBuilder s = new StringBuilder();
+		s.append(indent).append("{").append("\n");
+		for(int i = 0; i < keys.size(); i++) {
+			s.append(indent);
+			s.append("    ").append(keys.get(i)).append(":");
+			s.append(" ").append(values.get(keys.get(i)).inspect(indent + "    ", used).trim());
+			if(i < values.size()) {
+				s.append(",");
+			}
+			s.append("\n");
+		}
+		s.append(indent).append("}");
+		
+		used.remove(this);
+		
+		return s.toString();
+	}
 	
 	public String getState(String prefix, Set<Object> used) {
 		if(used.contains(this)) return prefix + "[CYCLIC]";

@@ -24,8 +24,9 @@ public class StringValue extends Value implements ImmutableValue, HasPropertiesO
 		return String.valueOf(value);
 	}
 	
-	public String inspect(Set<Value> used) {
-		return "'" + toString(used) + "'";
+	@Override
+	public String inspect(String prefix, Set<Value> used) {
+		return prefix + "'" + toString(used) + "'";
 	}
 	
 	@Override
