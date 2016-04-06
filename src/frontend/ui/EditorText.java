@@ -25,7 +25,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -722,10 +721,12 @@ public class EditorText {
 		if(tooltip != null) {
 			tooltip.dispose();
 		}
-		tooltip = new ToolTip(shell, SWT.BALLOON);
-		tooltip.setAutoHide(false);
-		tooltip.setMessage(value);
-		tooltip.setVisible(true);
+		if(!value.isEmpty()) {
+			tooltip = new ToolTip(shell, SWT.BALLOON);
+			tooltip.setMessage(value);
+			tooltip.setAutoHide(false);
+			tooltip.setVisible(true);
+		}
 	}
 
 	public Control getControl() {
