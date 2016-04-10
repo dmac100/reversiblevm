@@ -64,6 +64,7 @@ public class EditorText {
 	
 	private final int BREAKPOINT = 1;
 	private Callback<Void> compileCallback;
+	private Callback<Void> breakpointModifiedCallback;
 	
 	private final Theme theme = new ThemeSublime();
 	private StyleRange[] syntaxHighlightingRanges = new StyleRange[0];
@@ -115,6 +116,7 @@ public class EditorText {
 				updateSyntaxHighlightingRanges();
 				refreshStyle();
 				refreshLineStyles();
+				fireBreakpointModifiedCallbacks();
 			}
 		});
 		
@@ -231,6 +233,8 @@ public class EditorText {
 					}
 					
 					updateBreakpoints(breakpoints);
+					
+					fireBreakpointModifiedCallbacks();
 				}
 			}
 		});
@@ -568,6 +572,12 @@ public class EditorText {
 		}
 	}
 	
+	private void fireBreakpointModifiedCallbacks() {
+		if(breakpointModifiedCallback != null) {
+			breakpointModifiedCallback.onCallback(null);
+		}
+	}
+	
 	/**
 	 * Updates the syntax highlighting styles.
 	 */
@@ -701,6 +711,10 @@ public class EditorText {
 				callback.onCallback(null);
 			}
 		});
+	}
+	
+	public void setBreakpointModifiedCallback(Callback<Void> callback) {
+		breakpointModifiedCallback = callback;
 	}
 	
 	public void setHoverListener(final HoverListener hoverListener) {

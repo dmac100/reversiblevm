@@ -70,8 +70,13 @@ public class MainController {
 			public void onCallback(Void param) {
 				modified = true;
 				eventBus.post(new ModifiedEvent(modified));
-				runtime.setUserBreakpoints(editorText.getBreakpoints());
 				consoleText.setHistoryPrefix(editorText.getText());
+			}
+		});
+		
+		editorText.setBreakpointModifiedCallback(new Callback<Void>() {
+			public void onCallback(Void param) {
+				runtime.setUserBreakpoints(editorText.getBreakpoints());
 			}
 		});
 		
