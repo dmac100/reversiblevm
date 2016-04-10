@@ -29,6 +29,10 @@ another object as its prototype by setting the prototype property. For example:
 	obj = { a: 1 };
 	obj.prototype = objectProto;
 	print(obj.b); // => 2
+	
+Setting the `key` property of an object changes its identity to the value of that property. This is used to
+tell when two visual objects are the same object when used inside a `@for` statement. By default, this is
+equal to the object itself.
 
 **Array**
 

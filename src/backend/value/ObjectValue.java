@@ -152,7 +152,8 @@ public class ObjectValue extends Value implements HasState, HasPropertiesObject 
 	
 	@Override
 	public Object getKey() {
-		return this;
+		Value key = values.get("key");
+		return (key == null || key == this) ? this : key.getKey();
 	}
 
 	@Override
