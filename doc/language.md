@@ -290,6 +290,8 @@ Object
 
 **map()** - `print([1, 2, 3, 4].map(function(x) { return x * 2; }));` => `[2, 4, 6, 8]`
 
+**flatMap()** - `print([1, 2].flatMap(function(x) { return [x + 1, x + 2]; }));` => `[2, 3, 3, 4]`
+
 **reduce()** - `print([1, 2, 3, 4].reduce(function(prev, x) { return prev + x; }, 0));` => `10`
 
 **reduceRight()** - `print([1, 2, 3, 4].reduceRight(function(prev, x) { return prev + x; }, 0));` => `10`
@@ -303,6 +305,8 @@ Object
 **pop()** - `var a = [1, 2, 3]; a.pop(); print(a);` => `[1, 2]`
 
 **push()** - `var a = [1, 2, 3]; a.push(4); print(a);` => `[1, 2, 3, 4]`
+
+**pushAll()** - `var a = [1, 2, 3]; a.pushAll([4, 5]); print(a);` => `[1, 2, 3, 4, 5]`
 
 **reverse()** - `var a = [1, 2, 3]; a.reverse(); print(a);` => `[3, 2, 1]`
 

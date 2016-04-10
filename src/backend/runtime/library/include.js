@@ -55,6 +55,15 @@ ArrayProto.map = function(callback) {
 	return a;
 };
 
+ArrayProto.flatMap = function(callback) {
+	var a = [];
+	var length = this.length();
+	for(var i = 0; i < length; i++) {
+		ArrayProto.push.apply(a, callback(this[i]));
+	}
+	return a;
+};
+
 ArrayProto.reduce = function(callback, initialValue) {
 	var startIndex = 0;
 	var length = this.length();

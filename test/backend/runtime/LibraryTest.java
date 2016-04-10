@@ -219,6 +219,11 @@ public class LibraryTest {
 	public void arrayMap() {
 		assertOutput("[2, 4, 6, 8]", "print([1, 2, 3, 4].map(function(x) { return x * 2; }));");
 	}
+	
+	@Test
+	public void arrayFlatMap() {
+		assertOutput("[2, 3, 3, 4]", "print([1, 2].flatMap(function(x) { return [x + 1, x + 2]; }));");
+	}
 
 	@Test
 	public void arrayReduce() {
@@ -262,7 +267,16 @@ public class LibraryTest {
 
 	@Test
 	public void arrayPush() {
+		assertOutput("[1, 2, 3]", "var a = [1, 2, 3]; a.push(); print(a);");
 		assertOutput("[1, 2, 3, 4]", "var a = [1, 2, 3]; a.push(4); print(a);");
+		assertOutput("[1, 2, 3, 4, 5]", "var a = [1, 2, 3]; a.push(4, 5); print(a);");
+	}
+	
+	@Test
+	public void arrayPushAll() {
+		assertOutput("[1, 2, 3]", "var a = [1, 2, 3]; a.pushAll([]); print(a);");
+		assertOutput("[1, 2, 3, 4]", "var a = [1, 2, 3]; a.pushAll([4]); print(a);");
+		assertOutput("[1, 2, 3, 4, 5]", "var a = [1, 2, 3]; a.pushAll([4, 5]); print(a);");
 	}
 
 	@Test

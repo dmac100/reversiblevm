@@ -102,11 +102,21 @@ public class ArrayProto {
 	public static Value push(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
 		while(params.size() <= 0) params.add(new NullValue());
 		ArrayValue array = runtime.checkArrayValue(params.get(0));
-		Value value = params.get(1);
 		List<Value> values = array.values(runtime);
-		values.add(value);
+		for(int i = 1; i < params.size(); i++) {
+			values.add(params.get(i));
+		}
 		array.setValues(values);
-		return value;
+		return new DoubleValue(values.size());
+	}
+	
+	public static Value pushAll(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+		while(params.size() <= 1) params.add(new NullValue());
+		ArrayValue array = runtime.checkArrayValue(params.get(0));
+		List<Value> values = array.values(runtime);
+		values.addAll(runtime.checkArrayValue(params.get(1)).values(runtime));
+		array.setValues(values);
+		return new DoubleValue(values.size());
 	}
 
 	public static Value reverse(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
