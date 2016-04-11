@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Supplier;
-
 import backend.instruction.Instruction;
 import backend.instruction.viz.StartVizInstruction;
 import backend.instruction.viz.VizFilterInstruction;
@@ -27,7 +25,6 @@ public class Runtime implements HasState, ValueReadObserver {
 	private UndoStack undoStack = new UndoStack();
 	
 	private Stack stack = new Stack(undoStack);
-	private StackFrame lastStackFrame = null;
 	private List<StackFrame> stackFrames = new ArrayList<>();
 	private int nestedFunctionDefinitionCount = 0;
 	private List<VizObject> vizObjects = new ArrayList<>();
@@ -43,8 +40,8 @@ public class Runtime implements HasState, ValueReadObserver {
 	 * Runs instructions at the current position in the runtime.
 	 */
 	public void runInstructions(String infoMessage, List<Instruction> instructions) {
-		// Get current stack frame or last stack frame if at the end of the program.
-		final StackFrame parentStackFrame = (getCurrentStackFrame() == null) ? lastStackFrame : getCurrentStackFrame();
+		// Get current stack frame.
+		final StackFrame parentStackFrame = getCurrentStackFrame();
 		
 		undoStack.saveUndoPoint(parentStackFrame.getInstructionCounter());
 		
@@ -82,9 +79,6 @@ public class Runtime implements HasState, ValueReadObserver {
 		}
 		
 		info(stack.getLastPoppedValue().inspect());
-		
-		// Restore lastStackFrame in case it's been changed.
-		lastStackFrame = parentStackFrame;
 	}
 	
 	/**
@@ -236,25 +230,26 @@ public class Runtime implements HasState, ValueReadObserver {
 	 * Returns whether the current instruction position is at the end of the program.
 	 */
 	public boolean atEnd() {
-		return getCurrentStackFrame() == null;
+		if(stackFrames.size() > 1) return false;
+		StackFrame stackFrame = stackFrames.get(0);
+		return stackFrame.getInstructionCounter() >= stackFrame.getFunction().getInstructions().size();
 	}
 	
 	public StackFrame getCurrentStackFrame() {
 		return stackFrames.isEmpty() ? null : stackFrames.get(stackFrames.size() - 1);
 	}
 	
-	public StackFrame popStackFrame() {
-		if(stackFrames.isEmpty()) return null;
+	public void clearStackFrames() {
+		stackFrames.clear();
+	}
+	
+	public void popStackFrame() {
 		if(stackFrames.size() > 1) {
 			stackFrames.get(stackFrames.size() - 1).clearVizObjectInstructions();
+			undoStack.addPopStackFrameUndo(stackFrames.get(stackFrames.size() - 1));
+			stackFrames.remove(stackFrames.size() - 1);
+			markVizObjectsDirty();
 		}
-		undoStack.addPopStackFrameUndo(stackFrames.get(stackFrames.size() - 1));
-		StackFrame stackFrame = stackFrames.remove(stackFrames.size() - 1);
-		if(stackFrames.isEmpty()) {
-			lastStackFrame = stackFrame;
-		}
-		markVizObjectsDirty();
-		return stackFrame;
 	}
 	
 	public Scope getScope() {
@@ -292,6 +287,7 @@ public class Runtime implements HasState, ValueReadObserver {
 	
 	public List<VizObject> getVizObjects() {
 		if(vizUpdatesEnabled) {
+			vizObjectsDirty = true;
 			do {
 				boolean oldVizObjectsDirty = vizObjectsDirty;
 				vizObjectsDirty = false;
@@ -303,22 +299,11 @@ public class Runtime implements HasState, ValueReadObserver {
 	
 	public void refreshVizObjects(boolean dirty) {
 		try {
-			if(stackFrames.isEmpty() && lastStackFrame != null) {
-				// Restore last stack frame to display final visual.
-				stackFrames.add(lastStackFrame);
-				try {
-					List<VizObject> vizObjects = lastStackFrame.getVizObjects(dirty);
-					this.vizObjects = applyVizObjectFilters(vizObjects);
-				} finally {
-					stackFrames.clear();
-				}
-			} else {
-				List<VizObject> vizObjects = new ArrayList<>();
-				for(StackFrame stackFrame:new ArrayList<>(stackFrames)) {
-					vizObjects.addAll(stackFrame.getVizObjects(dirty));
-				}
-				this.vizObjects = applyVizObjectFilters(vizObjects);
+			List<VizObject> vizObjects = new ArrayList<>();
+			for(StackFrame stackFrame:new ArrayList<>(stackFrames)) {
+				vizObjects.addAll(stackFrame.getVizObjects(dirty));
 			}
+			this.vizObjects = applyVizObjectFilters(vizObjects);
 		} catch(ExecutionException e) {
 			throwError(e.getMessage());
 		}
@@ -526,10 +511,6 @@ public class Runtime implements HasState, ValueReadObserver {
 	 * Returns the value of the variable at lineNumber and columnNumber, or null if there is none.
 	 */
 	public String getValueAt(int lineNumber, int columnNumber) {
-		if(stackFrames.isEmpty()) {
-			return lastStackFrame.getValueAt(lineNumber, columnNumber);
-		}
-		
 		for(int i = stackFrames.size() - 1; i >= 0; i--) {
 			String value = stackFrames.get(i).getValueAt(lineNumber, columnNumber);
 			if(value != null) {

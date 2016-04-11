@@ -50,11 +50,12 @@ public class Engine {
 		
 		runtime.addStackFrame(new FunctionValue(globalScope, runtime.getUndoStack(), 0, includeInstructions));
 		run();
+		runtime.clearStackFrames();
 	}
 
 	public void run() {
 		try {
-			while(runtime.getCurrentStackFrame() != null) {
+			while(!runtime.atEnd()) {
 				stepForward();
 			}
 		} catch(ExecutionException e) {
