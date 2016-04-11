@@ -29,7 +29,7 @@ public class StartVizInstruction extends Instruction {
 	public void execute(final Runtime runtime) {
 		List<Instruction> instructions = runtime.getInstructionsUpTo(StartVizInstruction.class, EndVizInstruction.class);
 		final StackFrame stackFrame = runtime.getCurrentStackFrame();
-		final VizObjectInstructions vizObjectInstructions = new VizObjectInstructions(runtime, instructions);
+		final VizObjectInstructions vizObjectInstructions = new VizObjectInstructions(runtime, stackFrame.getScope(), instructions);
 
 		if(!stackFrame.containsVizObjectInstructionsFor(this)) {
 			stackFrame.addVizObjectInstructions(this, vizObjectInstructions);

@@ -91,9 +91,9 @@ public class Runtime implements HasState, ValueReadObserver {
 	 * Runs and then undoes all the given instructions within a new stack frame,
 	 * for the purposes of getting the visual objects for a block of instructions.
 	 */
-	public void runAndUndoInstructions(List<Instruction> instructions) {
+	public void runAndUndoInstructions(Scope scope, List<Instruction> instructions) {
 		undoStack.saveUndoPoint(getCurrentStackFrame().getInstructionCounter());
-		addStackFrame(new FunctionValue(getScope(), undoStack, 0, instructions));
+		addStackFrame(new FunctionValue(scope, undoStack, 0, instructions));
 		
 		int stackFrameCount = stackFrames.size();
 		
@@ -144,7 +144,7 @@ public class Runtime implements HasState, ValueReadObserver {
 				List<Object> key = getCurrentVizObjectKey();
 				getScope().set(name, value);
 				key.add(value.getKey());
-				runAndUndoInstructions(instructions.subList(frame.getInstructionCounter() + 1, instructions.size()));
+				runAndUndoInstructions(getScope(), instructions.subList(frame.getInstructionCounter() + 1, instructions.size()));
 				key.remove(key.size() - 1);
 			}
 			

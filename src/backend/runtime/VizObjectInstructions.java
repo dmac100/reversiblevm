@@ -11,6 +11,7 @@ import backend.util.VizObjectUtil;
 
 public class VizObjectInstructions implements ValueChangeObserver {
 	private final Runtime runtime;
+	private final Scope scope;
 	private final List<Instruction> instructions;
 	private final List<VizObject> vizObjects = new ArrayList<>();
 	private final List<ValueChangeObservable> activeObservers = new ArrayList<>();
@@ -18,8 +19,9 @@ public class VizObjectInstructions implements ValueChangeObserver {
 	private List<VizObject> vizObjectFilters = new ArrayList<>();
 	private boolean dirty = true;
 	
-	public VizObjectInstructions(Runtime runtime, List<Instruction> instructions) {
+	public VizObjectInstructions(Runtime runtime, Scope scope, List<Instruction> instructions) {
 		this.runtime = runtime;
+		this.scope = scope;
 		this.instructions = new ArrayList<>(instructions);
 	}
 
@@ -58,7 +60,7 @@ public class VizObjectInstructions implements ValueChangeObserver {
 		});
 		
 		try {
-			runtime.runAndUndoInstructions(instructions);
+			runtime.runAndUndoInstructions(scope, instructions);
 		} finally {
 			runtime.clearValueReadObservers();
 		}

@@ -162,6 +162,14 @@ public class VizObjectsTest {
 	}
 	
 	@Test
+	public void variableShadowing() {
+		assertVizObjects("var x = 2, y = 3; @rect(x: x, y: y); function f(x) { y = 4; }; f(3)", Arrays.asList(
+			Arrays.asList("rect(x: 2, y: 3)"),
+			Arrays.asList("rect(x: 2, y: 4)")
+		));
+	}
+	
+	@Test
 	public void multipleObjects_forwardAndBackward() {
 		assertVizObjectsForwardAndBackward("@rect(x: 1); @rect(x: 2); @rect(x: 3);", Arrays.asList(
 			Arrays.asList("rect(x: 1)"),
@@ -338,7 +346,7 @@ public class VizObjectsTest {
 		String initialState = runtime.getState();
 		
 		// Run viz object instructions.
-		new VizObjectInstructions(runtime, instructions).updateObjects();
+		new VizObjectInstructions(runtime, runtime.getScope(), instructions).updateObjects();
 		
 		// Check that the state is the same.
 		assertEquals(initialState, runtime.getState());
