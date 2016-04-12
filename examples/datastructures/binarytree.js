@@ -79,6 +79,8 @@ function remove(node, value, parent) {
 			if(node.left.value != null && node.right.value != null) {
 				node.value = minValue(node.right);
 				remove(node.right, node.value, node);
+			} else if(parent == null) {
+				root = (node.left.value != null) ? node.left : node.right;
 			} else if(parent.left == node) {
 				parent.left = (node.left.value != null) ? node.left : node.right;
 			} else if(parent.right == node) {
