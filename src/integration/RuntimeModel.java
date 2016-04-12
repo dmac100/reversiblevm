@@ -15,7 +15,7 @@ public class RuntimeModel {
 	private boolean pauseEnabled = true;
 	private boolean compileEnabled = true;
 	private int linesExecutedCount = 0;
-	private int maxLinesExecutedCount = 0;
+	private int maxInstructionsExecutedCount = 0;
 	
 	public List<OutputLine> getOutput() {
 		return output;
@@ -81,11 +81,11 @@ public class RuntimeModel {
 		this.linesExecutedCount = linesExecutedCount;
 	}
 
-	public int getMaxLinesExecutedCount() {
-		return maxLinesExecutedCount;
+	public int getMaxInstructionsExecutedCount() {
+		return maxInstructionsExecutedCount;
 	}
 
-	public void setMaxLinesExecutedCount(int maxLinesExecutedCount) {
-		this.maxLinesExecutedCount = maxLinesExecutedCount;
+	public void setInstructionsExecutedCount(int maxInstructionsExecutedCount) {
+		this.maxInstructionsExecutedCount = maxInstructionsExecutedCount;
 	}
 }

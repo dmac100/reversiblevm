@@ -20,7 +20,6 @@ import backend.runtime.OutputLine;
 import backend.runtime.Runtime;
 import backend.runtime.VizObject;
 import backend.util.VizObjectUtil;
-import backend.value.Value;
 import frontend.controller.MainController;
 
 /**
@@ -38,8 +37,7 @@ public class RuntimeController {
 	private Set<Instruction> lineBreakpoints = new HashSet<>();
 	private Set<Integer> userBreakpoints = new HashSet<>();
 	private int instructionDelay = 1;
-	private int maxLinesExecutedCount = 0;
-	private int linesExecutedCount = 0;
+	private int maxInstructionsExecutedCount = 0;
 
 	private final MainController mainController;
 	
@@ -133,8 +131,8 @@ public class RuntimeController {
 		runtimeModel.setForwardEnabled(!running && !runtime.atEnd());
 		runtimeModel.setPauseEnabled(running);
 		runtimeModel.setCompileEnabled(true);
-		runtimeModel.setLinesExecutedCount(linesExecutedCount);
-		runtimeModel.setMaxLinesExecutedCount(maxLinesExecutedCount);
+		runtimeModel.setLinesExecutedCount(runtime.getInstructionsExecutedCount());
+		runtimeModel.setInstructionsExecutedCount(maxInstructionsExecutedCount);
 		
 		final VizObjectControlledSettings vizObjectControlledSettings = new VizObjectControlledSettings(vizObjects);
 		this.instructionDelay = vizObjectControlledSettings.getInstructionDelay();
@@ -197,8 +195,7 @@ public class RuntimeController {
 		engine = new Engine(runtime, new ArrayList<Instruction>());
 		runningForward = false;
 		runningBackward = false;
-		linesExecutedCount = 0;
-		maxLinesExecutedCount = 0;
+		maxInstructionsExecutedCount = 0;
 		lineBreakpoints.clear();
 			
 		try {
@@ -351,8 +348,7 @@ public class RuntimeController {
 			
 			while(runtime.getLineNumber() == lineNumber || runtime.getLineNumber() <= 0) {
 				if(runtime.atEnd()) {
-					linesExecutedCount++;
-					maxLinesExecutedCount = Math.max(maxLinesExecutedCount, linesExecutedCount);
+					maxInstructionsExecutedCount = runtime.getInstructionsExecutedCount();
 					updateUi();
 					
 					runningForward = false;
@@ -361,8 +357,7 @@ public class RuntimeController {
 				engine.stepForward();
 			}
 			
-			linesExecutedCount++;
-			maxLinesExecutedCount = Math.max(maxLinesExecutedCount, linesExecutedCount);
+			maxInstructionsExecutedCount = Math.max(maxInstructionsExecutedCount, runtime.getInstructionsExecutedCount());
 			
 			if(userBreakpoints.contains(runtime.getLineNumber())) {
 				runningForward = false;
@@ -396,7 +391,6 @@ public class RuntimeController {
 	private void stepBackwardSync() {
 		try {
 			int lineNumber = runtime.getLineNumber();
-			linesExecutedCount--;
 			do {
 				engine.stepBackward();
 			
@@ -425,11 +419,11 @@ public class RuntimeController {
 	public void setExecutionPoint(final int executionPoint) {
 		runnableQueue.add(new Runnable() {
 			public void run() {
-				while(linesExecutedCount > executionPoint) {
+				while(runtime.getInstructionsExecutedCount() > executionPoint && !runtime.atStart()) {
 					stepBackwardSync();
 				}
 				
-				while(linesExecutedCount < executionPoint) {
+				while(runtime.getInstructionsExecutedCount() < executionPoint && !runtime.atEnd()) {
 					stepForwardSync();
 				}
 				

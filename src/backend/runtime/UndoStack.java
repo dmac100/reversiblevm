@@ -209,4 +209,8 @@ public class UndoStack {
 		popValueUndoTypes.clear();
 		flagStack.clear();
 	}
+	
+	public int getInstructionsExecuted() {
+		return instructionCounterUndos.size();
+	}
 }

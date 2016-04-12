@@ -525,4 +525,8 @@ public class Runtime implements HasState, ValueReadObserver {
 			stackFrame.clearIdentifierValues();
 		}
 	}
+
+	public int getInstructionsExecutedCount() {
+		return undoStack.getInstructionsExecuted();
+	}
 }

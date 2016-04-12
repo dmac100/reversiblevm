@@ -493,10 +493,10 @@ public class Main {
 		nextVisualButton.setEnabled(runtimeModel.isForwardEnabled());
 		prevVisualButton.setEnabled(runtimeModel.isBackwardEnabled());
 		
-		if(runtimeModel.getMaxLinesExecutedCount() > 0) {
+		if(runtimeModel.getMaxInstructionsExecutedCount() > 0) {
 			executionPointSlider.setEnabled(true);
-			if(runtimeModel.getMaxLinesExecutedCount() + 1 != executionPointSlider.getMaximum()) {
-				executionPointSlider.setMaximum(runtimeModel.getMaxLinesExecutedCount() + 1);
+			if(runtimeModel.getMaxInstructionsExecutedCount() + 1 != executionPointSlider.getMaximum()) {
+				executionPointSlider.setMaximum(runtimeModel.getMaxInstructionsExecutedCount() + 1);
 			}
 			if(executionPointSlider.getSelection() != runtimeModel.getLinesExecutedCount() && !executionPointSliderDragInProgress) {
 				executionPointSlider.setSelection(runtimeModel.getLinesExecutedCount());
