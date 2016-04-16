@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import backend.instruction.Instruction;
 import backend.instruction.viz.StartVizInstruction;
 import backend.instruction.viz.VizFilterInstruction;
@@ -22,6 +24,8 @@ import backend.value.StringValue;
 import backend.value.Value;
 
 public class Runtime implements HasState, ValueReadObserver {
+	private static final int MAX_OUTPUT_LENGTH = 10000;
+	
 	private UndoStack undoStack = new UndoStack();
 	
 	private Stack stack = new Stack(undoStack);
@@ -340,6 +344,7 @@ public class Runtime implements HasState, ValueReadObserver {
 	}
 
 	public void throwError(String error) {
+		error = StringUtils.abbreviate(error, MAX_OUTPUT_LENGTH);
 		System.err.println("Error: " + error);
 		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
@@ -354,6 +359,7 @@ public class Runtime implements HasState, ValueReadObserver {
 	}
 	
 	public void info(String command) {
+		command = StringUtils.abbreviate(command, MAX_OUTPUT_LENGTH);
 		System.out.println(command);
 		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
@@ -368,6 +374,7 @@ public class Runtime implements HasState, ValueReadObserver {
 	}
 	
 	public void print(String value) {
+		value = StringUtils.abbreviate(value, MAX_OUTPUT_LENGTH);
 		System.out.println(value);
 		undoStack.addCommandUndo(new Runnable() {
 			public void run() {
