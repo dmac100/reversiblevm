@@ -227,7 +227,7 @@ public class RuntimeController {
 	private void runCommandSync(String command) {
 		try {
 			List<Instruction> instructions = Engine.compile(command, false);
-			runtime.runInstructions(formatCommand(command), instructions);
+			runtime.evalAndPrintExpression(formatCommand(command), instructions);
 		} catch(CompileException | ExecutionException e) {
 			runtime.throwError(e.getMessage());
 		}

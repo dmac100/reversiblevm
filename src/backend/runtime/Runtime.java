@@ -37,17 +37,27 @@ public class Runtime implements HasState, ValueReadObserver {
 	private List<OutputLine> output = new ArrayList<>();
 	
 	/**
-	 * Runs instructions at the current position in the runtime.
+	 * Evaluates an expression then prints the result.
 	 */
-	public void runInstructions(String infoMessage, List<Instruction> instructions) {
+	public void evalAndPrintExpression(String infoMessage, List<Instruction> instructions) {
+		String result = evalExpression(infoMessage, instructions);
+		info(result);
+	}
+	
+	/**
+	 * Runs instructions at the current position in the runtime, and returns the last evaluated value.
+	 */
+	public String evalExpression(String infoMessage, List<Instruction> instructions) {
 		// Get current stack frame.
 		final StackFrame parentStackFrame = getCurrentStackFrame();
 		
 		undoStack.saveUndoPoint(parentStackFrame.getInstructionCounter());
 		
-		stack.resetLastPoppedValue();
+		if(infoMessage != null) {
+			info(infoMessage);
+		}
 		
-		info(infoMessage);
+		stack.resetLastPoppedValue();
 		
 		// Add new function with same scope as current function with instructions to execute.
 		FunctionValue function = new FunctionValue(parentStackFrame.getScope(), undoStack, 0, instructions);
@@ -78,7 +88,7 @@ public class Runtime implements HasState, ValueReadObserver {
 			});
 		}
 		
-		info(stack.getLastPoppedValue().inspect());
+		return stack.getLastPoppedValue().inspect();
 	}
 	
 	/**

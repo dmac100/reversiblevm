@@ -15,7 +15,7 @@ import org.junit.Test;
 import backend.instruction.Instruction;
 import backend.value.FunctionValue;
 
-public class RunInstructionsTest {
+public class EvalAndPrintExpressionTest {
 	@Test
 	public void runInstructions() {
 		assertOutput("1", "print(1)");
@@ -44,7 +44,7 @@ public class RunInstructionsTest {
 		UndoStack undoStack = runtime.getUndoStack();
 		runtime.addStackFrame(new FunctionValue(new GlobalScope(undoStack), undoStack, 0, new ArrayList<Instruction>()));
 		
-		runtime.runInstructions("info", instructions);
+		runtime.evalAndPrintExpression("info", instructions);
 		
 		assertEquals(expected, StringUtils.join(filterStandard(runtime.getOutput()), "\n"));
 		assertTrue(filterError(runtime.getOutput()).isEmpty());
@@ -59,12 +59,12 @@ public class RunInstructionsTest {
 		Runtime runtime = new Runtime();
 		UndoStack undoStack = runtime.getUndoStack();
 		runtime.addStackFrame(new FunctionValue(new GlobalScope(undoStack), undoStack, 0, new ArrayList<Instruction>()));
-		runtime.runInstructions("", Engine.compile("var x = 1; print(x)"));
+		runtime.evalAndPrintExpression("", Engine.compile("var x = 1; print(x)"));
 		
 		String initialState = runtime.getState();
 		
 		try {
-			runtime.runInstructions("", instructions);
+			runtime.evalAndPrintExpression("", instructions);
 		} catch(ExecutionException e) {
 		}
 		
