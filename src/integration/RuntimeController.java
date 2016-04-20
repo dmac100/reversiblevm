@@ -36,7 +36,7 @@ public class RuntimeController {
 	private boolean runningBackward;
 	private Set<Instruction> lineBreakpoints = new HashSet<>();
 	private Set<Integer> userBreakpoints = new HashSet<>();
-	private int instructionDelay = 1;
+	private int instructionDelay = 0;
 	private int maxInstructionsExecutedCount = 0;
 
 	private final MainController mainController;

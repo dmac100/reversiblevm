@@ -8,7 +8,7 @@ import java.util.List;
 import backend.runtime.VizObject;
 
 public class VizObjectControlledSettings {
-	private int instructionDelay = 1;
+	private int instructionDelay = 0;
 	private int transitionDelay = 400;
 	private String boundsFit = "extend";
 	
