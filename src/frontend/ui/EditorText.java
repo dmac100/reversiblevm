@@ -257,6 +257,7 @@ public class EditorText {
 		styledText.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent event) {
 				if(tooltip != null) {
+					tooltip.setVisible(false);
 					tooltip.dispose();
 					tooltip = null;
 				}
