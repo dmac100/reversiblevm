@@ -1,0 +1,52 @@
+<project name="Project" default="compile" basedir=".">
+	<path id="classpath">
+		<fileset dir="lib" includes="**/*.jar"/>
+		<pathelement path="build"/>
+	</path>
+
+	<target name="clean">
+		<delete dir="build"/>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="build"/>
+		<javac srcdir="src" destdir="build" classpathref="classpath" debug="on"/>
+		<copy todir="build">
+			<fileset dir="src" excludes="**/*.java"/>
+		</copy>
+		<javac srcdir="test" destdir="build" classpathref="classpath" debug="on"/>
+	</target>
+
+	<target name="java" depends="compile">
+		<java classname="frontend.ui.Main">
+			<classpath refid="classpath"/>
+		</java>
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="dist"/>
+		<jar destfile="dist/vm.jar" basedir="build">
+			<fileset dir="build"/>
+			<restrict>
+				<archives>
+					<zips>
+						<fileset dir="lib" includes="**/*.jar"/>
+					</zips>
+				</archives>
+			</restrict>
+			<manifest>
+				<attribute name="Main-Class" value="frontend.ui.Main"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="junit" depends="compile">
+		<junit fork="true" logfailedtests="false">
+			<classpath refid="classpath"/>
+			<batchtest>
+				<fileset dir="test" includes="**/*Test.java"/>
+				<formatter type="plain" usefile="false"/>
+			</batchtest>
+		</junit>
+	</target>
+</project>
