@@ -79,6 +79,15 @@ public class VizObjectUtil {
 		if(value > max) return max;
 		return value;
 	}
+	
+	/**
+	 * Returns value clamped between min and max.
+	 */
+	public static double ensureInRange(double value, double min, double max) {
+		if(value < min) return min;
+		if(value > max) return max;
+		return value;
+	}
 
 	/**
 	 * Returns the double value for the named property or the defaultValue.

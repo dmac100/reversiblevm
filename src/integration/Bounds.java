@@ -1,12 +1,16 @@
 package integration;
 
 public class Bounds {
-	private int minX;
-	private int minY;
-	private int maxX;
-	private int maxY;
+	private float minX;
+	private float minY;
+	private float maxX;
+	private float maxY;
 	
-	public Bounds(int minX, int minY, int maxX, int maxY) {
+	public Bounds(double minX, double minY, double maxX, double maxY) {
+		this((float) minX, (float) minY, (float) maxX, (float) maxY);
+	}
+	
+	public Bounds(float minX, float minY, float maxX, float maxY) {
 		this.minX = minX;
 		this.minY = minY;
 		this.maxX = maxX;
@@ -20,23 +24,27 @@ public class Bounds {
 		this.maxY = other.maxY;
 	}
 
-	public int getMinX() {
+	public float getMinX() {
 		return minX;
 	}
 	
-	public int getMinY() {
+	public float getMinY() {
 		return minY;
 	}
 	
-	public int getMaxX() {
+	public float getMaxX() {
 		return maxX;
 	}
 	
-	public int getMaxY() {
+	public float getMaxY() {
 		return maxY;
 	}
 	
-	public void extendBounds(int minX, int minY, int maxX, int maxY) {
+	public void extendBounds(double minX, double minY, double maxX, double maxY) {
+		extendBounds((float) minX, (float) minY, (float) maxX, (float) maxY);
+	}
+	
+	public void extendBounds(float minX, float minY, float maxX, float maxY) {
 		this.minX = Math.min(this.minX, minX);
 		this.minY = Math.min(this.minY, minY);
 		this.maxX = Math.max(this.maxX, maxX);

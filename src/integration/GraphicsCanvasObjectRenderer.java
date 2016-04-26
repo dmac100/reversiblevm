@@ -4,12 +4,16 @@ import static backend.util.VizObjectUtil.ensureInRange;
 import static backend.util.VizObjectUtil.getDoubleOrDefault;
 import static backend.util.VizObjectUtil.getStringOrDefault;
 
+import java.awt.Graphics2D;
+import java.util.Arrays;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.TextLayout;
+import org.eclipse.swt.graphics.Transform;
 
 import frontend.ui.ColorCache;
 
@@ -23,23 +27,23 @@ public class GraphicsCanvasObjectRenderer {
 	/**
 	 * Draws a single visual object onto the graphics context.
 	 */
-	public void paint(GC gc, Bounds bounds, DisplayedVizObject vizObject) {
+	public void paint(GC gc, Transform transform, Bounds bounds, DisplayedVizObject vizObject) {
 		String name = vizObject.getName();
 		
-		int x = (int) getDoubleOrDefault(vizObject, "x", 0);
-		int y = (int) getDoubleOrDefault(vizObject, "y", 0);
-		int x1 = (int) getDoubleOrDefault(vizObject, "x1", 0);
-		int y1 = (int) getDoubleOrDefault(vizObject, "y1", 0);
-		int x2 = (int) getDoubleOrDefault(vizObject, "x2", 0);
-		int y2 = (int) getDoubleOrDefault(vizObject, "y2", 0);
-		int cx = (int) getDoubleOrDefault(vizObject, "cx", 0);
-		int cy = (int) getDoubleOrDefault(vizObject, "cy", 0);
-		int width = (int) getDoubleOrDefault(vizObject, "width", 50);
-		int height = (int) getDoubleOrDefault(vizObject, "height", 50);
-		int r = (int) getDoubleOrDefault(vizObject, "r", 0);
-		int arcWidth = (int) getDoubleOrDefault(vizObject, "rx", 0) * 2;
-		int arcHeight = (int) getDoubleOrDefault(vizObject, "ry", 0) * 2;
-		double opacity = (double) getDoubleOrDefault(vizObject, "opacity", 1);
+		double x = getDoubleOrDefault(vizObject, "x", 0);
+		double y = getDoubleOrDefault(vizObject, "y", 0);
+		double x1 = getDoubleOrDefault(vizObject, "x1", 0);
+		double y1 = getDoubleOrDefault(vizObject, "y1", 0);
+		double x2 = getDoubleOrDefault(vizObject, "x2", 0);
+		double y2 = getDoubleOrDefault(vizObject, "y2", 0);
+		double cx = getDoubleOrDefault(vizObject, "cx", 0);
+		double cy = getDoubleOrDefault(vizObject, "cy", 0);
+		double width = getDoubleOrDefault(vizObject, "width", 50);
+		double height = getDoubleOrDefault(vizObject, "height", 50);
+		double r = getDoubleOrDefault(vizObject, "r", 0);
+		double arcWidth = getDoubleOrDefault(vizObject, "rx", 0) * 2;
+		double arcHeight = getDoubleOrDefault(vizObject, "ry", 0) * 2;
+		double opacity = getDoubleOrDefault(vizObject, "opacity", 1);
 		int colorRed = (int) getDoubleOrDefault(vizObject, "fill-red", 200);
 		int colorGreen = (int) getDoubleOrDefault(vizObject, "fill-green", 200);
 		int colorBlue = (int) getDoubleOrDefault(vizObject, "fill-blue", 200);
@@ -48,10 +52,10 @@ public class GraphicsCanvasObjectRenderer {
 		int strokeBlue = (int) getDoubleOrDefault(vizObject, "stroke-blue", 200);
 		int strokeWidth = (int) getDoubleOrDefault(vizObject, "strokeWidth", 0);
 		String strokeStyle = getStringOrDefault(vizObject, "strokeStyle", "solid");
-		int arrowLength = (int) getDoubleOrDefault(vizObject, "arrowLength", 0);
-		int arrowAngle = (int) getDoubleOrDefault(vizObject, "arrowAngle", 40);
-		int startOffset = (int) getDoubleOrDefault(vizObject, "startOffset", 0);
-		int endOffset = (int) getDoubleOrDefault(vizObject, "endOffset", 0);
+		double arrowLength = getDoubleOrDefault(vizObject, "arrowLength", 0);
+		double arrowAngle = getDoubleOrDefault(vizObject, "arrowAngle", 40);
+		double startOffset = getDoubleOrDefault(vizObject, "startOffset", 0);
+		double endOffset = getDoubleOrDefault(vizObject, "endOffset", 0);
 		String text = getStringOrDefault(vizObject, "text", "");
 		int fontSize = (int) getDoubleOrDefault(vizObject, "fontSize", 12);
 		String fontName = getStringOrDefault(vizObject, "fontName", "Arial");
@@ -71,7 +75,7 @@ public class GraphicsCanvasObjectRenderer {
 		if(strokeStyle.equals("dashdot")) gc.setLineStyle(SWT.LINE_DASHDOT);
 		if(strokeStyle.equals("dashdotdot")) gc.setLineStyle(SWT.LINE_DASHDOTDOT);
 		
-		int sw = strokeWidth / 2;
+		ScaledCanvas scaledCanvas = new ScaledCanvas(gc, transform, bounds);
 		
 		if(name.equals("rect")) {
 			if(!vizObject.hasProperty("rx")) arcWidth = arcHeight;
@@ -80,31 +84,25 @@ public class GraphicsCanvasObjectRenderer {
 			arcHeight = ensureInRange(arcHeight, 0, height);
 			
 			if(!getStringOrDefault(vizObject, "fill", "").equals("none")) {
-				gc.fillRoundRectangle(x, y, width, height, arcWidth, arcHeight);
+				scaledCanvas.fillRoundRectangle(x, y, width, height, arcWidth, arcHeight);
 			}
 			if(strokeWidth > 0) {
-				gc.drawRoundRectangle(x, y, width, height, arcWidth, arcHeight);
+				scaledCanvas.drawRoundRectangle(x, y, width, height, arcWidth, arcHeight);
 			}
-			
-			bounds.extendBounds(x - sw, y - sw, x + width + sw, y + height + sw);
 		} else if(name.equals("ellipse")) {
 			if(!getStringOrDefault(vizObject, "fill", "").equals("none")) {
-				gc.fillOval(cx - arcWidth, cy - arcHeight, arcWidth * 2, arcHeight * 2);
+				scaledCanvas.fillOval(cx, cy, arcWidth * 2, arcHeight * 2);
 			}
 			if(strokeWidth > 0) {
-				gc.drawOval(cx - arcWidth, cy - arcHeight, arcWidth * 2, arcHeight * 2);
+				scaledCanvas.drawOval(cx, cy, arcWidth * 2, arcHeight * 2);
 			}
-			
-			bounds.extendBounds(x - arcWidth - sw, y - arcHeight - sw, x + arcWidth + sw, y + arcHeight + sw);
 		} else if(name.equals("circle")) {
 			if(!getStringOrDefault(vizObject, "fill", "").equals("none")) {
-				gc.fillOval(cx - r, cy - r, r * 2, r * 2);
+				scaledCanvas.fillOval(cx, cy, r * 2, r * 2);
 			}
 			if(strokeWidth > 0) {
-				gc.drawOval(cx - r, cy - r, r * 2, r * 2);
+				scaledCanvas.drawOval(cx, cy, r * 2, r * 2);
 			}
-			
-			bounds.extendBounds(cx - r - sw, cy - r - sw, cx + r + sw, cy + r + sw);
 		} else if(name.equals("line")) {
 			if(startOffset > 0 || endOffset > 0) {
 				double theta = Math.atan2(y2 - y1, x2 - x1);
@@ -116,61 +114,23 @@ public class GraphicsCanvasObjectRenderer {
 			
 			if(arrowLength > 0) {
 				gc.setBackground(colorCache.getColor(strokeRed, strokeGreen, strokeBlue));
-				drawArrow(gc, x1, y1, x2, y2, arrowLength, Math.toRadians(arrowAngle));
+				scaledCanvas.drawArrow(x1, y1, x2, y2, arrowLength, Math.toRadians(arrowAngle));
 			} else {
-				gc.drawLine(x1, y1, x2, y2);
+				scaledCanvas.drawLine(x1, y1, x2, y2);
 			}
-			
-			bounds.extendBounds(Math.min(x1, x2) - sw, Math.min(y1, y2) - sw, Math.max(x1, x2) + sw, Math.max(y1, y2) + sw);
 		} else if(name.equals("text")) {
 			int style = SWT.NORMAL;
 			if(fontStyle.toLowerCase().contains("bold")) style |= SWT.BOLD;
 			if(fontStyle.toLowerCase().contains("italic")) style |= SWT.ITALIC;
 			Font font = new Font(gc.getDevice(), new FontData(fontName, fontSize, style));
 
-			if(!textAlign.equals("left")) {
-				TextLayout textLayout = new TextLayout(gc.getDevice());
-				textLayout.setFont(font);
-				textLayout.setText(text);
-				if(textAlign.toLowerCase().contains("center")) {
-					x -= textLayout.getBounds().width / 2;
-				} else if(textAlign.toLowerCase().contains("right")) {
-					x -= textLayout.getBounds().width;
-				}
-				if(textAlign.toLowerCase().contains("middle")) {
-					y -= textLayout.getBounds().height / 2;
-				} else if(textAlign.toLowerCase().contains("bottom")) {
-					y -= textLayout.getBounds().height;
-				}
-				textLayout.dispose();
-			}
+			scaledCanvas.drawText(text, font, textAlign, x, y, true);
 			
-			gc.setFont(font);
-			gc.drawText(text, x, y, true);
 			font.dispose();
-			
-			bounds.extendBounds(x, y, x + 10, y + 10);
 		}
 		
 		gc.setLineStyle(SWT.LINE_SOLID);
 		gc.setLineWidth(0);
 		gc.setAlpha(255);
-	}
-	
-	private static void drawArrow(GC gc, int x1, int y1, int x2, int y2, double arrowLength, double arrowAngle) {
-        double theta = Math.atan2(y2 - y1, x2 - x1);
-        double offset = (arrowLength - 2) * Math.cos(arrowAngle);
-        
-        gc.drawLine(x1, y1, (int)(x2 - offset * Math.cos(theta)), (int)(y2 - offset * Math.sin(theta)));
-		
-		Path path = new Path(gc.getDevice());
-		path.moveTo((float)(x2 - arrowLength * Math.cos(theta - arrowAngle)), (float)(y2 - arrowLength * Math.sin(theta - arrowAngle)));
-		path.lineTo((float)x2, (float)y2);
-		path.lineTo((float)(x2 - arrowLength * Math.cos(theta + arrowAngle)), (float)(y2 - arrowLength * Math.sin(theta + arrowAngle)));
-		path.close();
-		
-		gc.fillPath(path);
-		
-		path.dispose();
 	}
 }

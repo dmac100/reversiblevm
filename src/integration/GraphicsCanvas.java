@@ -185,7 +185,6 @@ public class GraphicsCanvas {
 				transform.scale(scale, scale);
 			}
 		}
-		gc.setTransform(transform);
 		
 		// Paint the visual objects.
 		GraphicsCanvasObjectRenderer renderer = new GraphicsCanvasObjectRenderer(colorCache);
@@ -196,15 +195,13 @@ public class GraphicsCanvas {
 			newBounds = new Bounds(canvasMargin, canvasMargin, canvasWidth - canvasMargin * 2, canvasHeight - canvasMargin * 2);
 		}
 		for(DisplayedVizObject vizObject:displayedVizObjects.values()) {
-			renderer.paint(gc, newBounds, vizObject);
+			renderer.paint(gc, transform, newBounds, vizObject);
 		}
 		if(!newBounds.equals(bounds)) {
 			canvas.redraw();
 		}
 		this.bounds = newBounds;
-		
 		transform.dispose();
-		gc.setTransform(null);
 		
 		// Draw border around canvas.
 		gc.setClipping(0, 0, canvasWidth, canvasHeight);
