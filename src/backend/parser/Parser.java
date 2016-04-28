@@ -1,7 +1,7 @@
 package backend.parser;
 
 import static backend.instruction.NopInstruction.Nop;
-import static backend.instruction.array.GetElementInstruction.GetElementInstruction;
+import static backend.instruction.array.GetElementInstruction.GetElement;
 import static backend.instruction.array.NewArrayInstruction.NewArray;
 import static backend.instruction.array.PushElementInstruction.PushElement;
 import static backend.instruction.function.CallInstruction.Call;
@@ -179,7 +179,7 @@ public class Parser extends BaseParser<Instructions> {
 			Sequence(
 				Terminal("["),
 				Expression(),
-				push(Instructions(pop(1), pop(), Instructions(GetElementInstruction()))),
+				push(Instructions(pop(1), pop(), Instructions(GetElement()))),
 				Terminal("]")
 			),
 			Sequence(
@@ -221,7 +221,7 @@ public class Parser extends BaseParser<Instructions> {
 				Sequence(
 					Terminal("["),
 					Expression(),
-					push(Instructions(pop(1), pop(), Instructions(GetElementInstruction()))),
+					push(Instructions(pop(1), pop(), Instructions(GetElement()))),
 					Terminal("]")
 				),
 				Sequence(
@@ -801,6 +801,16 @@ public class Parser extends BaseParser<Instructions> {
 	public Rule VizForExpression() {
 		return FirstOf(
 			Sequence(
+				Test(Terminal("[")),
+				push(Instructions()),
+				VizDestructuredExpression(),
+				push(Instructions(VizIterateInstruction("_array"))),
+				mergeBefore(),
+				Terminal("<-"),
+				AssignmentExpression(),
+				mergeBefore()
+			),
+			Sequence(
 				Optional(Terminal("var")),
 				Identifier(),
 				push(Instructions(VizIterateInstruction(match().trim()))),
@@ -815,6 +825,60 @@ public class Parser extends BaseParser<Instructions> {
 		);
 	}
 	
+	public Rule VizDestructuredExpression() {
+		Var<Identifier> identifier = new Var<>();
+		Var<Integer> index = new Var<>(0);
+		Var<Instructions> loadParentIndexes = new Var<>();
+		return Sequence(
+			loadParentIndexes.set(pop()),
+			Terminal("["),
+			FirstOf(
+				Sequence(
+					push(loadParentIndexes.get()),
+					push(Instructions(Push(Value(index.get())), GetElement())),
+					mergeAfter(),
+					VizDestructuredExpression()
+				),
+				Sequence(
+					Identifier(),
+					identifier.set(createIdentifier()),
+					push(Instructions(Local(identifier.get()), Load(new Identifier("_array")))),
+					push(loadParentIndexes.get()),
+					mergeAfter(),
+					push(Instructions(Push(Value(index.get())), GetElement())),
+					mergeAfter(),
+					push(Instructions(Store(identifier.get()))),
+					mergeAfter()
+				)
+			),
+			ZeroOrMore(
+				Terminal(","),
+				index.set(index.get() + 1),
+				FirstOf(
+					Sequence(
+						push(loadParentIndexes.get()),
+						push(Instructions(Push(Value(index.get())), GetElement())),
+						mergeAfter(),
+						VizDestructuredExpression()
+					),
+					Sequence(
+						Identifier(),
+						identifier.set(createIdentifier()),
+						push(Instructions(Local(identifier.get()), Load(new Identifier("_array")))),
+						push(loadParentIndexes.get()),
+						mergeAfter(),
+						push(Instructions(Push(Value(index.get())), GetElement())),
+						mergeAfter(),
+						push(Instructions(Store(identifier.get()))),
+						mergeAfter()
+					)
+				),
+				mergeAfter()
+			),
+			Terminal("]")
+		);
+	}
+
 	public Rule VizObject() {
 		return Sequence(
 			Terminal("@"),

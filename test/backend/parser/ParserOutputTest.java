@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.Test;
 import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
-import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
@@ -342,6 +341,13 @@ public class ParserOutputTest {
 		assertParseOutput("@for(x <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "ENDVIZ"));
 		assertParseOutput("@for(x <- a) { @rect(); }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "NEWVIZOBJECT: rect", "ENDVIZ"));
 		assertParseOutput("@for(x <- a) { @rect(); @circle(); }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "NEWVIZOBJECT: rect", "NEWVIZOBJECT: circle", "ENDVIZ"));
+		
+		assertParseOutput("@for(x <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "ENDVIZ"));
+		
+		assertParseOutput("@for([x] <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: _array", "LOCAL: x", "LOAD: _array", "PUSH: 0", "GETELEMENT", "STORE: x", "ENDVIZ"));
+		assertParseOutput("@for([x, y] <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: _array", "LOCAL: x", "LOAD: _array", "PUSH: 0", "GETELEMENT", "STORE: x", "LOCAL: y", "LOAD: _array", "PUSH: 1", "GETELEMENT", "STORE: y", "ENDVIZ"));
+		assertParseOutput("@for([x, [y, z]] <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: _array", "LOCAL: x", "LOAD: _array", "PUSH: 0", "GETELEMENT", "STORE: x", "LOCAL: y", "LOAD: _array", "PUSH: 1", "GETELEMENT", "PUSH: 0", "GETELEMENT", "STORE: y", "LOCAL: z", "LOAD: _array", "PUSH: 1", "GETELEMENT", "PUSH: 1", "GETELEMENT", "STORE: z", "ENDVIZ"));
+		assertParseOutput("@for([x] <- a, [y] <- b) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: _array", "LOCAL: x", "LOAD: _array", "PUSH: 0", "GETELEMENT", "STORE: x", "LOAD: b", "VIZITERATE: _array", "LOCAL: y", "LOAD: _array", "PUSH: 0", "GETELEMENT", "STORE: y", "ENDVIZ"));
 	}
 	
 	@Test

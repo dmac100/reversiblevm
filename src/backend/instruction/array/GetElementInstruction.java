@@ -15,7 +15,7 @@ public class GetElementInstruction extends Instruction {
 	public GetElementInstruction() {
 	}
 	
-	public static Instruction GetElementInstruction() {
+	public static Instruction GetElement() {
 		return new GetElementInstruction();
 	}
 	

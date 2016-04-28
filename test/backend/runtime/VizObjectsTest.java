@@ -257,6 +257,25 @@ public class VizObjectsTest {
 		));
 	}
 	
+	@Test
+	public void destructuredAssignment() {
+		assertVizObjects("@for([x] <- [[1], [2]]) @rect(x: x);", Arrays.asList(
+			Arrays.asList("rect(x: 1)", "rect(x: 2)")
+		));
+		
+		assertVizObjects("@for([x, y] <- [[1, 2], [3, 4]]) @rect(x: x, y: y);", Arrays.asList(
+			Arrays.asList("rect(x: 1, y: 2)", "rect(x: 3, y: 4)")
+		));
+		
+		assertVizObjects("@for([x, [y, z]] <- [[1, [2, 3]], [4, [5, 6]]]) @rect(x: x, y: y, z: z);", Arrays.asList(
+			Arrays.asList("rect(x: 1, y: 2, z: 3)", "rect(x: 4, y: 5, z: 6)")
+		));
+		
+		assertVizObjects("@for([x] <- [[1], [2]], [y] <- [[3], [4]]) @rect(x: x, y: y);", Arrays.asList(
+			Arrays.asList("rect(x: 1, y: 3)", "rect(x: 1, y: 4)", "rect(x: 2, y: 3)", "rect(x: 2, y: 4)")
+		));
+	}
+	
 	private static void assertVizObjects(String program, List<List<String>> expectedObjects) {
 		assertVizObjects(program, expectedObjects, false);
 	}

@@ -134,7 +134,7 @@ public class Runtime implements HasState, ValueReadObserver {
 		}
 		
 		Instruction instruction = function.getInstructions().get(frame.getInstructionCounter());
-
+		
 		// Run any viz iterate instructions by running and undoing the remaining instructions for each value in the array.
 		if(instruction instanceof VizIterateInstruction) {
 			String name = ((VizIterateInstruction)instruction).getName();
@@ -144,8 +144,9 @@ public class Runtime implements HasState, ValueReadObserver {
 			
 			List<Instruction> instructions = function.getInstructions();
 			
+			Scope scope = getScope();
 			popStackFrame();
-			addStackFrame(new FunctionValue(getScope(), undoStack, 0, new ArrayList<Instruction>()));
+			addStackFrame(new FunctionValue(scope, undoStack, 0, new ArrayList<Instruction>()));
 			getScope().create(name);
 			
 			for(Value value:array.values(this)) {
