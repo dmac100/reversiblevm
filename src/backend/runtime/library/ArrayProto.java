@@ -1,6 +1,7 @@
 package backend.runtime.library;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -183,6 +184,33 @@ public class ArrayProto {
 		List<Value> list = new ArrayList<>();
 		for(int i = 0; i < array.length(runtime).getValue(); i++) {
 			list.add(array.get(new DoubleValue(i), runtime));
+		}
+		return new ArrayValue(list, runtime.getUndoStack());
+	}
+	
+	public static Value eachCons(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+		while(params.size() <= 1) params.add(new NullValue());
+		ArrayValue array = runtime.checkArrayValue(params.get(0));
+		int size = (int) runtime.checkDoubleValue(params.get(1)).getValue();
+		List<Value> list = new ArrayList<>();
+		for(int i = 0; i <= array.length(runtime).getValue() - size; i++) {
+			List<Value> values = new ArrayList<>();
+			for(int j = i; j < i + size; j++) {
+				values.add(array.get(new DoubleValue(j), runtime));
+			}
+			list.add(new ArrayValue(values, runtime.getUndoStack()));
+		}
+		return new ArrayValue(list, runtime.getUndoStack());
+	}
+	
+	public static Value withIndex(Runtime runtime, Stack stack, List<Value> params) throws ExecutionException {
+		while(params.size() <= 0) params.add(new NullValue());
+		ArrayValue array = runtime.checkArrayValue(params.get(0));
+		List<Value> list = new ArrayList<>();
+		for(int i = 0; i < array.length(runtime).getValue(); i++) {
+			Value index = new DoubleValue(i);
+			Value value = array.get(new DoubleValue(i), runtime);
+			list.add(new ArrayValue(Arrays.asList(value, index), runtime.getUndoStack()));
 		}
 		return new ArrayValue(list, runtime.getUndoStack());
 	}

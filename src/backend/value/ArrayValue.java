@@ -22,6 +22,10 @@ public class ArrayValue extends Value implements HasState, HasPropertiesObject {
 	}
 	
 	public ArrayValue(List<Value> values, UndoStack undoStack) {
+		if(!(values instanceof ArrayList)) {
+			values = new ArrayList<>(values);
+		}
+		
 		this.values = values;
 		this.undoStack = undoStack;
 		this.propertiesObject = new ObjectValue(undoStack);

@@ -303,6 +303,17 @@ public class LibraryTest {
 	public void arrayValues() {
 		assertOutput("[1, 2, 3, 4]", "var a = [1, 2, 3, 4]; print(a.values());");
 	}
+	
+	@Test
+	public void arrayEachCons() {
+		assertOutput("[[1, 2], [2, 3], [3, 4]]", "var a = [1, 2, 3, 4]; print(a.eachCons(2));");
+		assertOutput("[]", "var a = [1, 2, 3, 4]; print(a.eachCons(5));");
+	}
+	
+	@Test
+	public void arrayWithIndex() {
+		assertOutput("[[1, 0], [2, 1], [3, 2], [4, 3]]", "var a = [1, 2, 3, 4]; print(a.withIndex());");
+	}
 
 	@Test
 	public void mathE() {

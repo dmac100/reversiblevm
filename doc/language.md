@@ -272,6 +272,9 @@ Object
 
 **values()** - `print(({a:1, b:2}).values());` => `[1, 2]`
 
+Array
+-----
+
 **length()** - `print([1, 2, 3].length());` => `3`
 
 **concat()** - `print([1, 2].concat([3], [4]));` => `[1, 2, 3, 4]`
@@ -321,6 +324,10 @@ Object
 **keys()** - `var a = [1, 2, 3, 4]; print(a.keys());` => `[0, 1, 2, 3]`
 
 **values()** - `var a = [1, 2, 3, 4]; print(a.values());` => `[1, 2, 3, 4]`
+
+**eachCons()** - `var a = [1, 2, 3, 4]; print(a.eachCons(2));` => `[[1, 2], [2, 3], [3, 4]]`
+
+**withIndex()** - `var a = [1, 2, 3, 4]; print(a.withIndex());` => `[[1, 0], [2, 1], [3, 2], [4, 3]]`
 
 Math
 ----
