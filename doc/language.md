@@ -160,6 +160,18 @@ Can iterate over multiple arrays with comma separated items:
 
 	@for(x <- array2, y <- array2) @rect(x: x, y: y);
 
+If the iterated value is not an array, then it is treated like an array with a single value:
+
+	@for(x <- 10) @rect(x: x);
+	
+Can use destructuring assignment for the left parameter to iterate over arrays of objects or other arrays:
+
+	@for({x: x, y: y} <- [{x: 10, y: 10}, {x: 20, y: 20}]) @rect(x: x, y: y);
+	
+or:
+	
+	@for([x, y] <- [[10, 10], [20, 20]]) @rect(x: x, y: y);
+
 Objects are identified using the statement that created it along with the set of values the loop variables had. If the identity of an object is the same but its properties have
 changed, then the transition will be animated in the graphical viewer.
 
