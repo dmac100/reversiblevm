@@ -837,16 +837,8 @@ public class Parser extends BaseParser<Instructions> {
 		return Sequence(
 			loadContext.set(pop()),
 			Terminal("["),
-			FirstOf(
-				Sequence(
-					push(Instructions(loadContext.get(), Instructions(Push(Value(index.get())), GetElement()))),
-					VizDestructuredExpression()
-				),
-				VizDestructuredArrayExpressionIdentifier(loadContext, index)
-			),
-			ZeroOrMore(
-				Terminal(","),
-				index.set(index.get() + 1),
+			push(Instructions()),
+			SeparatedSequence(Terminal(","), Sequence(
 				FirstOf(
 					Sequence(
 						push(Instructions(loadContext.get(), Instructions(Push(Value(index.get())), GetElement()))),
@@ -854,8 +846,9 @@ public class Parser extends BaseParser<Instructions> {
 					),
 					VizDestructuredArrayExpressionIdentifier(loadContext, index)
 				),
-				mergeAfter()
-			),
+				mergeAfter(),
+				index.set(index.get() + 1)
+			)),
 			Terminal("]")
 		);
 	}
@@ -879,18 +872,8 @@ public class Parser extends BaseParser<Instructions> {
 		return Sequence(
 			loadContext.set(pop()),
 			Terminal("{"),
-			Identifier(),
-			property.set(createIdentifier()),
-			Terminal(":"),
-			FirstOf(
-				Sequence(
-					push(Instructions(loadContext.get(), Instructions(GetProperty(property.get())))),
-					VizDestructuredExpression()
-				),
-				VizDestructuredObjectExpressionIdentifier(loadContext, property)
-			),
-			ZeroOrMore(
-				Terminal(","),
+			push(Instructions()),
+			SeparatedSequence(Terminal(","), Sequence(
 				Identifier(),
 				property.set(createIdentifier()),
 				Terminal(":"),
@@ -902,7 +885,7 @@ public class Parser extends BaseParser<Instructions> {
 					VizDestructuredObjectExpressionIdentifier(loadContext, property)
 				),
 				mergeAfter()
-			),
+			)),
 			Terminal("}")
 		);
 	}
@@ -1135,5 +1118,12 @@ public class Parser extends BaseParser<Instructions> {
 	 */
 	public Rule OptionalOr(Rule optional, Instruction instruction) {
 		return FirstOf(optional, push(Instructions(instruction)));
-	}	
+	}
+	
+	/**
+	 * Matches one or more rules separated by separator.
+	 */
+	public Rule SeparatedSequence(Rule separator, Rule rule) {
+		return Sequence(rule, ZeroOrMore(separator, rule));
+	}
 }
