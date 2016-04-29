@@ -275,9 +275,9 @@ Object
 Array
 -----
 
-**length()** - `print([1, 2, 3].length());` => `3`
-
 **concat()** - `print([1, 2].concat([3], [4]));` => `[1, 2, 3, 4]`
+
+**eachCons()** - `var a = [1, 2, 3, 4]; print(a.eachCons(2));` => `[[1, 2], [2, 3], [3, 4]]`
 
 **every()** - `print([1, 2, 3].every(function(x) { return x >= 1; }));` => `true`
 
@@ -287,27 +287,21 @@ Array
 
 **findIndex()** - `print([1, 2, 3, 4, 5].findIndex(function(x) { return x == 3; }));` => `2`
 
+**flatMap()** - `print([1, 2].flatMap(function(x) { return [x + 1, x + 2]; }));` => `[2, 3, 3, 4]`
+
 **forEach()** - `[1, 2, 3].forEach(function(x) { print(x); });` => `1\n2\n3`
 
 **indexOf()** - `print([1, 2, 3, 4, 5].indexOf(3));` => `2`
 
 **join()** - `print([1, 2, 3, 4, 5].join(','));` => `1,2,3,4,5`
 
+**keys()** - `var a = [1, 2, 3, 4]; print(a.keys());` => `[0, 1, 2, 3]`
+
 **lastIndexOf()** - `print([3, 3, 3, 3, 3].lastIndexOf(3));` => `4`
 
+**length()** - `print([1, 2, 3].length());` => `3`
+
 **map()** - `print([1, 2, 3, 4].map(function(x) { return x * 2; }));` => `[2, 4, 6, 8]`
-
-**flatMap()** - `print([1, 2].flatMap(function(x) { return [x + 1, x + 2]; }));` => `[2, 3, 3, 4]`
-
-**reduce()** - `print([1, 2, 3, 4].reduce(function(prev, x) { return prev + x; }, 0));` => `10`
-
-**reduceRight()** - `print([1, 2, 3, 4].reduceRight(function(prev, x) { return prev + x; }, 0));` => `10`
-
-**some()** - `print([1, 2, 3, 4].some(function(x) { return x == 1; }));` => `true`
-
-**slice()** - `print([1, 2, 3, 4].slice(1, 3));` => `[2, 3]`
-
-**sort()** - `var a = [10, 1, 2]; a.sort((x, y) => x - y); print(a);` => `[1, 2, 10]`
 
 **pop()** - `var a = [1, 2, 3]; a.pop(); print(a);` => `[1, 2]`
 
@@ -315,17 +309,23 @@ Array
 
 **pushAll()** - `var a = [1, 2, 3]; a.pushAll([4, 5]); print(a);` => `[1, 2, 3, 4, 5]`
 
+**reduce()** - `print([1, 2, 3, 4].reduce(function(prev, x) { return prev + x; }, 0));` => `10`
+
+**reduceRight()** - `print([1, 2, 3, 4].reduceRight(function(prev, x) { return prev + x; }, 0));` => `10`
+
 **reverse()** - `var a = [1, 2, 3]; a.reverse(); print(a);` => `[3, 2, 1]`
 
 **shift()** - `var a = [1, 2, 3]; a.shift(); print(a);` => `[2, 3]`
 
+**slice()** - `print([1, 2, 3, 4].slice(1, 3));` => `[2, 3]`
+
+**some()** - `print([1, 2, 3, 4].some(function(x) { return x == 1; }));` => `true`
+
+**sort()** - `var a = [10, 1, 2]; a.sort((x, y) => x - y); print(a);` => `[1, 2, 10]`
+
 **unshift()** - `var a = [1, 2, 3]; a.unshift(4); print(a);` => `[4, 1, 2, 3]`
 
-**keys()** - `var a = [1, 2, 3, 4]; print(a.keys());` => `[0, 1, 2, 3]`
-
 **values()** - `var a = [1, 2, 3, 4]; print(a.values());` => `[1, 2, 3, 4]`
-
-**eachCons()** - `var a = [1, 2, 3, 4]; print(a.eachCons(2));` => `[[1, 2], [2, 3], [3, 4]]`
 
 **withIndex()** - `var a = [1, 2, 3, 4]; print(a.withIndex());` => `[[1, 0], [2, 1], [3, 2], [4, 3]]`
 
