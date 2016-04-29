@@ -826,7 +826,6 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule VizDestructuredExpression() {
-		Var<Identifier> identifier = new Var<>();
 		Var<Integer> index = new Var<>(0);
 		Var<Instructions> loadParentIndexes = new Var<>();
 		return Sequence(
@@ -839,17 +838,7 @@ public class Parser extends BaseParser<Instructions> {
 					mergeAfter(),
 					VizDestructuredExpression()
 				),
-				Sequence(
-					Identifier(),
-					identifier.set(createIdentifier()),
-					push(Instructions(Local(identifier.get()), Load(new Identifier("_array")))),
-					push(loadParentIndexes.get()),
-					mergeAfter(),
-					push(Instructions(Push(Value(index.get())), GetElement())),
-					mergeAfter(),
-					push(Instructions(Store(identifier.get()))),
-					mergeAfter()
-				)
+				VizDestructuredExpressionIdentifier(loadParentIndexes, index)
 			),
 			ZeroOrMore(
 				Terminal(","),
@@ -861,21 +850,26 @@ public class Parser extends BaseParser<Instructions> {
 						mergeAfter(),
 						VizDestructuredExpression()
 					),
-					Sequence(
-						Identifier(),
-						identifier.set(createIdentifier()),
-						push(Instructions(Local(identifier.get()), Load(new Identifier("_array")))),
-						push(loadParentIndexes.get()),
-						mergeAfter(),
-						push(Instructions(Push(Value(index.get())), GetElement())),
-						mergeAfter(),
-						push(Instructions(Store(identifier.get()))),
-						mergeAfter()
-					)
+					VizDestructuredExpressionIdentifier(loadParentIndexes, index)
 				),
 				mergeAfter()
 			),
 			Terminal("]")
+		);
+	}
+	
+	public Rule VizDestructuredExpressionIdentifier(Var<Instructions> loadParentIndexes, Var<Integer> index) {
+		Var<Identifier> identifier = new Var<>();
+		return Sequence(
+			Identifier(),
+			identifier.set(createIdentifier()),
+			push(Instructions(Local(identifier.get()), Load(new Identifier("_array")))),
+			push(loadParentIndexes.get()),
+			mergeAfter(),
+			push(Instructions(Push(Value(index.get())), GetElement())),
+			mergeAfter(),
+			push(Instructions(Store(identifier.get()))),
+			mergeAfter()
 		);
 	}
 
