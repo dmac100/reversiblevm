@@ -801,10 +801,9 @@ public class Parser extends BaseParser<Instructions> {
 	public Rule VizForExpression() {
 		return FirstOf(
 			Sequence(
-				Test(Terminal("[")),
 				push(Instructions()),
 				VizDestructuredExpression(),
-				push(Instructions(VizIterateInstruction("_array"))),
+				push(Instructions(VizIterateInstruction("_element"))),
 				mergeBefore(),
 				Terminal("<-"),
 				AssignmentExpression(),
@@ -826,31 +825,34 @@ public class Parser extends BaseParser<Instructions> {
 	}
 	
 	public Rule VizDestructuredExpression() {
+		return FirstOf(
+			VizDestructuredArrayExpression(),
+			VizDestructuredObjectExpression()
+		);
+	}
+	
+	public Rule VizDestructuredArrayExpression() {
 		Var<Integer> index = new Var<>(0);
-		Var<Instructions> loadParentIndexes = new Var<>();
+		Var<Instructions> loadContext = new Var<>();
 		return Sequence(
-			loadParentIndexes.set(pop()),
+			loadContext.set(pop()),
 			Terminal("["),
 			FirstOf(
 				Sequence(
-					push(loadParentIndexes.get()),
-					push(Instructions(Push(Value(index.get())), GetElement())),
-					mergeAfter(),
+					push(Instructions(loadContext.get(), Instructions(Push(Value(index.get())), GetElement()))),
 					VizDestructuredExpression()
 				),
-				VizDestructuredExpressionIdentifier(loadParentIndexes, index)
+				VizDestructuredArrayExpressionIdentifier(loadContext, index)
 			),
 			ZeroOrMore(
 				Terminal(","),
 				index.set(index.get() + 1),
 				FirstOf(
 					Sequence(
-						push(loadParentIndexes.get()),
-						push(Instructions(Push(Value(index.get())), GetElement())),
-						mergeAfter(),
+						push(Instructions(loadContext.get(), Instructions(Push(Value(index.get())), GetElement()))),
 						VizDestructuredExpression()
 					),
-					VizDestructuredExpressionIdentifier(loadParentIndexes, index)
+					VizDestructuredArrayExpressionIdentifier(loadContext, index)
 				),
 				mergeAfter()
 			),
@@ -858,15 +860,60 @@ public class Parser extends BaseParser<Instructions> {
 		);
 	}
 	
-	public Rule VizDestructuredExpressionIdentifier(Var<Instructions> loadParentIndexes, Var<Integer> index) {
+	public Rule VizDestructuredArrayExpressionIdentifier(Var<Instructions> loadContext, Var<Integer> index) {
 		Var<Identifier> identifier = new Var<>();
 		return Sequence(
 			Identifier(),
 			identifier.set(createIdentifier()),
-			push(Instructions(Local(identifier.get()), Load(new Identifier("_array")))),
-			push(loadParentIndexes.get()),
+			push(Instructions(Local(identifier.get()), Load(new Identifier("_element")))),
+			push(Instructions(loadContext.get(), Instructions(Push(Value(index.get())), GetElement()))),
 			mergeAfter(),
-			push(Instructions(Push(Value(index.get())), GetElement())),
+			push(Instructions(Store(identifier.get()))),
+			mergeAfter()
+		);
+	}
+	
+	public Rule VizDestructuredObjectExpression() {
+		Var<Identifier> property = new Var<>();
+		Var<Instructions> loadContext = new Var<>();
+		return Sequence(
+			loadContext.set(pop()),
+			Terminal("{"),
+			Identifier(),
+			property.set(createIdentifier()),
+			Terminal(":"),
+			FirstOf(
+				Sequence(
+					push(Instructions(loadContext.get(), Instructions(GetProperty(property.get())))),
+					VizDestructuredExpression()
+				),
+				VizDestructuredObjectExpressionIdentifier(loadContext, property)
+			),
+			ZeroOrMore(
+				Terminal(","),
+				Identifier(),
+				property.set(createIdentifier()),
+				Terminal(":"),
+				FirstOf(
+					Sequence(
+						push(Instructions(loadContext.get(), Instructions(GetProperty(property.get())))),
+						VizDestructuredExpression()
+					),
+					VizDestructuredObjectExpressionIdentifier(loadContext, property)
+				),
+				mergeAfter()
+			),
+			Terminal("}")
+		);
+	}
+	
+	public Rule VizDestructuredObjectExpressionIdentifier(Var<Instructions> loadContext, Var<Identifier> property) {
+		Var<Identifier> identifier = new Var<>();
+		return Sequence(
+			Identifier(),
+			identifier.set(createIdentifier()),
+			push(Instructions(Local(identifier.get()), Load(new Identifier("_element")))),
+			push(Instructions(loadContext.get(), Instructions(GetProperty(property.get())))),
 			mergeAfter(),
 			push(Instructions(Store(identifier.get()))),
 			mergeAfter()

@@ -344,10 +344,15 @@ public class ParserOutputTest {
 		
 		assertParseOutput("@for(x <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: x", "ENDVIZ"));
 		
-		assertParseOutput("@for([x] <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: _array", "LOCAL: x", "LOAD: _array", "PUSH: 0", "GETELEMENT", "STORE: x", "ENDVIZ"));
-		assertParseOutput("@for([x, y] <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: _array", "LOCAL: x", "LOAD: _array", "PUSH: 0", "GETELEMENT", "STORE: x", "LOCAL: y", "LOAD: _array", "PUSH: 1", "GETELEMENT", "STORE: y", "ENDVIZ"));
-		assertParseOutput("@for([x, [y, z]] <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: _array", "LOCAL: x", "LOAD: _array", "PUSH: 0", "GETELEMENT", "STORE: x", "LOCAL: y", "LOAD: _array", "PUSH: 1", "GETELEMENT", "PUSH: 0", "GETELEMENT", "STORE: y", "LOCAL: z", "LOAD: _array", "PUSH: 1", "GETELEMENT", "PUSH: 1", "GETELEMENT", "STORE: z", "ENDVIZ"));
-		assertParseOutput("@for([x] <- a, [y] <- b) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: _array", "LOCAL: x", "LOAD: _array", "PUSH: 0", "GETELEMENT", "STORE: x", "LOAD: b", "VIZITERATE: _array", "LOCAL: y", "LOAD: _array", "PUSH: 0", "GETELEMENT", "STORE: y", "ENDVIZ"));
+		assertParseOutput("@for([x] <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: _element", "LOCAL: x", "LOAD: _element", "PUSH: 0", "GETELEMENT", "STORE: x", "ENDVIZ"));
+		assertParseOutput("@for([x, y] <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: _element", "LOCAL: x", "LOAD: _element", "PUSH: 0", "GETELEMENT", "STORE: x", "LOCAL: y", "LOAD: _element", "PUSH: 1", "GETELEMENT", "STORE: y", "ENDVIZ"));
+		assertParseOutput("@for([x, [y, z]] <- a) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: _element", "LOCAL: x", "LOAD: _element", "PUSH: 0", "GETELEMENT", "STORE: x", "LOCAL: y", "LOAD: _element", "PUSH: 1", "GETELEMENT", "PUSH: 0", "GETELEMENT", "STORE: y", "LOCAL: z", "LOAD: _element", "PUSH: 1", "GETELEMENT", "PUSH: 1", "GETELEMENT", "STORE: z", "ENDVIZ"));
+		assertParseOutput("@for([x] <- a, [y] <- b) { }", Arrays.asList("STARTVIZ", "LOAD: a", "VIZITERATE: _element", "LOCAL: x", "LOAD: _element", "PUSH: 0", "GETELEMENT", "STORE: x", "LOAD: b", "VIZITERATE: _element", "LOCAL: y", "LOAD: _element", "PUSH: 0", "GETELEMENT", "STORE: y", "ENDVIZ"));
+		
+		assertParseOutput("@for({x: x} <- [a]) { }", Arrays.asList("STARTVIZ", "NEWARRAY", "DUP", "LOAD: a", "PUSHELEMENT", "VIZITERATE: _element", "LOCAL: x", "LOAD: _element", "GETPROPERTY: x", "STORE: x", "ENDVIZ"));
+		assertParseOutput("@for({x: x, y: y} <- [a]) { }", Arrays.asList("STARTVIZ", "NEWARRAY", "DUP", "LOAD: a", "PUSHELEMENT", "VIZITERATE: _element", "LOCAL: x", "LOAD: _element", "GETPROPERTY: x", "STORE: x", "LOCAL: y", "LOAD: _element", "GETPROPERTY: y", "STORE: y", "ENDVIZ"));
+		assertParseOutput("@for({x: w, y: [{y: x, z: y}, z]} <- [a]) { }", Arrays.asList("STARTVIZ", "NEWARRAY", "DUP", "LOAD: a", "PUSHELEMENT", "VIZITERATE: _element", "LOCAL: w", "LOAD: _element", "GETPROPERTY: x", "STORE: w", "LOCAL: x", "LOAD: _element", "GETPROPERTY: y", "PUSH: 0", "GETELEMENT", "GETPROPERTY: y", "STORE: x", "LOCAL: y", "LOAD: _element", "GETPROPERTY: y", "PUSH: 0", "GETELEMENT", "GETPROPERTY: z", "STORE: y", "LOCAL: z", "LOAD: _element", "GETPROPERTY: y", "PUSH: 1", "GETELEMENT", "STORE: z", "ENDVIZ"));
+		assertParseOutput("@for([x, {x: y}] <- [a]) { }", Arrays.asList("STARTVIZ", "NEWARRAY", "DUP", "LOAD: a", "PUSHELEMENT", "VIZITERATE: _element", "LOCAL: x", "LOAD: _element", "PUSH: 0", "GETELEMENT", "STORE: x", "LOCAL: y", "LOAD: _element", "PUSH: 1", "GETELEMENT", "GETPROPERTY: x", "STORE: y", "ENDVIZ"));
 	}
 	
 	@Test

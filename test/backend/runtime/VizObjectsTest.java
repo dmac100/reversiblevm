@@ -274,6 +274,18 @@ public class VizObjectsTest {
 		assertVizObjects("@for([x] <- [[1], [2]], [y] <- [[3], [4]]) @rect(x: x, y: y);", Arrays.asList(
 			Arrays.asList("rect(x: 1, y: 3)", "rect(x: 1, y: 4)", "rect(x: 2, y: 3)", "rect(x: 2, y: 4)")
 		));
+		
+		assertVizObjects("@for({x: x, y: y} <- [{x: 1, y: 2}]) @rect(x: x, y: y);", Arrays.asList(
+			Arrays.asList("rect(x: 1, y: 2)")
+		));
+		
+		assertVizObjects("@for({x: w, y: [{y: x, z: y}, z]} <- [{x: 1, y: [{y: 2, z: 3}, 4]}]) @rect(w: w, x: x, y: y, z: z);", Arrays.asList(
+			Arrays.asList("rect(w: 1, x: 2, y: 3, z: 4)")
+		));
+		
+		assertVizObjects("@for([x, {x: y}] <- [[1, {x: 2}]]) @rect(x: x, y: y);", Arrays.asList(
+			Arrays.asList("rect(x: 1, y: 2)")
+		));
 	}
 	
 	private static void assertVizObjects(String program, List<List<String>> expectedObjects) {
