@@ -32,9 +32,9 @@ function findAugmentingPath() {
 	var item;
 	@for(v <- getPath(item))
 		@circle[vertex: v.label](stroke: '#f33', strokeWidth: 2);
-	@for(e <- eachCons(getPath(item), 2)) {
-		@line[start: e[0].label, end: e[1].label](stroke: '#f33', strokeWidth: 2);
-		@line[start: e[1].label, end: e[0].label](stroke: '#f33', strokeWidth: 2);
+	@for([e1, e2] <- getPath(item).eachCons(2)) {
+		@line[start: e1.label, end: e2.label](stroke: '#f33', strokeWidth: 2);
+		@line[start: e2.label, end: e1.label](stroke: '#f33', strokeWidth: 2);
 	}
 	
 	var queue = [];
@@ -64,18 +64,6 @@ function findAugmentingPath() {
 		}
 	}
 	return false;
-}
-
-function eachCons(array, count) {
-	var groups = [];
-	for(var i = 0; i <= array.length() - count; i++) {
-		var group = [];
-		for(var j = 0; j < count; j++) {
-			group.push(array[i + j]);
-		}
-		groups.push(group);
-	}
-	return groups;
 }
 
 function getPath(item) {

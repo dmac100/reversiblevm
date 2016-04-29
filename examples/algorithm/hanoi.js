@@ -1,3 +1,4 @@
+@bounds(fit: 'full');
 @delay(transition: 0, instruction: 1);
 
 discs = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [], []];

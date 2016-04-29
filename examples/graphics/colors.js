@@ -1,3 +1,5 @@
+@bounds(fit: 'full');
+
 digits = ['0', '3', '6', '9', 'c', 'f'];
 
 colors = [];
