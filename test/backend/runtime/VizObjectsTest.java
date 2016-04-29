@@ -64,6 +64,10 @@ public class VizObjectsTest {
 	public void forLoop() {
 		assertVizObjects("var a = []; @for(x <- a) @rect(x: x);", new ArrayList<List<String>>());
 		
+		assertVizObjects("@for(x <- 5) @rect(x: 5);", Arrays.asList(
+			Arrays.asList("rect(x: 5)")
+		));
+		
 		assertVizObjects("var a = [5]; @for(x <- a) @rect(x: x);", Arrays.asList(
 			Arrays.asList("rect(x: 5)")
 		));
@@ -273,6 +277,10 @@ public class VizObjectsTest {
 		
 		assertVizObjects("@for([x] <- [[1], [2]], [y] <- [[3], [4]]) @rect(x: x, y: y);", Arrays.asList(
 			Arrays.asList("rect(x: 1, y: 3)", "rect(x: 1, y: 4)", "rect(x: 2, y: 3)", "rect(x: 2, y: 4)")
+		));
+		
+		assertVizObjects("@for({x: x, y: y} <- {x: 1, y: 2}) @rect(x: x, y: y);", Arrays.asList(
+			Arrays.asList("rect(x: 1, y: 2)")
 		));
 		
 		assertVizObjects("@for({x: x, y: y} <- [{x: 1, y: 2}]) @rect(x: x, y: y);", Arrays.asList(

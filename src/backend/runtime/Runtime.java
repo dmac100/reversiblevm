@@ -1,6 +1,7 @@
 package backend.runtime;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -139,8 +140,14 @@ public class Runtime implements HasState, ValueReadObserver {
 		if(instruction instanceof VizIterateInstruction) {
 			String name = ((VizIterateInstruction)instruction).getName();
 			
-			checkArrayValue(getStack().peekValue(0));
-			ArrayValue array = checkArrayValue(getStack().popValue(true, false));
+			// Set array to the value at the top of the stack if it's an array, or else wrap it in one.
+			ArrayValue array;
+			Value iteratedValue = getStack().popValue(true, false);
+			if(iteratedValue instanceof ArrayValue) {
+				array = checkArrayValue(iteratedValue);
+			} else {
+				array = new ArrayValue(Arrays.asList(iteratedValue), undoStack);
+			}
 			
 			List<Instruction> instructions = function.getInstructions();
 			
