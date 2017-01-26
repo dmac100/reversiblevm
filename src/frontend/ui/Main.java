@@ -586,7 +586,7 @@ public class Main {
 			CommandLine command = parser.parse(options, args);
 		
 			if(command.hasOption("h") || command.getArgs().length > 1) {
-				new HelpFormatter().printHelp("java -jar vm.jar [options] [filename]", options);
+				new HelpFormatter().printHelp("java -jar reversiblevm.jar [options] [filename]", options);
 				System.exit(0);
 			}
 			
@@ -604,7 +604,7 @@ public class Main {
 		} catch(Throwable e) {
 			// Print usage and exit on any error.
 			System.err.println(e.getMessage());
-			new HelpFormatter().printHelp("java -jar vm.jar", options);
+			new HelpFormatter().printHelp("java -jar reversiblevm.jar", options);
 			System.exit(0);
 		}
 	}
