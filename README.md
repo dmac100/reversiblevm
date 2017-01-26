@@ -24,26 +24,6 @@ For example, a sorting algorithm can be displayed using:
 			stroke: '#333'
 		);
 
-	@rect(
-		x: 10,
-		y: 15 * x + 20,
-		width: 20,
-		height: 8,
-		fill: 'cyan',
-		strokeWidth: 1,
-		stroke: '#000'
-	);
-
-	@rect(
-		x: 10,
-		y: 15 * y + 20,
-		width: 20,
-		height: 8,
-		fill: 'yellow',
-		strokeWidth: 1,
-		stroke: '#000'
-	);
-
 	for(var x = 0; x < a.length(); x++) {
 		for(var y = x; y < a.length(); y++) {
 			if(a[x].value > a[y].value) {
