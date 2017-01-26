@@ -522,7 +522,7 @@ public class Main {
 	}
 
 	public void refreshTitle() {
-		shell.setText("ScratchPad");
+		shell.setText("ReversibleVm");
 
 		String filename = "Untitled";
 		String modified = "";
@@ -540,7 +540,7 @@ public class Main {
 			modified = "*";
 		}
 		
-		shell.setText(modified + filename + " - ScratchPad");
+		shell.setText(modified + filename + " - ReversibleVm");
 	}
 	
 	private void addFileDropTarget(Composite parent) {
