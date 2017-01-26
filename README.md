@@ -1,7 +1,7 @@
 ReversibleVM
 ============
 
-An editor and virtual machine for a JavaScript like language that allows running a program backwards and forwards, with
+An editor and virtual machine for a [JavaScript like language](doc/language.md) that allows running a program backwards and forwards, with
 an animated graphical visualisation.
 
 ![Screenshot](screenshot.png)
