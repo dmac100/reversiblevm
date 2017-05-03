@@ -197,11 +197,10 @@ public class Parser extends BaseParser<Instructions> {
 			Sequence(
 				MemberExpression(),
 				Arguments(),
-				callable.set(new CallableInstructions(pop(2))),
+				callable.set(new CallableInstructions(pop(1))),
 				push(Instructions(
 					Instructions(callable.get().getPrefix()),
 					Instructions(callable.get().getRead()),
-					pop(),
 					pop(),
 					Instructions(Call())
 				))
@@ -209,11 +208,10 @@ public class Parser extends BaseParser<Instructions> {
 			ZeroOrMore(FirstOf(
 				Sequence(
 					Arguments(),
-					callable.set(new CallableInstructions(pop(2))),
+					callable.set(new CallableInstructions(pop(1))),
 					push(Instructions(
 						Instructions(callable.get().getPrefix()),
 						Instructions(callable.get().getRead()),
-						pop(),
 						pop(),
 						Instructions(Call())
 					))
@@ -238,8 +236,7 @@ public class Parser extends BaseParser<Instructions> {
 			Sequence(
 				Terminal("("),
 				Terminal(")"),
-				push(Instructions(Push(Value(1)), Swap())),
-				push(Instructions())
+				push(Instructions(Push(Value(1)), Swap()))
 			),
 			Sequence(Terminal("("), ArgumentList(), Terminal(")"))
 		);
@@ -257,7 +254,7 @@ public class Parser extends BaseParser<Instructions> {
 				push(Instructions(pop(1), pop(), Instructions(Swap())))
 			),
 			push(Instructions(Instructions(Push(Value(argCount.get()))), Instructions(Swap()))),
-			swap()
+			mergeAfter()
 		);
 	}
 	
