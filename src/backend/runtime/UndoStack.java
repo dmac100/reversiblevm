@@ -1,7 +1,5 @@
 package backend.runtime;
 
-import gnu.trove.list.array.TDoubleArrayList;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +9,13 @@ import backend.value.BooleanValue;
 import backend.value.DoubleValue;
 import backend.value.NullValue;
 import backend.value.Value;
+import gnu.trove.list.array.TDoubleArrayList;
 
+/**
+ * Stores values needed to restore previous state to enable undo of instructions.
+ * Values are added to the undo stack when state is modified, and removed on undo.
+ * Values are split across multiple stacks internally to allow for more efficient storage and compression.
+ */
 public class UndoStack {
 	private final int RUNINSTRUCTION = 1;
 	private final int POPSTACKFRAME = 2;
@@ -36,20 +40,32 @@ public class UndoStack {
 	
 	private boolean undoEnabled = true;
 
+	/**
+	 * Returns whether undo is enabled.
+	 */
 	public boolean isUndoEnabled() {
 		return undoEnabled;
 	}
 	
+	/**
+	 * Enables undo.
+	 */
 	public void setUndoEnabled(boolean undoEnabled) {
 		this.undoEnabled = undoEnabled;
 	}
 	
+	/**
+	 * Adds an undo command which will be run on undo.
+	 */
 	public void addCommandUndo(Runnable command) {
 		if(!undoEnabled) return;
 		
 		commandUndos.add(command);
 	}
 	
+	/**
+	 * Stores that the a stack frame was popped since the previous undo point.
+	 */
 	public void addPopStackFrameUndo(StackFrame stackFrame) {
 		if(!undoEnabled) return;
 		
@@ -57,18 +73,27 @@ public class UndoStack {
 		popStackFrameUndos.add(stackFrame);
 	}
 	
+	/**
+	 * Stores that there was an instruction executed since the previous undo point.
+	 */
 	public void addInstructionUndo() {
 		if(!undoEnabled) return;
 		
 		flagStack.push(flagStack.pop() | RUNINSTRUCTION);
 	}
 	
+	/**
+	 * Stores that the viz objects were marked dirty since the previous undo point.
+	 */
 	public void addMarkVizObjectsDirtyUndo() {
 		if(!undoEnabled) return;
 		
 		flagStack.push(flagStack.pop() | MARKVIZOBJECTSDIRTY);
 	}
 	
+	/**
+	 * Stores an undo of a stack pop where the given value is the value that was at the top of the stack.
+	 */
 	public void addPopValueUndo(Value value) {
 		if(!undoEnabled) return;
 		
@@ -84,7 +109,10 @@ public class UndoStack {
 			popValueUndos.add(value);
 		}
 	}
-	
+
+	/**
+	 * Does an undo of a stack pop, restoring the previous value to the top of the stack.
+	 */
 	public void undoPopValue(Runtime runtime) {
 		if(!undoEnabled) return;
 		
@@ -106,6 +134,9 @@ public class UndoStack {
 		runtime.getStack().push(value, false);
 	}
 
+	/**
+	 * Runs a full undo to restore state to the previous undo point.
+	 */
 	public void undo(Runtime runtime) {
 		if(!undoEnabled) return;
 
@@ -114,6 +145,9 @@ public class UndoStack {
 		undoInstructionCounterChange(runtime);
 	}
 	
+	/**
+	 * Runs any undo commands added since the previous undo point.
+	 */
 	private void undoCommands() {
 		while(!commandUndos.isEmpty()) {
 			Runnable command = commandUndos.remove(commandUndos.size() - 1);
@@ -124,6 +158,10 @@ public class UndoStack {
 		}
 	}
 
+	/**
+	 * Does any undo needed based on the flags that were set. These flags are set at most once per instruction, and
+	 * restore to the previous undo point.
+	 */
 	private void undoFlags(Runtime runtime) {
 		if(!flagStack.isEmpty()) {
 			int flag = flagStack.pop();
@@ -143,6 +181,9 @@ public class UndoStack {
 		}
 	}
 	
+	/**
+	 * Does an undo of instruction specific changes by finding the instruction that was executed and calls the undo method.
+	 */
 	private void undoInstruction(Runtime runtime) {
 		if(!instructionCounterUndos.isEmpty()) {
 			int instructionCounter = instructionCounterUndos.peek();
@@ -157,7 +198,10 @@ public class UndoStack {
 			}
 		}
 	}
-	
+
+	/**
+	 * Does an undo of any instruction counter changes.
+	 */
 	private void undoInstructionCounterChange(Runtime runtime) {
 		// Undo instruction counter changes.
 		if(!instructionCounterUndos.isEmpty()) {
@@ -168,6 +212,9 @@ public class UndoStack {
 		}
 	}
 
+	/**
+	 * Saves an undo point before running an instruction, so the state can be restored the this state on undo.
+	 */
 	public void saveUndoPoint(int currentInstructionCounter) {
 		if(!undoEnabled) return;
 		
@@ -176,6 +223,9 @@ public class UndoStack {
 		flagStack.push(0);
 	}
 	
+	/**
+	 * Returns the state of the undo stack as a String for testing purposes.
+	 */
 	public String getState(String prefix) {
 		StringBuilder s = new StringBuilder();
 		s.append(prefix).append("Command Undos: " + commandUndos.size()).append("\n");
@@ -187,7 +237,10 @@ public class UndoStack {
 		s.append(prefix).append("Flags: " + flagStack.size());
 		return s.toString();
 	}
-	
+
+	/**
+	 * Returns the total size of all the items in the undo stack.
+	 */
 	public int getSize() {
 		int size = 0;
 		size += commandUndos.size();
@@ -200,6 +253,9 @@ public class UndoStack {
 		return size;
 	}
 	
+	/**
+	 * Clears the undo stack so that it is empty.
+	 */
 	public void clear() {
 		commandUndos.clear();
 		instructionCounterUndos.clear();
@@ -210,6 +266,9 @@ public class UndoStack {
 		flagStack.clear();
 	}
 	
+	/**
+	 * Returns the number of instructions that have been executed and saved on the undo stack. 
+	 */
 	public int getInstructionsExecuted() {
 		return instructionCounterUndos.size();
 	}

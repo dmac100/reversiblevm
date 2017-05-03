@@ -3,6 +3,9 @@ package backend.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A stack of integers, which stores its data in a compressed form to reduce memory usage.
+ */
 public class IntStack {
 	private static final int NEGATIVE_OFFSET = 50;
 	
@@ -60,7 +63,7 @@ public class IntStack {
 			storedValue >>>= 7;
 		}
 		
-		// Ensure that the 7th is not set in the last byte without run-length encoding.
+		// Ensure that the 7th bit is not set in the last byte without run-length encoding.
 		if((values[size - 1] & 0x40) > 0) {
 			values[size++] = (byte) 0x80;
 		}

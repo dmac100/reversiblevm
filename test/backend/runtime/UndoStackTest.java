@@ -73,7 +73,7 @@ public class UndoStackTest {
 		runtime.getUndoStack().saveUndoPoint(0);
 		runtime.popStackFrame();
 		
-		// Undo twice.
+		// Undo instruction.
 		undoStack.undo(runtime);
 		
 		// Check that state is the same as the initial state.

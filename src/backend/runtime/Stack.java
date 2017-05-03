@@ -7,6 +7,9 @@ import java.util.Set;
 import backend.value.NullValue;
 import backend.value.Value;
 
+/**
+ * The stack where values are pushed and popped as instructions are being evaluated.
+ */
 public class Stack implements HasState {
 	private final UndoStack undoStack;
 	private final List<Value> stack = new ArrayList<>();

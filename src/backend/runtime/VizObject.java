@@ -8,6 +8,14 @@ import java.util.Set;
 import backend.value.ImmutableValue;
 import backend.value.NullValue;
 
+/**
+ * A visual object that represents an object displayed on the graphical canvas.
+ * A VizObject can be created with an statement like "@rect[id: 5](width: 50, height: 50)"
+ * Here, the name would be 'rect', the values would be the width and height, and the filters would be the id.
+ * If filters are set, then this object applies its values to any other objects containing values matching the filter.
+ * The key is a unique object to tell which objects are equal to each other. Each object has a different key, but also
+ * if VizObjects are created within a @for instruction, then they have a different key for each iteration.
+ */
 public class VizObject implements HasImmutableValueProperties {
 	private final String name;
 	private final Object key;
