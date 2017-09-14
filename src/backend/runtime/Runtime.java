@@ -309,11 +309,9 @@ public class Runtime implements HasState, ValueReadObserver {
 	
 	public List<VizObject> getVizObjects() {
 		if(vizUpdatesEnabled) {
-			vizObjectsDirty = true;
 			do {
-				boolean oldVizObjectsDirty = vizObjectsDirty;
 				vizObjectsDirty = false;
-				refreshVizObjects(oldVizObjectsDirty);
+				refreshVizObjects(true);
 			} while(vizObjectsDirty);
 		}
 		return vizObjects;
