@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<script src="https://d3js.org/d3.v4.min.js"></script>
+		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+		<style>
+			body {
+				width: 100%;
+				background-color: #fafafa;
+			}
+
+			#content {
+				background-color: white;
+				box-shadow: 1px 1px 2px #ccc;
+				border: 1px solid #aaa;
+				margin: 0px auto;
+				width: 1020px;
+				border-radius: 3px;
+			}
+
+			#buttons {
+				margin: 5px;
+				text-align: center;
+			}
+
+			#slider {
+				margin-left: 20%;
+				width: 60%;
+			}
+
+			svg {
+				padding: 10px;
+				width: 1000px;
+				display: block;
+				height: 600px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="content">
+			<div id="buttons">
+				<input id="prevButton" type="button" value="Previous"/>
+				<input id="nextButton" type="button" value="Next"/>
+			</div>
+			<div id="slider">
+			</div>
+			<svg>
+				<defs>
+					<marker id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5' refY='5'>
+						<path d='M0,0 V10 L5,5 Z'/>
+					</marker>
+				</defs>
+			</svg>
+		</div>
+		<script>
+			[DATA]
+		</script>
+		<script>
+			var delay = 100
+			var boundsFit = 'extend'
+			var svgWidth = 1000
+			var svgHeight = 600
+			var transform = { scale: 1, tx: 0, ty: 0 }
+			var timeline = JSON.parse(LZString.decompressFromBase64(data))
+			var position = 0
+
+			var slider = $("#slider").slider({
+				min: 0,
+				max: timeline.length - 1,
+				step: 1,
+				value: position,
+				slide: function(event, ui) {
+					updatePosition(ui.value)
+				}
+			})
+
+			function getColor(color, defaultColor) {
+				if(!color) color = defaultColor
+
+				if(color == "red") return "rgb(200, 100, 100)"
+				if(color == "green") return "rgb(100, 200, 100)"
+				if(color == "blue") return "rgb(100, 100, 200)"
+				if(color == "yellow") return "rgb(200, 200, 100)"
+				if(color == "magenta") return "rgb(200, 100, 200)"
+				if(color == "cyan") return "rgb(100, 200, 200)"
+				if(color == "white") return "rgb(255, 255, 255)"
+				if(color == "lightgrey") return "rgb(200, 200, 200)"
+				if(color == "grey") return "rgb(150, 150, 150)"
+				if(color == "darkgrey") return "rgb(50, 50, 50)"
+				if(color == "black") return "rgb(0, 0, 0)"
+
+				return color
+			}
+
+			function updateElements(data) {
+				['rect', 'ellipse', 'circle', 'line', 'text'].forEach(type => {
+					var groups = d3.select("svg")
+						.selectAll(type)
+						.data(data.filter(d => d.name == type), d => d.key)
+
+					var update = groups
+						.transition()
+						.duration(delay)
+						.attr("opacity", "1")
+						.call(updateElement)
+
+					var update = groups
+						.enter()
+						.append(type)
+						.call(updateElement)
+						.selectAll(type)
+						.attr("opacity", "0")
+						.transition()
+						.duration(delay)
+						.attr("opacity", "1")
+
+					groups.exit()
+						.attr("opacity", "1")
+						.transition()
+						.delay(delay)
+						.attr("opacity", "0")
+						.remove()
+				})
+			}
+
+			function updateElement(group) {
+				return group.attr("x", d => d.x || 0)
+					.attr("y", d => d.y || 0)
+					.attr("x1", d => d.x1 || 0)
+					.attr("y1", d => d.y1 || 0)
+					.attr("x2", d => d.x2 || 0)
+					.attr("y2", d => d.y2 || 0)
+					.attr("cx", d => d.cx || 0)
+					.attr("cy", d => d.cy || 0)
+					.attr("width", d => d.width || 50)
+					.attr("height", d => d.height || 50)
+					.attr("r", d => d.r || 0)
+					.attr("rx", d => (d.rx || 0) * 2)
+					.attr("ry", d => (d.ry || 0) * 2)
+					.attr("fill", d => d.fill)
+					.attr("fill-opacity", d => d.fillOpacity)
+					.attr("stroke", d => d.stroke)
+					.attr("stroke-width", d => d.strokeWidth || 0)
+					.attr("stroke-style", d => d.strokeStyle || 'solid')
+					.attr("arrow-length", d => d.arrowLength || 0)
+					.attr("arrow-angle", d => d.arrowAngle || 40)
+					.attr("start-offset", d => d.startOffset || 0)
+					.attr("end-offset", d => d.endOffset || 0)
+					.text(d => d.text || '')
+					.attr("font-size", d => d.fontSize || 12)
+					.attr("font-family", d => d.fontName || 'Arial')
+					.attr("font-style", d => d.fontStyle || 'normal')
+					.attr("font-weight", d => d.fontWeight || 'normal')
+					.attr("text-align", d => d.textAlign || 'left')
+					.attr("text-anchor", d => d.textAnchor || 'start')
+					.attr("dominant-baseline", d => d.dominantBaseLine || '')
+					.attr("marker-end", d => d.markerEnd)
+			}
+
+			function tx(x) {
+				return x * transform.scale + transform.tx
+			}
+
+			function ty(y) {
+				return y * transform.scale + transform.ty
+			}
+
+			function extendBounds(bounds, x1, y1, x2, y2) {
+				bounds.x1 = Math.min(bounds.x1, x1)
+				bounds.y1 = Math.min(bounds.y1, y1)
+				bounds.x2 = Math.max(bounds.x2, x2)
+				bounds.y2 = Math.max(bounds.y2, y2)
+			}
+
+			function updateTransform(bounds) {
+				var boundsWidth = (bounds.x2 - bounds.x1 + 10)
+				var boundsHeight = (bounds.y2 - bounds.y1 + 10)
+				var scaleX = svgWidth / boundsWidth
+				var scaleY = svgHeight / boundsHeight
+				var scale = Math.min(scaleX, scaleY)
+
+				if(boundsFit == 'extend') {
+					scale = Math.min(scale, 1)
+				}
+
+				if(boundsFit != 'none') {
+					transform.tx = -bounds.x1 * scale + 10
+					transform.ty = -bounds.y1 * scale + 10
+					transform.scale = scale
+					
+					transform.tx += Math.max(0, (svgWidth - boundsWidth * scale) / 2)
+					transform.ty += Math.max(0, (svgHeight - boundsHeight * scale) / 2)
+				}
+			}
+
+			function updatePosition(newPosition) {
+				if(newPosition >= 0 && newPosition < timeline.length) {
+					position = newPosition
+					slider.slider('option', 'value', position)
+					updateElements(timeline[position])
+				}
+			}
+
+			function init() {
+				timeline.forEach(values => {
+					if(boundsFit == 'full') {
+						var bounds = { x1: Number.MAX_VALUE, y1: Number.MAX_VALUE, x2: -Number.MAX_VALUE, y2: -Number.MAX_VALUE }
+					} else {
+						var bounds = { x1: 0, y1: 0, x2: svgWidth, y2: svgHeight }
+					}
+
+					values.forEach(value => {
+						value.x = parseFloat(value.x || 0)
+						value.y = parseFloat(value.y || 0)
+						value.x1 = parseFloat(value.x1 || 0)
+						value.y1 = parseFloat(value.y1 || 0)
+						value.x2 = parseFloat(value.x2 || 0)
+						value.y2 = parseFloat(value.y2 || 0)
+						value.cx = parseFloat(value.cx || 0)
+						value.cy = parseFloat(value.cy || 0)
+						value.width = parseFloat(value.width || 50)
+						value.height = parseFloat(value.height || 50)
+						value.r = parseFloat(value.r || 0)
+						value.rx = parseFloat(value.rx || 0)
+						value.ry = parseFloat(value.ry || 0)
+						value.startOffset = parseFloat(value.startOffset || 0)
+						value.endOffset = parseFloat(value.endOffset || 0)
+
+						if(value.name == "rect") {
+							extendBounds(bounds, value.x, value.y, value.x + value.width, value.y + value.height)
+						} else if(value.name == "ellipse") {
+							extendBounds(bounds, value.x - value.rx, value.y - value.ry, value.x + value.rx, value.y + vaue.ry)
+						} else if(value.name == "circle") {
+							extendBounds(bounds, value.cx - value.r, value.cy - value.r, value.cx + value.r, value.cy + value.r)
+						} else if(value.name == "line") {
+							extendBounds(bounds, value.x1, value.y1, value.x2, value.y2)
+						} else if(value.name == "text") {
+							extendBounds(bounds, value.x, value.y, value.x, value.y)
+						}
+					})
+
+					updateTransform(bounds)
+
+					values.forEach(value => {
+						value.x = tx(value.x)
+						value.y = ty(value.y)
+						value.x1 = tx(value.x1)
+						value.x2 = tx(value.x2)
+						value.y1 = ty(value.y1)
+						value.y2 = ty(value.y2)
+						value.width = tx(value.width) - tx(0)
+						value.height = ty(value.height) - ty(0)
+						value.startOffset = Math.min(tx(value.startOffset) - tx(0), ty(value.startOffset) - ty(0))
+						value.endOffset = Math.min(tx(value.endOffset) - tx(0), ty(value.endOffset) - ty(0))
+						value.cx = tx(value.cx)
+						value.cy = ty(value.cy)
+						value.r = Math.min(tx(value.r) - tx(0), ty(value.r) - ty(0))
+
+						if(value.name == 'line') {
+							value.strokeWidth = 1
+						}
+
+						if(value.name == 'text') {
+							value.textAlign = value.textAlign || ''
+							value.fontStyle = value.fontStyle || ''
+
+							if(value.textAlign.toLowerCase().indexOf('center') >= 0) {
+								value.textAnchor = "middle"
+							} else if(value.text.toLowerCase().indexOf('right') >= 0) {
+								value.dominantBaseLine = "end"
+							} else {
+								value.dominantBaseLine = "start"
+							}
+
+							if(value.textAlign.toLowerCase().indexOf('middle') >= 0) {
+								value.dominantBaseLine = "middle"
+							} else if(value.text.toLowerCase().indexOf('bottom') >= 0) {
+								value.dominantBaseLine = "hanging"
+							} else {
+								value.dominantBaseLine = ""
+							}
+
+							value.fill = getColor(value.stroke, 'darkgrey')
+							value.fontWeight = (value.fontStyle.toLowerCase().indexOf("bold") >= 0) ? "bold" : "normal"
+							value.fontStyle = (value.fontStyle.toLowerCase().indexOf("italic") >= 0) ? "italic" : "normal"
+						}
+
+						if(value.startOffset > 0 || value.endOffset > 0) {
+							var theta = Math.atan2(value.y2 - value.y1, value.x2 - value.x1)
+							value.x1 += value.startOffset * Math.cos(theta)
+							value.y1 += value.startOffset * Math.sin(theta)
+							value.x2 -= value.endOffset * Math.cos(theta)
+							value.y2 -= value.endOffset * Math.sin(theta)
+						}
+
+						value.markerEnd = (parseFloat(value.arrowLength || 0) > 0) ? "url(#arrow)" : ""
+						value.fillOpacity = (value.fill == 'none') ? 0 : 1
+						value.fill = getColor(value.fill, 'red')
+						value.stroke = getColor(value.stroke, 'darkgrey')
+					})
+				})
+				
+				updateElements(timeline[position])
+
+				d3.select("#prevButton").on("click", function() {
+					updatePosition(position - 1)
+				})
+
+				d3.select("#nextButton").on("click", function() {
+					updatePosition(position + 1)
+				})
+			}
+
+			init()
+		</script>
+	</body>
+</html>

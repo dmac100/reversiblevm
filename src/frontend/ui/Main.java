@@ -175,6 +175,16 @@ public class Main {
 			})
 			.setAccelerator(SWT.CONTROL | SWT.SHIFT | 's')
 			.addSeparator()
+			.addItem("Export HtML...").addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent event) {
+					try {
+						exportHtml();
+					} catch(Exception e) {
+						displayException(e);
+					}
+				}
+			})
+			.addSeparator()
 			.addItem("E&xit\tCtrl+Q").addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					shell.dispose();
@@ -323,6 +333,17 @@ public class Main {
 		
 		if(selected != null) {
 			mainController.saveAs(selected);
+		}
+	}
+	
+	private void exportHtml() throws IOException {
+		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+		dialog.setText("Export HTML");
+		
+		String selected = dialog.open();
+		
+		if(selected != null) {
+			mainController.exportHtml(selected);
 		}
 	}
 

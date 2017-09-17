@@ -1,6 +1,7 @@
 package frontend.controller;
 
 import integration.GraphicsCanvas;
+import integration.HtmlExporter;
 import integration.RuntimeController;
 import integration.RuntimeModel;
 import integration.VizObjectControlledSettings;
@@ -126,6 +127,10 @@ public class MainController {
 		FileUtils.writeStringToFile(file, editorText.getText());
 		modified = false;
 		eventBus.post(new ModifiedEvent(modified));
+	}
+	
+	public void exportHtml(String selected) throws IOException {
+		new HtmlExporter().exportHtml(editorText.getText(), new File(selected));
 	}
 	
 	public boolean getModified() {
