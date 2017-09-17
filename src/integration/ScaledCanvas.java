@@ -21,12 +21,12 @@ public class ScaledCanvas {
 	}
 	
 	public void drawOval(double cx, double cy, double width, double height) {
-		gc.drawOval(tx(cx - width / 2), ty(cy - height / 2), tx(cx + width / 2) - tx(cx - width / 2), ty(cy + width / 2) - ty(cy - width / 2));
+		gc.drawOval(tx(cx - width / 2), ty(cy - height / 2), tx(cx + width / 2) - tx(cx - width / 2), ty(cy + height / 2) - ty(cy - height / 2));
 		bounds.extendBounds(cx - width / 2, cy - height / 2, cx + width / 2, cy + height / 2);
 	}
 
 	public void fillOval(double cx, double cy, double width, double height) {
-		gc.fillOval(tx(cx - width / 2), ty(cy - height / 2), tx(cx + width / 2) - tx(cx - width / 2), ty(cy + width / 2) - ty(cy - width / 2));
+		gc.fillOval(tx(cx - width / 2), ty(cy - height / 2), tx(cx + width / 2) - tx(cx - width / 2), ty(cy + height / 2) - ty(cy - height / 2));
 		bounds.extendBounds(cx - width / 2, cy - height / 2, cx + width / 2, cy + height / 2);
 	}
 
